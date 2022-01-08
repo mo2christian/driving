@@ -1,0 +1,55 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  labels:
+    cloud.googleapis.com/location: europe-west1
+  name: SERVICE-NAME
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/maxScale: '2'
+    spec:
+      containerConcurrency: 80
+      serviceAccountName: planning-api@driving-monlabo-biz.iam.gserviceaccount.com
+      timeoutSeconds: 300
+      containers:
+      - env:
+        - name: DB_USER
+          value: planning
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: latest
+              name: DB_PASSWORD
+        - name: DB_LINK
+          value: planning-dev.dqieh.mongodb.net/base?retryWrites=true&w=majority
+        - name: EMAIL_SENDER
+          value: christian.momo@monlabo.biz
+        - name: EMAIL_KEY
+          valueFrom:
+            secretKeyRef:
+              key: latest
+              name: EMAIL_KEY
+        - name: HAZELCAST_HOST
+          value: hazelcast.monlabo.biz
+        - name: ZIPKIN_URL
+          value: https://zipkin.monlabo.biz/api/v2/spans
+        - name: SMS_FROM
+          value: '+33644601392'
+        - name: SMS_SID
+          value: AC1b1a2cf63b69f9644ee4f321cba1d3dd
+        - name: SMS_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: latest
+              name: SMS_TOKEN
+        image: IMAGE
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            cpu: 2000m
+            memory: 512Mi
+
+
