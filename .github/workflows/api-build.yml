@@ -40,13 +40,16 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
       - name: Make maven executable
+        working-directory: planning-api
         run: chmod +x ./mvnw
       - name: Run unit tests and sonar analyse
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        working-directory: planning-api
         run: ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
       - name: Run integration tests
+        working-directory: planning-api
         run: ./mvnw clean integration-test
   package:
     name: Construct docker image
@@ -75,6 +78,7 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Create docker image
+        working-directory: planning-api
         run: |
           chmod +x ./mvnw
           ./mvnw -DskipTests clean package
@@ -87,6 +91,7 @@ jobs:
       - name: Setup Gcloud
         uses: google-github-actions/setup-gcloud@v0
       - name: Authenticate to GCR and push image
+        working-directory: planning-api
         run: |
           gcloud auth configure-docker europe-west1-docker.pkg.dev
           docker push europe-west1-docker.pkg.dev/driving-monlabo-biz/planning/planning-api:${GITHUB_SHA}
@@ -107,6 +112,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Prepare service
+        working-directory: planning-api
         run: |
           IMAGE=europe-west1-docker.pkg.dev/driving-monlabo-biz/planning/planning-api:${GITHUB_SHA}
           sed -i "s@SERVICE-NAME@planning-api-$PR_NUMBER@g" src/main/cloudrun/service.yaml
@@ -129,8 +135,9 @@ jobs:
           region: europe-west1
           metadata: src/main/cloudrun/service.yaml
       - name: Make service public
+        working-directory: planning-api
         run: |
           gcloud run services add-iam-policy-binding planning-api-${{ github.event.pull_request.number }} \
             --member="allUsers" \
             --role="roles/run.invoker" \
-            --region=europe-west1
+            --region=${{ secrets.REGION }}

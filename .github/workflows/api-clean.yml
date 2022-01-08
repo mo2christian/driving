@@ -20,5 +20,6 @@ jobs:
           workload_identity_provider: ${{ secrets.IDENTITY_POOL }}
           service_account: ${{ secrets.SERVICE_ACCOUNT }}
       - name: Delete service
+        working-directory: planning-api
         run: |
-          gcloud run services delete --region=europe-west1 --quiet planning-api-${{ github.event.pull_request.number }}
+          gcloud run services delete --region=${{ secrets.REGION }} --quiet planning-api-${{ github.event.pull_request.number }}

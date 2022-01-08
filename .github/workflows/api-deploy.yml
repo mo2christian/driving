@@ -32,10 +32,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        working-directory: planning-api
         run: |
           chmod +x ./mvnw
           ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
       - name: Create docker image
+        working-directory: planning-api
         run: |
           ./mvnw -DskipTests clean package
           docker build -f src/main/docker/Dockerfile.jvm -t europe-west1-docker.pkg.dev/driving-monlabo-biz/planning/planning-api:${GITHUB_SHA} .
@@ -48,6 +50,7 @@ jobs:
       - name: Setup Gcloud
         uses: google-github-actions/setup-gcloud@v0
       - name: Authenticate to GCR and push image
+        working-directory: planning-api
         run: |
           gcloud auth configure-docker europe-west1-docker.pkg.dev
           docker push europe-west1-docker.pkg.dev/driving-monlabo-biz/planning/planning-api:${GITHUB_SHA}
@@ -67,6 +70,7 @@ jobs:
       with:
         fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
     - name: Prepare service
+      working-directory: planning-api
       run: |
         IMAGE=europe-west1-docker.pkg.dev/driving-monlabo-biz/planning/planning-api:${GITHUB_SHA}
         sed -i "s@SERVICE-NAME@planning-api@g" src/main/cloudrun/service.yaml
@@ -79,5 +83,5 @@ jobs:
     - id: deploy
       uses: google-github-actions/deploy-cloudrun@v0
       with:
-        region: europe-west1
+        region: ${{ secrets.REGION }}
         metadata: src/main/cloudrun/service.yaml
