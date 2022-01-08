@@ -1,0 +1,24 @@
+name: Clean staging Env
+on:
+  pull_request:
+    types: [ closed ]
+    paths:
+      - planning-api/**
+jobs:
+  delete-stage:
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    runs-on: ubuntu-latest
+    name: Delete stage environment
+    environment:
+      name: Dev
+    steps:
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v0
+        with:
+          workload_identity_provider: ${{ secrets.IDENTITY_POOL }}
+          service_account: ${{ secrets.SERVICE_ACCOUNT }}
+      - name: Delete service
+        run: |
+          gcloud run services delete --region=europe-west1 --quiet planning-api-${{ github.event.pull_request.number }}
