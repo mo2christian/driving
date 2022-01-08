@@ -57,6 +57,8 @@ jobs:
     permissions:
       contents: 'read'
       id-token: 'write'
+    environment:
+      name: Dev
     timeout-minutes: 15
     if: github.event_name == 'pull_request'
     needs:
