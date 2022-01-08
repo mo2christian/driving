@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
 <head>
-  <title>Spring Security Example</title>
+  <title>Welcome</title>
 </head>
 <body>
-<h1>Welcome!</h1>
-
-<p><form th:action="@{/logout}" method="post"><input type="submit" value="Logout"/></form></p>
+<div layout:fragment="content">
+  <h1>Welcome!</h1>
+</div>
 </body>
 </html>
