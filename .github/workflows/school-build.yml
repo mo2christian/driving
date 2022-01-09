@@ -57,6 +57,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         working-directory: planning-school
         run: |
+          gcloud auth application-default login
           chmod +x ./mvnw
           ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
   package:
@@ -87,12 +88,6 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      - name: Create docker image
-        working-directory: planning-school
-        run: |
-          chmod +x ./mvnw
-          ./mvnw -DskipTests clean package
-          docker build -f src/main/docker/Dockerfile.jvm -t europe-west1-docker.pkg.dev/driving-monlabo-biz/planning/planning-school:${GITHUB_SHA} .
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v0
         with:
@@ -100,6 +95,13 @@ jobs:
           service_account: ${{ secrets.SERVICE_ACCOUNT }}
       - name: Setup Gcloud
         uses: google-github-actions/setup-gcloud@v0
+      - name: Create docker image
+        working-directory: planning-school
+        run: |
+          chmod +x ./mvnw
+          gcloud auth application-default login
+          ./mvnw -DskipTests clean package
+          docker build -f src/main/docker/Dockerfile.jvm -t europe-west1-docker.pkg.dev/driving-monlabo-biz/planning/planning-school:${GITHUB_SHA} .
       - name: Authenticate to GCR and push image
         working-directory: planning-school
         run: |
