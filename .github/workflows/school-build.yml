@@ -45,6 +45,7 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
       - name: Authenticate to Google Cloud
+        id: auth
         uses: google-github-actions/auth@v0
         with:
           workload_identity_provider: ${{ secrets.IDENTITY_POOL }}
@@ -57,7 +58,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         working-directory: planning-school
         run: |
-          gcloud auth application-default login --quiet
+          gcloud auth application-default login --quiet --client-id-file=${{ steps.auth.outputs.credentials_file_path }}
           chmod +x ./mvnw
           ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
   package:
@@ -89,6 +90,7 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Authenticate to Google Cloud
+        id: auth
         uses: google-github-actions/auth@v0
         with:
           workload_identity_provider: ${{ secrets.IDENTITY_POOL }}
@@ -99,7 +101,7 @@ jobs:
         working-directory: planning-school
         run: |
           chmod +x ./mvnw
-          gcloud auth application-default login --quiet
+          gcloud auth application-default login --quiet --client-id-file=${{ steps.auth.outputs.credentials_file_path }}
           ./mvnw -DskipTests clean package
           docker build -f src/main/docker/Dockerfile.jvm -t europe-west1-docker.pkg.dev/driving-monlabo-biz/planning/planning-school:${GITHUB_SHA} .
       - name: Authenticate to GCR and push image
