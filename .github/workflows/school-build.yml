@@ -57,7 +57,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         working-directory: planning-school
         run: |
-          gcloud auth application-default login
+          gcloud auth application-default login --quiet
           chmod +x ./mvnw
           ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
   package:
@@ -99,7 +99,7 @@ jobs:
         working-directory: planning-school
         run: |
           chmod +x ./mvnw
-          gcloud auth application-default login
+          gcloud auth application-default login --quiet
           ./mvnw -DskipTests clean package
           docker build -f src/main/docker/Dockerfile.jvm -t europe-west1-docker.pkg.dev/driving-monlabo-biz/planning/planning-school:${GITHUB_SHA} .
       - name: Authenticate to GCR and push image
