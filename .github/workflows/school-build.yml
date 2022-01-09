@@ -17,6 +17,8 @@ jobs:
     timeout-minutes: 15
     env:
       MAVEN_OPTS: -Xms1024m -Xmx2048m -XX:MaxMetaspaceSize=1000m
+    environment:
+      name: Dev
     steps:
       - uses: actions/checkout@v2
         with:
@@ -39,18 +41,19 @@ jobs:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
-      - name: Make maven executable
-        working-directory: planning-school
-        run: chmod +x ./mvnw
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v0
+        with:
+          workload_identity_provider: ${{ secrets.IDENTITY_POOL }}
+          service_account: ${{ secrets.SERVICE_ACCOUNT }}
       - name: Run unit tests and sonar analyse
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         working-directory: planning-school
-        run: ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
-      - name: Run integration tests
-        working-directory: planning-school
-        run: ./mvnw clean integration-test
+        run: |
+          chmod +x ./mvnw
+          ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
   package:
     name: Construct docker image
     runs-on: ubuntu-latest
