@@ -15,6 +15,9 @@ jobs:
     name: Unit and integration tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: 'read'
+      id-token: 'write'
     env:
       MAVEN_OPTS: -Xms1024m -Xmx2048m -XX:MaxMetaspaceSize=1000m
     environment:
