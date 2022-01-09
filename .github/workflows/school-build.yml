@@ -49,6 +49,8 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.IDENTITY_POOL }}
           service_account: ${{ secrets.SERVICE_ACCOUNT }}
+      - name: Setup Gcloud
+        uses: google-github-actions/setup-gcloud@v0
       - name: Run unit tests and sonar analyse
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any

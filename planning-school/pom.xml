@@ -18,6 +18,14 @@
 		<spring-cloud-gcp.version>2.0.4</spring-cloud-gcp.version>
 		<spring-cloud.version>2020.0.4</spring-cloud.version>
 		<planning-client.version>1.0-SNAPSHOT</planning-client.version>
+
+		<sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+		<sonar.surefire.reportsPaths>${project.build.directory}/surefire-reports</sonar.surefire.reportsPaths>
+		<sonar.organization>mo2christian</sonar.organization>
+		<sonar.projectKey>mo2christian_planning-school</sonar.projectKey>
+		<sonar-plugin.version>3.7.0.1746</sonar-plugin.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -127,6 +135,15 @@
 				<version>2.1.1</version>
 			</extension>
 		</extensions>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.sonarsource.scanner.maven</groupId>
+					<artifactId>sonar-maven-plugin</artifactId>
+					<version>${sonar-plugin.version}</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -139,6 +156,26 @@
 						</exclude>
 					</excludes>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.5</version>
+				<executions>
+					<execution>
+						<id>default-prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>default-report</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
