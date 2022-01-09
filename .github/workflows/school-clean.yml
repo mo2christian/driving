@@ -1,9 +1,9 @@
-name: Clean staging Env for Planning API
+name: Clean staging Env for Planning School
 on:
   pull_request:
     types: [ closed ]
     paths:
-      - planning-api/**
+      - planning-school/**
 jobs:
   delete-stage:
     permissions:
@@ -20,6 +20,5 @@ jobs:
           workload_identity_provider: ${{ secrets.IDENTITY_POOL }}
           service_account: ${{ secrets.SERVICE_ACCOUNT }}
       - name: Delete service
-        working-directory: planning-api
         run: |
-          gcloud run services delete --region=${{ secrets.REGION }} --quiet planning-api-${{ github.event.pull_request.number }}
+          gcloud run services delete --region=${{ secrets.REGION }} --quiet planning-school-${{ github.event.pull_request.number }}

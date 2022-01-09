@@ -1,15 +1,15 @@
-name: Build planning API
+name: Build Planning school
 on:
   push:
     branches:
       - '*'
       - '!main'
     paths:
-      - planning-api/**
+      - planning-school/**
   pull_request:
     types: [ opened, synchronize, reopened ]
     paths:
-      - planning-api/**
+      - planning-school/**
 jobs:
   tests:
     name: Unit and integration tests
@@ -40,16 +40,16 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
       - name: Make maven executable
-        working-directory: planning-api
+        working-directory: planning-school
         run: chmod +x ./mvnw
       - name: Run unit tests and sonar analyse
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        working-directory: planning-api
+        working-directory: planning-school
         run: ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
       - name: Run integration tests
-        working-directory: planning-api
+        working-directory: planning-school
         run: ./mvnw clean integration-test
   package:
     name: Construct docker image
@@ -80,11 +80,11 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Create docker image
-        working-directory: planning-api
+        working-directory: planning-school
         run: |
           chmod +x ./mvnw
           ./mvnw -DskipTests clean package
-          docker build -f src/main/docker/Dockerfile.jvm -t europe-west1-docker.pkg.dev/driving-monlabo-biz/planning/planning-api:${GITHUB_SHA} .
+          docker build -f src/main/docker/Dockerfile.jvm -t europe-west1-docker.pkg.dev/driving-monlabo-biz/planning/planning-school:${GITHUB_SHA} .
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v0
         with:
@@ -93,10 +93,10 @@ jobs:
       - name: Setup Gcloud
         uses: google-github-actions/setup-gcloud@v0
       - name: Authenticate to GCR and push image
-        working-directory: planning-api
+        working-directory: planning-school
         run: |
           gcloud auth configure-docker europe-west1-docker.pkg.dev
-          docker push europe-west1-docker.pkg.dev/driving-monlabo-biz/planning/planning-api:${GITHUB_SHA}
+          docker push europe-west1-docker.pkg.dev/driving-monlabo-biz/planning/planning-school:${GITHUB_SHA}
   deploy-staging:
     name: Deploy to staging
     permissions:
@@ -114,10 +114,10 @@ jobs:
         with:
           fetch-depth: 0
       - name: Prepare service
-        working-directory: planning-api
+        working-directory: planning-school
         run: |
-          IMAGE=europe-west1-docker.pkg.dev/driving-monlabo-biz/planning/planning-api:${GITHUB_SHA}
-          sed -i "s@SERVICE-NAME@planning-api-$PR_NUMBER@g" src/main/cloudrun/service.yaml
+          IMAGE=europe-west1-docker.pkg.dev/driving-monlabo-biz/planning/planning-school:${GITHUB_SHA}
+          sed -i "s@SERVICE-NAME@planning-school-$PR_NUMBER@g" src/main/cloudrun/service.yaml
           sed -i "s@IMAGE@$IMAGE@g" src/main/cloudrun/service.yaml
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -134,10 +134,10 @@ jobs:
       - id: deploy
         uses: google-github-actions/deploy-cloudrun@v0
         with:
-          region: europe-west1
+          region: ${{ secrets.REGION }}
           metadata: src/main/cloudrun/service.yaml
       - name: Make service public
-        working-directory: planning-api
+        working-directory: planning-school
         run: |
           gcloud run services add-iam-policy-binding planning-api-${{ github.event.pull_request.number }} \
             --member="allUsers" \
