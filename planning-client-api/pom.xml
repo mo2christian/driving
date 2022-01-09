@@ -101,17 +101,17 @@
 	<distributionManagement>
 		<snapshotRepository>
 			<id>artifact-registry</id>
-			<url>artifactregistry://europe-west1-maven.pkg.dev/driving-monlabo-biz/driving</url>
+			<url>artifactregistry://europe-west1-maven.pkg.dev/driving-monlabo-biz/auto</url>
 		</snapshotRepository>
 		<repository>
 			<id>artifact-registry</id>
-			<url>artifactregistry://europe-west1-maven.pkg.dev/driving-monlabo-biz/driving</url>
+			<url>artifactregistry://europe-west1-maven.pkg.dev/driving-monlabo-biz/auto</url>
 		</repository>
 	</distributionManagement>
 	<repositories>
 		<repository>
 			<id>gcp-driving-repo</id>
-			<url>artifactregistry://europe-west1-maven.pkg.dev/driving-monlabo-biz/driving</url>
+			<url>artifactregistry://europe-west1-maven.pkg.dev/driving-monlabo-biz/auto</url>
 			<releases>
 				<enabled>true</enabled>
 				<updatePolicy>always</updatePolicy>

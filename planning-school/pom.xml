@@ -118,7 +118,7 @@
 	<repositories>
 		<repository>
 			<id>artifact-registry</id>
-			<url>artifactregistry://europe-west1-maven.pkg.dev/driving-monlabo-biz/planning</url>
+			<url>artifactregistry://europe-west1-maven.pkg.dev/driving-monlabo-biz/auto</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
