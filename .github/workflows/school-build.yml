@@ -15,6 +15,9 @@ jobs:
     name: Unit and integration tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: 'read'
+      id-token: 'write'
     env:
       MAVEN_OPTS: -Xms1024m -Xmx2048m -XX:MaxMetaspaceSize=1000m
     environment:
@@ -41,12 +44,21 @@ jobs:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v0
+        with:
+          workload_identity_provider: ${{ secrets.IDENTITY_POOL }}
+          service_account: ${{ secrets.SERVICE_ACCOUNT }}
+      - name: Setup Gcloud
+        uses: google-github-actions/setup-gcloud@v0
       - name: Run unit tests and sonar analyse
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         working-directory: planning-school
         run: |
+          gcloud auth application-login --client-id-file=${{ steps.auth.outputs.credentials_file_path }}
           chmod +x ./mvnw
           ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
   package:
