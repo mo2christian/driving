@@ -1,26 +1,31 @@
-name: Build planning API
+name: Build Planning school
 on:
   push:
     branches:
       - '*'
       - '!main'
     paths:
-      - planning-api/**
+      - planning-school/**
   pull_request:
     types: [ opened, synchronize, reopened ]
     paths:
-      - planning-api/**
+      - planning-school/**
 jobs:
   tests:
     name: Unit and integration tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: 'read'
+      id-token: 'write'
     env:
       MAVEN_OPTS: -Xms1024m -Xmx2048m -XX:MaxMetaspaceSize=1000m
+    environment:
+      name: Dev
     steps:
       - uses: actions/checkout@v2
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          fetch-depth: 0
       - name: Set up JDK 11
         uses: actions/setup-java@v1
         with:
@@ -39,18 +44,21 @@ jobs:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
-      - name: Make maven executable
-        working-directory: planning-api
-        run: chmod +x ./mvnw
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v0.4.4
+        with:
+          create_credentials_file: true
+          workload_identity_provider: ${{ secrets.IDENTITY_POOL }}
+          service_account: ${{ secrets.SERVICE_ACCOUNT }}
       - name: Run unit tests and sonar analyse
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        working-directory: planning-api
-        run: ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
-      - name: Run integration tests
-        working-directory: planning-api
-        run: ./mvnw clean integration-test
+        working-directory: planning-school
+        run: |
+          chmod +x ./mvnw
+          ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
   package:
     name: Construct docker image
     runs-on: ubuntu-latest
@@ -79,24 +87,26 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      - name: Create docker image
-        working-directory: planning-api
-        run: |
-          chmod +x ./mvnw
-          ./mvnw -DskipTests clean package
-          docker build -f src/main/docker/Dockerfile.jvm -t europe-west1-docker.pkg.dev/driving-monlabo-biz/planning/planning-api:${GITHUB_SHA} .
       - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v0
+        id: auth
+        uses: google-github-actions/auth@v0.4.4
         with:
+          create_credentials_file: true
           workload_identity_provider: ${{ secrets.IDENTITY_POOL }}
           service_account: ${{ secrets.SERVICE_ACCOUNT }}
       - name: Setup Gcloud
-        uses: google-github-actions/setup-gcloud@v0
+        uses: google-github-actions/setup-gcloud@v0.3.0
+      - name: Create docker image
+        working-directory: planning-school
+        run: |
+          chmod +x ./mvnw
+          ./mvnw -DskipTests clean package
+          docker build -f src/main/docker/Dockerfile.jvm -t europe-west1-docker.pkg.dev/driving-monlabo-biz/planning/planning-school:${GITHUB_SHA} .
       - name: Authenticate to GCR and push image
-        working-directory: planning-api
+        working-directory: planning-school
         run: |
           gcloud auth configure-docker europe-west1-docker.pkg.dev
-          docker push europe-west1-docker.pkg.dev/driving-monlabo-biz/planning/planning-api:${GITHUB_SHA}
+          docker push europe-west1-docker.pkg.dev/driving-monlabo-biz/planning/planning-school:${GITHUB_SHA}
   deploy-staging:
     name: Deploy to staging
     permissions:
@@ -114,32 +124,33 @@ jobs:
         with:
           fetch-depth: 0
       - name: Prepare service
-        working-directory: planning-api
+        working-directory: planning-school
         run: |
-          IMAGE=europe-west1-docker.pkg.dev/driving-monlabo-biz/planning/planning-api:${GITHUB_SHA}
-          sed -i "s@SERVICE-NAME@planning-api-$PR_NUMBER@g" src/main/cloudrun/service.yaml
+          IMAGE=europe-west1-docker.pkg.dev/driving-monlabo-biz/planning/planning-school:${GITHUB_SHA}
+          sed -i "s@SERVICE-NAME@planning-school-$PR_NUMBER@g" src/main/cloudrun/service.yaml
           sed -i "s@IMAGE@$IMAGE@g" src/main/cloudrun/service.yaml
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v0
-        with:
-          workload_identity_provider: ${{ secrets.IDENTITY_POOL }}
-          service_account: ${{ secrets.SERVICE_ACCOUNT }}
       - name: Upload service
         uses: actions/upload-artifact@v2
         with:
           name: service
-          path: ${{ github.workspace }}/src/main/cloudrun/service.yaml
-      - id: deploy
-        uses: google-github-actions/deploy-cloudrun@v0
+          path: ${{ github.workspace }}/planning-school/src/main/cloudrun/service.yaml
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v0.4.4
         with:
-          region: europe-west1
-          metadata: src/main/cloudrun/service.yaml
+          create_credentials_file: true
+          workload_identity_provider: ${{ secrets.IDENTITY_POOL }}
+          service_account: ${{ secrets.SERVICE_ACCOUNT }}
+      - id: deploy
+        uses: google-github-actions/deploy-cloudrun@v0.7.0
+        with:
+          region: ${{ secrets.REGION }}
+          metadata: planning-school/src/main/cloudrun/service.yaml
       - name: Make service public
-        working-directory: planning-api
+        working-directory: planning-school
         run: |
-          gcloud run services add-iam-policy-binding planning-api-${{ github.event.pull_request.number }} \
+          gcloud run services add-iam-policy-binding planning-school-${{ github.event.pull_request.number }} \
             --member="allUsers" \
             --role="roles/run.invoker" \
             --region=${{ secrets.REGION }}

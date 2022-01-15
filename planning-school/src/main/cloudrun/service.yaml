@@ -1,0 +1,28 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  labels:
+    cloud.googleapis.com/location: europe-west1
+  name: SERVICE-NAME
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/maxScale: '2'
+    spec:
+      containerConcurrency: 80
+      serviceAccountName: planning-school@driving-monlabo-biz.iam.gserviceaccount.com
+      timeoutSeconds: 300
+      containers:
+      - env:
+        - name: PLANNING_API_URL
+          value: https://planning-api.monlabo.biz
+        image: IMAGE
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            cpu: 2000m
+            memory: 512Mi
+
+
