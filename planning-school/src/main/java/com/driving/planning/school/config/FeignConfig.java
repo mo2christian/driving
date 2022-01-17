@@ -1,7 +1,6 @@
 package com.driving.planning.school.config;
 
-import com.driving.planning.school.common.ApiException;
-import feign.Response;
+import com.driving.planning.school.common.exception.ApiException;
 import feign.Retryer;
 import feign.codec.ErrorDecoder;
 import org.springframework.cloud.openfeign.EnableFeignClients;

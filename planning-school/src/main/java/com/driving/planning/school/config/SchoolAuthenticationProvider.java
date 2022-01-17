@@ -2,7 +2,7 @@ package com.driving.planning.school.config;
 
 import com.driving.planning.client.AccountApiClient;
 import com.driving.planning.client.model.AccountDto;
-import com.driving.planning.school.common.ApiException;
+import com.driving.planning.school.common.exception.ApiException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;

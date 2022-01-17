@@ -1,4 +1,4 @@
-package com.driving.planning.school.common;
+package com.driving.planning.school.common.exception;
 
 public class ApiException extends RuntimeException{
 

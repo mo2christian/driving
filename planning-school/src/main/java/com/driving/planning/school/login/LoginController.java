@@ -2,7 +2,7 @@ package com.driving.planning.school.login;
 
 import com.driving.planning.client.DrivingSchoolApiClient;
 import com.driving.planning.client.model.SchoolDto;
-import com.driving.planning.school.common.ApiException;
+import com.driving.planning.school.common.exception.ApiException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
