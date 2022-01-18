@@ -3,6 +3,7 @@ package com.driving.planning.school.login;
 import com.driving.planning.client.AccountApiClient;
 import com.driving.planning.client.model.AccountDto;
 import com.driving.planning.client.model.Text;
+import com.driving.planning.school.common.exception.ApiException;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +55,19 @@ class AuthenticationTest {
                 .extracting(AccountDto::getEmail, AccountDto::getPassword)
                 .containsExactly("user", "pwd");
 
+    }
+
+    @Test
+    void authFailed() throws Exception {
+        when(accountApiClient.apiV1AccountsCheckPost(anyString(), any(AccountDto.class)))
+                .thenThrow(new ApiException());
+        mockMvc.perform(post("/login")
+                        .param("username", "user")
+                        .param("password", "pwd")
+                        .param("school", "school")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login?error"));
     }
 
 }

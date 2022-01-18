@@ -2,13 +2,17 @@ package com.driving.planning.school.register;
 
 import com.driving.planning.school.common.constraint.Email;
 import com.driving.planning.school.common.constraint.PhoneNumber;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 
-@Data
+@Getter
+@Setter
+@ToString
 public class RegistrationDto implements Serializable {
 
     @NotBlank

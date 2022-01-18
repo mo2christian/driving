@@ -18,6 +18,7 @@
 		<spring-cloud-gcp.version>2.0.4</spring-cloud-gcp.version>
 		<spring-cloud.version>2020.0.4</spring-cloud.version>
 		<planning-client.version>1.0-SNAPSHOT</planning-client.version>
+		<wiremock.version>2.27.2</wiremock.version>
 
 		<sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -94,6 +95,12 @@
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.tomakehurst</groupId>
+			<artifactId>wiremock</artifactId>
+			<version>${wiremock.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
