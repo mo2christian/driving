@@ -3,7 +3,7 @@ package com.driving.planning.school.login;
 import com.driving.planning.client.DrivingSchoolApiClient;
 import com.driving.planning.client.model.SchoolDto;
 import com.driving.planning.client.model.SchoolResponse;
-import com.driving.planning.school.common.ApiException;
+import com.driving.planning.school.common.exception.ApiException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
