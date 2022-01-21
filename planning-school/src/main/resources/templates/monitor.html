@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <meta charset="UTF-8">
+    <title>Monitor</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <table>
+        <thead>
+            <tr>
+                <td>Firstname</td><td>Last Name</td><td>Phone Number</td>
+            </tr>
+        </thead>
+        <tbody>
+        <tr th:each="monitor : ${monitors}">
+            <td th:text="${monitor.firstName}">FirstName</td>
+            <td th:text="${monitor.lastName}">Last Name</td>
+            <td th:text="${monitor.phoneNumber}">Phone Number</td>
+        </tr>
+        </tbody>
+    </table>
+    <form th:action="@{/monitor}" method="post" th:object="${request}">
+        <div class="form-group">
+            <label> First Name : </label>
+            <input type="text" name="firstName" class="form-control" th:field="*{firstName}"/>
+            <ul>
+                <li th:each="err : ${#fields.errors('firstName')}" th:text="${err}" class="error"></li>
+            </ul>
+        </div>
+        <div class="form-group">
+            <label> Last Name : </label>
+            <input type="text" name="lastName" class="form-control" th:field="*{lastName}"/>
+            <ul>
+                <li th:each="err : ${#fields.errors('lastName')}" th:text="${err}" class="error"></li>
+            </ul>
+        </div>
+        <div class="form-group">
+            <label> Phone Number : </label>
+            <input type="text" name="phoneNumber" class="form-control" th:field="*{phoneNumber}"/>
+            <ul>
+                <li th:each="err : ${#fields.errors('phoneNumber')}" th:text="${err}" class="error"></li>
+            </ul>
+        </div>
+        <button type="submit" class="btn btn-default">Create</button>
+    </form>
+</div>
+</body>
+</html>

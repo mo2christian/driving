@@ -29,13 +29,13 @@ public class RegisterController {
 
     @GetMapping("/register")
     public String registerForm(Model model){
-        RegistrationDto registrationDto = new RegistrationDto();
+        RegistrationForm registrationDto = new RegistrationForm();
         model.addAttribute("request", registrationDto);
         return "subscription";
     }
 
     @PostMapping("/register")
-    public String register(@Valid @ModelAttribute("request") RegistrationDto request,
+    public String register(@Valid @ModelAttribute("request") RegistrationForm request,
                            BindingResult result){
         log.info("register new school {}", request);
         if (result.hasErrors()) {
