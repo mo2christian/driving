@@ -40,11 +40,11 @@ class RegisterControllerTest {
     @Autowired
     Validator validator;
 
-    RegistrationDto registration;
+    RegistrationForm registration;
 
     @BeforeEach
     void before(){
-        registration = new RegistrationDto();
+        registration = new RegistrationForm();
         registration.setEmail("test@test.com");
         registration.setName("name");
         registration.setPassword("pwd");

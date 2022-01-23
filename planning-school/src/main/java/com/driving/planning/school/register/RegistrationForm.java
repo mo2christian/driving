@@ -13,7 +13,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @ToString
-public class RegistrationDto implements Serializable {
+public class RegistrationForm implements Serializable {
 
     @NotBlank
     @Email
