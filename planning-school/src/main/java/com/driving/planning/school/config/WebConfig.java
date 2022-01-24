@@ -1,6 +1,8 @@
 package com.driving.planning.school.config;
 
+import com.driving.planning.school.common.converter.String2LocalTime;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -17,7 +19,13 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceHandler("/public/**")
                 .addResourceLocations("classpath:/static/")
                 .setCachePeriod( 3600 )
-                .resourceChain(true) // 4.1
-                .addResolver(new PathResourceResolver()); //4.1
+                .resourceChain(true)
+                .addResolver(new PathResourceResolver());
+    }
+
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        WebMvcConfigurer.super.addFormatters(registry);
+        registry.addConverter(new String2LocalTime());
     }
 }
