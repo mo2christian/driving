@@ -45,7 +45,26 @@
                 <li th:each="err : ${#fields.errors('phoneNumber')}" th:text="${err}" class="error"></li>
             </ul>
         </div>
-        <button type="submit" class="btn btn-default">Create</button>
+        <div class="form-group">
+            <div class="row">
+                <div class="col" th:each="workDay, stat : *{workDays}">
+                    <label th:text="${workDay.day}">Day</label>
+                    <input type="text" class="form-control"
+                           th:name="${workDay.day}"
+                           th:field="*{workDays[__${stat.index}__].begin}"/>
+                    <ul>
+                        <li th:each="err : ${#fields.errors('workDays[__${stat.index}__].begin')}" th:text="${err}" class="error"></li>
+                    </ul>
+                    <input type="text" class="form-control"
+                           th:name="${workDay.day}"
+                           th:field="*{workDays[__${stat.index}__].end}"/>
+                    <ul>
+                        <li th:each="err : ${#fields.errors('workDays[__${stat.index}__].end')}" th:text="${err}" class="error"></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Create</button>
     </form>
 </div>
 </body>

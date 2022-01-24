@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -21,6 +22,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.Validator;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -29,6 +31,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 class MonitorControllerTest {
+
+    private static final String TENANT = "test";
 
     @Autowired
     MockMvc mockMvc;
@@ -49,47 +53,67 @@ class MonitorControllerTest {
                 .phoneNumber("147852369");
         response = new MonitorResponse()
                 .addMonitorsItem(monitor);
-        Mockito.when(monitorApiClient.apiV1MonitorsGet("test"))
+        when(monitorApiClient.apiV1MonitorsGet(TENANT))
                 .thenReturn(ResponseEntity.ok(response));
     }
 
     @Test
-    @MockUser(username = "user", school = "test")
+    @MockUser(username = "user", school = TENANT)
     void list() throws Exception {
-
         mockMvc.perform(get("/monitor"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("monitor"))
                 .andExpect(model().attribute("monitors", response.getMonitors()))
                 .andExpect(model().attributeExists("request"));
+        verify(monitorApiClient, Mockito.atMostOnce()).apiV1MonitorsGet(TENANT);
     }
 
     @Test
-    @MockUser(username = "user", school = "test")
+    @MockUser(username = "user", school = TENANT)
     void add() throws Exception {
+        var dto = new MonitorDto()
+                .firstName("firstName")
+                .lastName("lastName")
+                .phoneNumber("147852369");
         mockMvc.perform(post("/monitor")
-                .param("firstName", "firstName")
-                .param("lastName", "lastName")
-                .param("phoneNumber", "147852369")
+                .param("firstName", dto.getFirstName())
+                .param("lastName", dto.getLastName())
+                .param("phoneNumber", dto.getPhoneNumber())
                 .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/monitor"))
                 .andExpect(model().attribute("monitors", response.getMonitors()))
                 .andExpect(model().attributeExists("request"));
+        ArgumentCaptor<MonitorDto> monitorCaptor = ArgumentCaptor.forClass(MonitorDto.class);
+        verify(monitorApiClient, atMostOnce()).apiV1MonitorsPost(eq(TENANT), monitorCaptor.capture());
+        assertThat(monitorCaptor.getValue())
+                .isNotNull()
+                .extracting(MonitorDto::getLastName, MonitorDto::getFirstName, MonitorDto::getPhoneNumber)
+                .containsExactly(dto.getLastName(), dto.getFirstName(), dto.getPhoneNumber());
+        assertThat(monitorCaptor.getValue().getWorkDays())
+                .isNotNull()
+                .hasSize(7)
+                .allMatch(hourly -> "09:00".equals(hourly.getBegin()) && "18:00".equals(hourly.getEnd()));
     }
 
     @Test
-    @MockUser(username = "user", school = "test")
+    @MockUser(username = "user", school = TENANT)
     void addWithError() throws Exception {
+        var dto = new MonitorDto()
+                .firstName("firstName")
+                .lastName("lastName")
+                .phoneNumber("142369");
         mockMvc.perform(post("/monitor")
-                        .param("firstName", "firstName")
-                        .param("lastName", "lastName")
-                        .param("phoneNumber", "147852")
+                        .param("firstName", dto.getFirstName())
+                        .param("lastName", dto.getLastName())
+                        .param("phoneNumber", dto.getPhoneNumber())
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("monitor"))
                 .andExpect(model().attribute("monitors", response.getMonitors()))
                 .andExpect(model().attributeExists("request"));
+        ArgumentCaptor<MonitorDto> monitorCaptor = ArgumentCaptor.forClass(MonitorDto.class);
+        verify(monitorApiClient, never()).apiV1MonitorsPost(eq(TENANT), monitorCaptor.capture());
     }
 
     @ParameterizedTest
