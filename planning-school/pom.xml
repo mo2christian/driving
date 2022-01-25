@@ -25,7 +25,7 @@
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
 		<sonar.surefire.reportsPaths>${project.build.directory}/surefire-reports</sonar.surefire.reportsPaths>
 		<sonar.organization>mo2christian</sonar.organization>
-		<sonar.projectKey>mo2christian_driving</sonar.projectKey>
+		<sonar.projectKey>mmo2christian_driving_planning-school</sonar.projectKey>
 		<sonar-plugin.version>3.7.0.1746</sonar-plugin.version>
 	</properties>
 	<dependencies>
