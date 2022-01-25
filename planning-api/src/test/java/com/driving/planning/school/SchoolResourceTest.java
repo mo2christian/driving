@@ -65,6 +65,7 @@ class SchoolResourceTest {
     @Test
     void getSchoolByID(){
         var dto = Generator.school();
+        dto.setPseudo("pseudo");
         when(schoolService.get(anyString())).thenReturn(Optional.of(dto));
         var formatter = DateTimeFormatter.ofPattern(DatePattern.TIME);
         var hourly = dto.getWorkDays().stream().findFirst().orElse(null);
