@@ -19,5 +19,6 @@ public class WorkDayForm {
     private LocalTime begin;
     @NotNull
     private LocalTime end;
+    private boolean selected = true;
 
 }

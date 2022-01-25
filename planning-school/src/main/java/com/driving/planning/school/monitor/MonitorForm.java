@@ -30,7 +30,7 @@ public class MonitorForm {
     private String phoneNumber;
 
     @Valid
-    @Size(min = 5, max = 7)
+    @Size(min = 1, max = 7)
     private List<WorkDayForm> workDays;
 
 }

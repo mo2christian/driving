@@ -31,6 +31,7 @@ public class MonitorController {
 
     private final MonitorApiClient monitorApiClient;
 
+
     @Autowired
     public MonitorController(MonitorApiClient monitorApiClient) {
         this.monitorApiClient = monitorApiClient;

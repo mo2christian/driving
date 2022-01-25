@@ -49,14 +49,13 @@
             <div class="row">
                 <div class="col" th:each="workDay, stat : *{workDays}">
                     <label th:text="${workDay.day}">Day</label>
+                    <input type="hidden" th:field="*{workDays[__${stat.index}__].day}">
                     <input type="text" class="form-control"
-                           th:name="${workDay.day}"
                            th:field="*{workDays[__${stat.index}__].begin}"/>
                     <ul>
                         <li th:each="err : ${#fields.errors('workDays[__${stat.index}__].begin')}" th:text="${err}" class="error"></li>
                     </ul>
                     <input type="text" class="form-control"
-                           th:name="${workDay.day}"
                            th:field="*{workDays[__${stat.index}__].end}"/>
                     <ul>
                         <li th:each="err : ${#fields.errors('workDays[__${stat.index}__].end')}" th:text="${err}" class="error"></li>

@@ -93,7 +93,8 @@ class MonitorControllerTest {
         assertThat(monitorCaptor.getValue().getWorkDays())
                 .isNotNull()
                 .hasSize(7)
-                .allMatch(hourly -> "09:00".equals(hourly.getBegin()) && "18:00".equals(hourly.getEnd()));
+                .allMatch(hourly -> "09:00".equals(hourly.getBegin()) && "18:00".equals(hourly.getEnd()))
+                .allMatch(hourly -> hourly.getDay() != null);
     }
 
     @Test
