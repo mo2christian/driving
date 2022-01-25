@@ -63,6 +63,43 @@ class SchoolResourceTest {
     }
 
     @Test
+    void getSchoolByID(){
+        var dto = Generator.school();
+        when(schoolService.get(anyString())).thenReturn(Optional.of(dto));
+        var formatter = DateTimeFormatter.ofPattern(DatePattern.TIME);
+        var hourly = dto.getWorkDays().stream().findFirst().orElse(null);
+        given()
+                .accept(ContentType.JSON)
+                .when()
+                .get("/api/v1/schools/{id}", dto.getPseudo())
+                .then()
+                .statusCode(200)
+                .body("name", Matchers.is(dto.getName()))
+                .body("pseudo", Matchers.is(dto.getPseudo()))
+                .body("phoneNumber", Matchers.is(dto.getPhoneNumber()))
+                .body("address.path", Matchers.is(dto.getAddress().getPath()))
+                .body("address.postalCode", Matchers.is(dto.getAddress().getPostalCode()))
+                .body("address.town", Matchers.is(dto.getAddress().getTown()))
+                .body("workDays.size()", Matchers.is(1))
+                .body("workDays[0].day", Matchers.is(hourly.getDay().getValue()))
+                .body("workDays[0].begin", Matchers.is(formatter.format(hourly.getBegin())))
+                .body("workDays[0].end", Matchers.is(formatter.format(hourly.getEnd())));
+        verify(schoolService, times(1)).get(dto.getPseudo());
+    }
+
+    @Test
+    void getSchoolByID_NotFound(){
+        when(schoolService.get(anyString())).thenReturn(Optional.empty());
+        given()
+                .accept(ContentType.JSON)
+                .when()
+                .get("/api/v1/schools/{id}", "empty")
+                .then()
+                .statusCode(Response.Status.NOT_FOUND.getStatusCode())
+                .body("message", Matchers.containsStringIgnoringCase("not found"));
+    }
+
+    @Test
     void handlePlanningException(){
         var msg = "Error";
         doThrow(new PlanningException(Response.Status.BAD_REQUEST, msg)).when(schoolService).list();

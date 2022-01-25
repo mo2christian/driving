@@ -106,6 +106,18 @@ public class SchoolResource {
         schoolService.delete(dto.getPseudo());
     }
 
+    @Operation(description = "Get specific driving school")
+    @Parameter(name = "id", in = ParameterIn.PATH, required = true,
+            schema = @Schema(required = true, implementation = String.class))
+    @APIResponse(responseCode = "200", description = "School returned")
+    @APIResponse(responseCode = "404", description = "School not found")
+    @Path("/{id}")
+    @GET
+    public SchoolDto getSchool(@PathParam("id") String id){
+        return schoolService.get(id)
+                .orElseThrow(() -> new PlanningException(Response.Status.NOT_FOUND, "School not found"));
+    }
+
     private String generatePseudo(String name){
         var builder = new StringBuilder();
         for (var i = 0; i < name.length() && i < 12; i++){
