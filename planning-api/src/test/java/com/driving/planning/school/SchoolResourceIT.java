@@ -1,9 +1,6 @@
 package com.driving.planning.school;
 
 import com.driving.planning.Generator;
-import com.driving.planning.account.dto.AccountDto;
-import com.driving.planning.school.dto.AddressDto;
-import com.driving.planning.school.dto.SchoolDto;
 import com.driving.planning.school.dto.SchoolRequest;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.http.ContentType;
@@ -63,6 +60,19 @@ class SchoolResourceIT {
                         .body()
                         .jsonPath()
                         .get("schools[0].pseudo");
+    }
+
+    @Test
+    @Order(4)
+    void get(){
+        var schoolDto = Generator.school();
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .body(schoolDto)
+                .post("/api/v1/schools/{id}", pseudo)
+                .then()
+                .statusCode(200);
     }
 
     @Test

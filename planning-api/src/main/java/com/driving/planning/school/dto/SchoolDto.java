@@ -9,6 +9,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 @RegisterForReflection
@@ -29,6 +30,10 @@ public class SchoolDto implements Serializable {
     private AddressDto address;
 
     private Set<Hourly> workDays;
+
+    public SchoolDto() {
+        workDays = new HashSet<>();
+    }
 
     public String getPseudo() {
         return pseudo;
