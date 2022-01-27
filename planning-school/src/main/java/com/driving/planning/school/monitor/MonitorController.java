@@ -1,10 +1,11 @@
 package com.driving.planning.school.monitor;
 
+import com.driving.planning.client.DrivingSchoolApiClient;
 import com.driving.planning.client.MonitorApiClient;
-import com.driving.planning.client.model.Day;
 import com.driving.planning.client.model.Hourly;
 import com.driving.planning.client.model.MonitorDto;
 import com.driving.planning.client.model.MonitorResponse;
+import com.driving.planning.school.common.exception.ApiException;
 import com.driving.planning.school.config.SchoolAuthenticationDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import javax.validation.Valid;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,10 +33,12 @@ public class MonitorController {
 
     private final MonitorApiClient monitorApiClient;
 
+    private final DrivingSchoolApiClient schoolApiClient;
 
     @Autowired
-    public MonitorController(MonitorApiClient monitorApiClient) {
+    public MonitorController(MonitorApiClient monitorApiClient, DrivingSchoolApiClient schoolApiClient) {
         this.monitorApiClient = monitorApiClient;
+        this.schoolApiClient = schoolApiClient;
     }
 
     @GetMapping
@@ -50,7 +54,9 @@ public class MonitorController {
         }
         var formatter = DateTimeFormatter.ofPattern("HH:mm");
         var workDays = form.getWorkDays()
-                .stream().map(wf -> new Hourly()
+                .stream()
+                .filter(WorkDayForm::isSelected)
+                .map(wf -> new Hourly()
                         .day(wf.getDay())
                         .begin(formatter.format(wf.getBegin()))
                         .end(formatter.format(wf.getEnd())))
@@ -67,13 +73,20 @@ public class MonitorController {
     @ModelAttribute("request")
     public MonitorForm getForm(){
         var form = new MonitorForm();
-        for (var day : Day.values()){
+        var school = schoolApiClient.apiV1SchoolsIdGet(getSchoolID())
+                .getBody();
+        if (school == null){
+            throw new ApiException(String.format("Unable to retrieve school %s", getSchoolID()));
+        }
+        var formatter = DateTimeFormatter.ofPattern("HH:mm");
+        for (var hourly : school.getWorkDays()){
             var workday = new WorkDayForm();
-            workday.setDay(day);
-            workday.setBegin(LocalTime.of(9,0));
-            workday.setEnd(LocalTime.of(18, 0));
+            workday.setDay(hourly.getDay());
+            workday.setBegin(LocalTime.parse(hourly.getBegin(), formatter));
+            workday.setEnd(LocalTime.parse(hourly.getEnd(), formatter));
             form.getWorkDays().add(workday);
         }
+        form.getWorkDays().sort(Comparator.comparing(WorkDayForm::getDay));
         return form;
     }
 

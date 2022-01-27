@@ -47,9 +47,15 @@
         </div>
         <div class="form-group">
             <div class="row">
+                <ul>
+                    <li th:each="err : ${#fields.errors('workDays')}" th:text="${err}" class="error"></li>
+                </ul>
+            </div>
+            <div class="row">
                 <div class="col" th:each="workDay, stat : *{workDays}">
                     <label th:text="${workDay.day}">Day</label>
                     <input type="hidden" th:field="*{workDays[__${stat.index}__].day}">
+                    <input type="checkbox" th:field="*{workDays[__${stat.index}__].selected}">
                     <input type="text" class="form-control"
                            th:field="*{workDays[__${stat.index}__].begin}"/>
                     <ul>
