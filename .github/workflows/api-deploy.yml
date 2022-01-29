@@ -86,4 +86,4 @@ jobs:
       uses: google-github-actions/deploy-cloudrun@v0.7.0
       with:
         region: ${{ secrets.REGION }}
-        metadata: src/main/cloudrun/service.yaml
+        metadata: planning-api/src/main/cloudrun/service.yaml

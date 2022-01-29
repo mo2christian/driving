@@ -1,23 +1,22 @@
-package com.driving.planning.school.monitor;
+package com.driving.planning.school.common.form;
 
 import com.driving.planning.client.model.Day;
+import com.driving.planning.school.common.constraint.WorkDay;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.validation.constraints.NotNull;
 import java.time.LocalTime;
 
 @Getter
 @Setter
 @ToString
+@WorkDay
 public class WorkDayForm {
 
-    @NotNull
     private Day day;
-    @NotNull
     private LocalTime begin;
-    @NotNull
     private LocalTime end;
+    private boolean selected = true;
 
 }

@@ -1,10 +1,9 @@
 package com.driving.planning.school.register;
 
 import com.driving.planning.client.DrivingSchoolApiClient;
-import com.driving.planning.client.model.AccountDto;
-import com.driving.planning.client.model.AddressDto;
-import com.driving.planning.client.model.SchoolDto;
-import com.driving.planning.client.model.SchoolRequest;
+import com.driving.planning.client.model.*;
+import com.driving.planning.school.common.TimeConstants;
+import com.driving.planning.school.common.form.WorkDayForm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,6 +14,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.validation.Valid;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Controller
@@ -29,8 +31,16 @@ public class RegisterController {
 
     @GetMapping("/register")
     public String registerForm(Model model){
-        RegistrationForm registrationDto = new RegistrationForm();
-        model.addAttribute("request", registrationDto);
+        var form = new RegistrationForm();
+        for (var day : Day.values()){
+            var workday = new WorkDayForm();
+            workday.setDay(day);
+            workday.setSelected(day != Day.SU);
+            workday.setBegin(LocalTime.of(8,0));
+            workday.setEnd(LocalTime.of(17, 0));
+            form.getWorkDays().add(workday);
+        }
+        model.addAttribute("request", form);
         return "subscription";
     }
 
@@ -41,18 +51,28 @@ public class RegisterController {
         if (result.hasErrors()) {
             return "subscription";
         }
-        AccountDto accountDto = new AccountDto()
+        var accountDto = new AccountDto()
                 .email(request.getEmail())
                 .password(request.getPassword());
-        AddressDto addressDto = new AddressDto()
+        var addressDto = new AddressDto()
                 .path(request.getPath())
                 .postalCode(request.getZipCode())
                 .town(request.getTown());
-        SchoolDto schoolDto = new SchoolDto()
+        var formatter = DateTimeFormatter.ofPattern(TimeConstants.HOUR_FORMAT.value());
+        var workDays = request.getWorkDays()
+                .stream()
+                .filter(WorkDayForm::isSelected)
+                .map(wf -> new Hourly()
+                        .day(wf.getDay())
+                        .begin(formatter.format(wf.getBegin()))
+                        .end(formatter.format(wf.getEnd())))
+                .collect(Collectors.toSet());
+        var schoolDto = new SchoolDto()
                 .name(request.getName())
                 .phoneNumber(request.getPhoneNumber())
-                .address(addressDto);
-        SchoolRequest schoolRequest = new SchoolRequest()
+                .address(addressDto)
+                .workDays(workDays);
+        var schoolRequest = new SchoolRequest()
                 .school(schoolDto)
                 .account(accountDto);
         schoolApiClient.apiV1SchoolsPost(schoolRequest);

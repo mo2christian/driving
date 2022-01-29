@@ -53,7 +53,7 @@ jobs:
       - name: Authenticate to GCR and push image
         working-directory: planning-school
         run: |
-          gcloud auth configure-docker europe-west1-docker.pkg.dev
+          gcloud auth configure-docker europe-west1-docker.pkg.dev --quiet
           docker push europe-west1-docker.pkg.dev/driving-monlabo-biz/planning/planning-school:${GITHUB_SHA}
   deploy:
     runs-on: ubuntu-latest

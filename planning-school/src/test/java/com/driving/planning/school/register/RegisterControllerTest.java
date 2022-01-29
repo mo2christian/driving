@@ -1,10 +1,8 @@
 package com.driving.planning.school.register;
 
 import com.driving.planning.client.DrivingSchoolApiClient;
-import com.driving.planning.client.model.AccountDto;
-import com.driving.planning.client.model.AddressDto;
-import com.driving.planning.client.model.SchoolDto;
-import com.driving.planning.client.model.SchoolRequest;
+import com.driving.planning.client.model.*;
+import com.driving.planning.school.common.form.WorkDayForm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -20,6 +18,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Validator;
+
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -52,10 +53,19 @@ class RegisterControllerTest {
         registration.setTown("Londres");
         registration.setPhoneNumber("147852369");
         registration.setZipCode("25874");
+        for (var day : Day.values()){
+            var workday = new WorkDayForm();
+            workday.setDay(day);
+            workday.setSelected(day != Day.SU);
+            workday.setBegin(LocalTime.of(8,0));
+            workday.setEnd(LocalTime.of(17, 0));
+            registration.getWorkDays().add(workday);
+        }
     }
 
     @Test
     void postRegister() throws Exception {
+        var formatter = DateTimeFormatter.ofPattern("HH:mm");
         mockMvc.perform(post("/register")
                         .param("email", registration.getEmail())
                         .param("name", registration.getName())
@@ -64,6 +74,9 @@ class RegisterControllerTest {
                         .param("town", registration.getTown())
                         .param("phoneNumber", registration.getPhoneNumber())
                         .param("zipCode", registration.getZipCode())
+                        .param("workDays[0].begin", formatter.format(registration.getWorkDays().get(0).getBegin()))
+                        .param("workDays[0].end", formatter.format(registration.getWorkDays().get(0).getEnd()))
+                        .param("workDays[0].day", registration.getWorkDays().get(0).getDay().toString())
                 .with(csrf()))
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl("/login"));
@@ -110,6 +123,7 @@ class RegisterControllerTest {
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("subscription"));
+        Mockito.verify(schoolApiClient, Mockito.never()).apiV1SchoolsPost(Mockito.any());
     }
 
     @ParameterizedTest
