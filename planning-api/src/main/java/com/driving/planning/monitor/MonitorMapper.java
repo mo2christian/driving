@@ -1,5 +1,7 @@
 package com.driving.planning.monitor;
 
+import com.driving.planning.monitor.domain.Monitor;
+import com.driving.planning.monitor.dto.MonitorDto;
 import org.bson.types.ObjectId;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

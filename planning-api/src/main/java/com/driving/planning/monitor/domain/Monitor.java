@@ -1,4 +1,4 @@
-package com.driving.planning.monitor;
+package com.driving.planning.monitor.domain;
 
 import com.driving.planning.common.hourly.Hourly;
 import com.driving.planning.monitor.absent.Absent;

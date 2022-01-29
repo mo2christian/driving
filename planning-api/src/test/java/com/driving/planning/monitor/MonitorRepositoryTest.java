@@ -4,6 +4,7 @@ import com.driving.planning.MongodbTestResource;
 import com.driving.planning.common.hourly.Day;
 import com.driving.planning.common.hourly.Hourly;
 import com.driving.planning.monitor.absent.Absent;
+import com.driving.planning.monitor.domain.Monitor;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import org.assertj.core.api.Assertions;

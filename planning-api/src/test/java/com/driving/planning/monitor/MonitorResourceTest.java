@@ -2,6 +2,7 @@ package com.driving.planning.monitor;
 
 import com.driving.planning.Generator;
 import com.driving.planning.common.DatePattern;
+import com.driving.planning.monitor.dto.MonitorDto;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import io.restassured.http.ContentType;
@@ -60,6 +61,38 @@ class MonitorResourceTest {
                 .body("monitors[0].absents[0].start", Matchers.is(dayFormatter.format(absent.getStart())))
                 .body("monitors[0].absents[0].end", Matchers.is(dayFormatter.format(absent.getEnd())))
                 .body("monitors[0].absents[0].motif", Matchers.is(absent.getMotif()));
+    }
+
+    @Test
+    void get(){
+        var monitorDto = Generator.monitor();
+        var absent = monitorDto.getAbsents().stream()
+                .findFirst()
+                .orElseThrow();
+        var hourly = getFirst(monitorDto.getWorkDays());
+        monitorDto.setId("id");
+        var timeFormatter = DateTimeFormatter.ofPattern(DatePattern.TIME);
+        var dayFormatter = DateTimeFormatter.ofPattern(DatePattern.DATE_TIME);
+        when(service.get(monitorDto.getId())).thenReturn(Optional.of(monitorDto));
+        given()
+                .accept(ContentType.JSON)
+                .header("x-app-tenant", "tenant")
+                .when()
+                .get("/api/v1/monitors/{id}", "id")
+                .then()
+                .statusCode(200)
+                .body("firstName", Matchers.is(monitorDto.getFirstName()))
+                .body("lastName", Matchers.is(monitorDto.getLastName()))
+                .body("phoneNumber", Matchers.is(monitorDto.getPhoneNumber()))
+                .body("id", Matchers.is(monitorDto.getId()))
+                .body("workDays.size()", Matchers.is(1))
+                .body("workDays[0].day", Matchers.is(hourly.getDay().getValue()))
+                .body("workDays[0].begin", Matchers.is(timeFormatter.format(hourly.getBegin())))
+                .body("workDays[0].end", Matchers.is(timeFormatter.format(hourly.getEnd())))
+                .body("absents.size()", Matchers.is(1))
+                .body("absents[0].start", Matchers.is(dayFormatter.format(absent.getStart())))
+                .body("absents[0].end", Matchers.is(dayFormatter.format(absent.getEnd())))
+                .body("absents[0].motif", Matchers.is(absent.getMotif()));
     }
 
     @Test
