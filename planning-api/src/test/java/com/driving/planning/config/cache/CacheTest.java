@@ -21,6 +21,7 @@ import static org.mockito.Mockito.*;
 @QuarkusTestResource(value = HazelcastTestResource.class)
 @QuarkusTestResource(value = ZipkinTestResource.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Disabled
 class CacheTest {
 
     @Inject
