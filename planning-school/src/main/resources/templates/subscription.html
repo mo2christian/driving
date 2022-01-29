@@ -67,13 +67,11 @@
                 <input type="checkbox" th:field="*{workDays[__${stat.index}__].selected}">
                 <input type="text" class="form-control"
                        th:field="*{workDays[__${stat.index}__].begin}"/>
-                <ul>
-                    <li th:each="err : ${#fields.errors('workDays[__${stat.index}__].begin')}" th:text="${err}" class="error"></li>
-                </ul>
+                <br/>
                 <input type="text" class="form-control"
                        th:field="*{workDays[__${stat.index}__].end}"/>
                 <ul>
-                    <li th:each="err : ${#fields.errors('workDays[__${stat.index}__].end')}" th:text="${err}" class="error"></li>
+                    <li th:each="err : ${#fields.errors('workDays[__${stat.index}__]')}" th:text="${err}" class="error"></li>
                 </ul>
             </div>
         </div>

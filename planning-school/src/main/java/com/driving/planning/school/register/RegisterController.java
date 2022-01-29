@@ -2,7 +2,8 @@ package com.driving.planning.school.register;
 
 import com.driving.planning.client.DrivingSchoolApiClient;
 import com.driving.planning.client.model.*;
-import com.driving.planning.school.monitor.WorkDayForm;
+import com.driving.planning.school.common.TimeConstants;
+import com.driving.planning.school.common.form.WorkDayForm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -57,7 +58,7 @@ public class RegisterController {
                 .path(request.getPath())
                 .postalCode(request.getZipCode())
                 .town(request.getTown());
-        var formatter = DateTimeFormatter.ofPattern("HH:mm");
+        var formatter = DateTimeFormatter.ofPattern(TimeConstants.HOUR_FORMAT.value());
         var workDays = request.getWorkDays()
                 .stream()
                 .filter(WorkDayForm::isSelected)

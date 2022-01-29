@@ -5,7 +5,9 @@ import com.driving.planning.client.MonitorApiClient;
 import com.driving.planning.client.model.Hourly;
 import com.driving.planning.client.model.MonitorDto;
 import com.driving.planning.client.model.MonitorResponse;
+import com.driving.planning.school.common.TimeConstants;
 import com.driving.planning.school.common.exception.ApiException;
+import com.driving.planning.school.common.form.WorkDayForm;
 import com.driving.planning.school.config.SchoolAuthenticationDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +54,7 @@ public class MonitorController {
         if (result.hasErrors()){
             return "monitor";
         }
-        var formatter = DateTimeFormatter.ofPattern("HH:mm");
+        var formatter = DateTimeFormatter.ofPattern(TimeConstants.HOUR_FORMAT.value());
         var workDays = form.getWorkDays()
                 .stream()
                 .filter(WorkDayForm::isSelected)
@@ -78,7 +80,7 @@ public class MonitorController {
         if (school == null){
             throw new ApiException(String.format("Unable to retrieve school %s", getSchoolID()));
         }
-        var formatter = DateTimeFormatter.ofPattern("HH:mm");
+        var formatter = DateTimeFormatter.ofPattern(TimeConstants.HOUR_FORMAT.value());
         for (var hourly : school.getWorkDays()){
             var workday = new WorkDayForm();
             workday.setDay(hourly.getDay());

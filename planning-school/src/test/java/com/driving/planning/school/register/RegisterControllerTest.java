@@ -2,7 +2,7 @@ package com.driving.planning.school.register;
 
 import com.driving.planning.client.DrivingSchoolApiClient;
 import com.driving.planning.client.model.*;
-import com.driving.planning.school.monitor.WorkDayForm;
+import com.driving.planning.school.common.form.WorkDayForm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
