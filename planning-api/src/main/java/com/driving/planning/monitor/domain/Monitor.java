@@ -56,14 +56,6 @@ public class Monitor implements Serializable {
         this.firstName = firstName;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
     public Set<Hourly> getWorkDays() {
         return workDays;
     }
@@ -72,6 +64,14 @@ public class Monitor implements Serializable {
         if (workDays != null){
             this.workDays = workDays;
         }
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public Set<Absent> getAbsents() {
