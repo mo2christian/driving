@@ -120,7 +120,7 @@ class MonitorResourceIT {
                 .accept(ContentType.JSON)
                 .header("x-app-tenant", tenant)
                 .when()
-                .get("/api/v1/monitors/{id}", monitor.getId())
+                .get("/api/v1/monitors/{id}", id)
                 .then()
                 .statusCode(200)
                 .body("phoneNumber", Matchers.is(monitor.getPhoneNumber()))
@@ -132,7 +132,7 @@ class MonitorResourceIT {
                 .body("workDays[0].end", Matchers.is(formatter.format(hourly.getEnd())));
     }
 
-    @Order(3)
+    @Order(4)
     @Test
     void delete(){
         given()
