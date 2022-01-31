@@ -2,8 +2,8 @@ package com.driving.planning.calendar;
 
 import com.driving.planning.common.exception.PlanningException;
 import com.driving.planning.config.database.Tenant;
-import com.driving.planning.monitor.MonitorDto;
 import com.driving.planning.monitor.MonitorService;
+import com.driving.planning.monitor.dto.MonitorDto;
 import com.driving.planning.school.SchoolService;
 import com.driving.planning.student.reservation.ReservationRepository;
 

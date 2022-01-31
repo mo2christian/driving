@@ -1,8 +1,8 @@
 package com.driving.planning.monitor.absent;
 
 import com.driving.planning.common.exception.PlanningException;
-import com.driving.planning.monitor.MonitorDto;
 import com.driving.planning.monitor.MonitorService;
+import com.driving.planning.monitor.dto.MonitorDto;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import io.restassured.http.ContentType;

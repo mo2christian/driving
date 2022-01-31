@@ -72,7 +72,7 @@ class SchoolResourceIT {
                 .body(schoolDto)
                 .post("/api/v1/schools/{id}", pseudo)
                 .then()
-                .statusCode(200);
+                .statusCode(204);
     }
 
     @Test

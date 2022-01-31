@@ -109,6 +109,31 @@ class MonitorResourceIT {
 
     @Order(3)
     @Test
+    void get(){
+        var monitor = Generator.monitor();
+        var hourly = monitor.getWorkDays()
+                .stream()
+                .findFirst()
+                .orElseThrow();
+        var formatter = DateTimeFormatter.ofPattern(DatePattern.TIME);
+        given()
+                .accept(ContentType.JSON)
+                .header("x-app-tenant", tenant)
+                .when()
+                .get("/api/v1/monitors/{id}", id)
+                .then()
+                .statusCode(200)
+                .body("phoneNumber", Matchers.is(monitor.getPhoneNumber()))
+                .body("firstName", Matchers.is(monitor.getFirstName()))
+                .body("lastName", Matchers.is(monitor.getLastName()))
+                .body("workDays.size()", Matchers.is(1))
+                .body("workDays[0].day", Matchers.is(hourly.getDay().getValue()))
+                .body("workDays[0].begin", Matchers.is(formatter.format(hourly.getBegin())))
+                .body("workDays[0].end", Matchers.is(formatter.format(hourly.getEnd())));
+    }
+
+    @Order(4)
+    @Test
     void delete(){
         given()
                 .contentType(ContentType.JSON)

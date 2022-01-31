@@ -1,51 +1,38 @@
-package com.driving.planning.monitor;
+package com.driving.planning.monitor.dto;
 
+import com.driving.planning.common.constraint.PhoneNumber;
 import com.driving.planning.common.hourly.Hourly;
 import com.driving.planning.monitor.absent.Absent;
 import io.quarkus.runtime.annotations.RegisterForReflection;
-import org.bson.codecs.pojo.annotations.BsonId;
-import org.bson.codecs.pojo.annotations.BsonProperty;
-import org.bson.types.ObjectId;
 
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 @RegisterForReflection
-public class Monitor implements Serializable {
+public class MonitorDto implements Serializable {
 
-    public static final String COLLECTION_NAME = "monitor";
+    public static final long serialVersionUID = 1L;
 
-    @BsonProperty("_id")
-    @BsonId
-    private ObjectId id;
+    private String id;
 
-    @BsonProperty("first_name")
+    @NotBlank
     private String firstName;
 
-    @BsonProperty("last_name")
+    @NotBlank
     private String lastName;
 
-    @BsonProperty("phone_number")
+    @PhoneNumber
     private String phoneNumber;
 
-    @BsonProperty("work_days")
     private Set<Hourly> workDays;
 
-    @BsonProperty("absents")
     private Set<Absent> absents;
 
-    public Monitor(){
+    public MonitorDto(){
         workDays = new HashSet<>();
         absents = new HashSet<>();
-    }
-
-    public ObjectId getId() {
-        return id;
-    }
-
-    public void setId(ObjectId id) {
-        this.id = id;
     }
 
     public String getFirstName() {
@@ -54,6 +41,22 @@ public class Monitor implements Serializable {
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getPhoneNumber() {
@@ -82,14 +85,6 @@ public class Monitor implements Serializable {
         if (absents != null){
             this.absents = absents;
         }
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
     }
 
 }

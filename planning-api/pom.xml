@@ -27,7 +27,7 @@
     <sonar.surefire.reportsPaths>${project.build.directory}/surefire-reports</sonar.surefire.reportsPaths>
     <sonar.organization>mo2christian</sonar.organization>
     <sonar.projectKey>mo2christian_driving_planning-api</sonar.projectKey>
-    <sonar-plugin.version>3.7.0.1746</sonar-plugin.version>
+    <sonar-plugin.version>3.9.1.2184</sonar-plugin.version>
 
     <!--    Twilio  -->
     <twilio.sendgrid.version>4.7.2</twilio.sendgrid.version>

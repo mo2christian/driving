@@ -1,6 +1,7 @@
 package com.driving.planning.monitor;
 
 import com.driving.planning.common.exception.PlanningException;
+import com.driving.planning.monitor.dto.MonitorDto;
 import org.eclipse.microprofile.opentracing.Traced;
 import org.jboss.logging.Logger;
 

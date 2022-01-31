@@ -1,7 +1,7 @@
 package com.driving.planning.calendar;
 
 import com.driving.planning.common.DatePattern;
-import com.driving.planning.monitor.MonitorDto;
+import com.driving.planning.monitor.dto.MonitorDto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
