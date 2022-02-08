@@ -184,6 +184,44 @@ class MonitorResourceTest {
     }
 
     @Test
+    void update_with_workday_null(){
+        var id = "test";
+        var dto = Generator.monitor();
+        dto.setId(id);
+        when(service.get(id)).thenReturn(Optional.of(dto));
+        var updateDto = Generator.monitor();
+        updateDto.getWorkDays().forEach(h -> {
+            h.setBegin(null);
+            h.setEnd(null);
+            h.setDay(null);
+        });
+        given()
+                .contentType(ContentType.JSON)
+                .header("x-app-tenant", "tenant")
+                .body(updateDto)
+                .when()
+                .post("/api/v1/monitors/{id}", id)
+                .then()
+                .statusCode(400);
+        verify(service, never()).update(any());
+
+        var hourly = new Hourly();
+        hourly.setBegin(LocalTime.now());
+        hourly.setEnd(LocalTime.now().plusHours(5));
+        hourly.setDay(Day.MONDAY);
+        updateDto.getWorkDays().add(hourly);
+        given()
+                .contentType(ContentType.JSON)
+                .header("x-app-tenant", "tenant")
+                .body(updateDto)
+                .when()
+                .post("/api/v1/monitors/{id}", id)
+                .then()
+                .statusCode(400);
+        verify(service, never()).update(any());
+    }
+
+    @Test
     void delete(){
         var id = "id";
         var dto = new MonitorDto();
