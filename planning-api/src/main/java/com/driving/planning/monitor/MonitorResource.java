@@ -49,8 +49,10 @@ public class MonitorResource implements MonitorEndpoint {
     @Override
     public void update(@PathParam("id") String id, @Valid MonitorDto dto){
         logger.debugf("Update monitor %s", id);
-        if (service.get(id).isEmpty()){
-            throw notFound();
+        var monitor = service.get(id)
+                .orElseThrow(this::notFound);
+        if (!dto.getWorkDays().equals(monitor.getWorkDays())){
+            throw new PlanningException(Response.Status.BAD_REQUEST, "Cannot modify work days");
         }
         dto.setId(id);
         service.update(dto);
