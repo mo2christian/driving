@@ -192,15 +192,21 @@ class MonitorResourceTest {
         var h2 = new Hourly();
         Assertions.assertThat(h1)
                 .isNotEqualTo(h2);
+        Assertions.assertThat(h2)
+                .isNotEqualTo(h1);
         h2.setDay(h1.getDay());
         Assertions.assertThat(h1)
                 .isNotEqualTo(h2);
+        Assertions.assertThat(h2)
+                .isNotEqualTo(h1);
         h2.setBegin(h1.getBegin());
         Assertions.assertThat(h1)
                 .isNotEqualTo(h2);
         h2.setEnd(h1.getEnd());
         Assertions.assertThat(h1)
                 .isEqualTo(h2);
+        Assertions.assertThat(h2)
+                .isEqualTo(h1);
     }
 
     @Test
