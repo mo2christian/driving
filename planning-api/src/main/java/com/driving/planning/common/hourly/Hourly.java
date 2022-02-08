@@ -53,9 +53,15 @@ public class Hourly implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         Hourly hourly = (Hourly) o;
         var formatter = DateTimeFormatter.ofPattern(DatePattern.TIME);
-        return day == hourly.day &&
-                (hourly.begin == begin || begin.format(formatter).equals(hourly.begin.format(formatter))) &&
-                (hourly.end == end || end.format(formatter).equals(hourly.end.format(formatter)));
+        if (hourly.begin == null || begin == null){
+            return false;
+        }
+        if (hourly.end == null || end == null){
+            return false;
+        }
+        return hourly.day == day  &&
+                begin.format(formatter).equals(hourly.begin.format(formatter)) &&
+                end.format(formatter).equals(hourly.end.format(formatter));
     }
 
     @Override
