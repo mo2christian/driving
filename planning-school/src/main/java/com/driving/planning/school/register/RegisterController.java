@@ -17,6 +17,7 @@ import javax.validation.Valid;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Controller
@@ -31,15 +32,18 @@ public class RegisterController {
 
     @GetMapping("/register")
     public String registerForm(Model model){
+        var wds = Stream.of(Day.values())
+                .map(d -> {
+                    var wd = new WorkDayForm();
+                    wd.setSelected(d != Day.SU);
+                    wd.setBegin(LocalTime.of(8,0));
+                    wd.setEnd(LocalTime.of(18,0));
+                    wd.setDay(d);
+                    return wd;
+                })
+                .collect(Collectors.toList());
         var form = new RegistrationForm();
-        for (var day : Day.values()){
-            var workday = new WorkDayForm();
-            workday.setDay(day);
-            workday.setSelected(day != Day.SU);
-            workday.setBegin(LocalTime.of(8,0));
-            workday.setEnd(LocalTime.of(17, 0));
-            form.getWorkDays().add(workday);
-        }
+        form.setWorkDays(wds);
         model.addAttribute("request", form);
         return "subscription";
     }

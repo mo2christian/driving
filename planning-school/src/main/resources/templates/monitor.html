@@ -12,7 +12,7 @@
     <table>
         <thead>
             <tr>
-                <td>Firstname</td><td>Last Name</td><td>Phone Number</td>
+                <td>Firstname</td><td>Last Name</td><td>Phone Number</td><td>Options</td>
             </tr>
         </thead>
         <tbody>
@@ -20,6 +20,7 @@
             <td th:text="${monitor.firstName}">FirstName</td>
             <td th:text="${monitor.lastName}">Last Name</td>
             <td th:text="${monitor.phoneNumber}">Phone Number</td>
+            <td> <a th:href="@{/monitor(id=${monitor.id})}">Update</a> </td>
         </tr>
         </tbody>
     </table>
@@ -45,28 +46,35 @@
                 <li th:each="err : ${#fields.errors('phoneNumber')}" th:text="${err}" class="error"></li>
             </ul>
         </div>
-        <div class="form-group">
-            <div class="row">
-                <ul>
-                    <li th:each="err : ${#fields.errors('workDays')}" th:text="${err}" class="error"></li>
-                </ul>
-            </div>
-            <div class="row">
-                <div class="col" th:each="workDay, stat : *{workDays}">
-                    <label th:text="${workDay.day}">Day</label>
-                    <input type="hidden" th:field="*{workDays[__${stat.index}__].day}">
-                    <input type="checkbox" th:field="*{workDays[__${stat.index}__].selected}">
-                    <input type="text" class="form-control"
-                           th:field="*{workDays[__${stat.index}__].begin}"/>
-                    <br/>
-                    <input type="text" class="form-control"
-                           th:field="*{workDays[__${stat.index}__].end}"/>
+        <input type="hidden" name="monitorId" th:field="*{monitorId}">
+        <input type="hidden" name="disabled" th:field="*{disabled}">
+        <fieldset th:disabled="*{disabled}">
+            <div class="form-group">
+                <label>Planning </label>
+                <div class="row">
                     <ul>
-                        <li th:each="err : ${#fields.errors('workDays[__${stat.index}__]')}" th:text="${err}" class="error"></li>
+                        <li th:each="err : ${#fields.errors('workDays')}" th:text="${err}" class="error"></li>
                     </ul>
                 </div>
+                <div class="row">
+                    <div class="col" th:each="workDay, stat : *{workDays}">
+                        <label th:text="${workDay.day}">Day</label>
+                        <input type="hidden" th:field="*{workDays[__${stat.index}__].day}">
+                        <input type="checkbox" th:field="*{workDays[__${stat.index}__].selected}">
+                        <fieldset disabled>
+                            <input type="text" class="form-control"
+                                   th:field="*{workDays[__${stat.index}__].begin}"/>
+                            <br/>
+                            <input type="text" class="form-control"
+                                   th:field="*{workDays[__${stat.index}__].end}"/>
+                        </fieldset>
+                        <ul>
+                            <li th:each="err : ${#fields.errors('workDays[__${stat.index}__]')}" th:text="${err}" class="error"></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-        </div>
+        </fieldset>
         <button type="submit" class="btn btn-primary">Create</button>
     </form>
 </div>
