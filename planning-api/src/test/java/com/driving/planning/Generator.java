@@ -3,6 +3,8 @@ package com.driving.planning;
 import com.driving.planning.account.dto.AccountDto;
 import com.driving.planning.common.hourly.Day;
 import com.driving.planning.common.hourly.Hourly;
+import com.driving.planning.event.domain.EventType;
+import com.driving.planning.event.dto.EventDto;
 import com.driving.planning.monitor.absent.Absent;
 import com.driving.planning.monitor.dto.MonitorDto;
 import com.driving.planning.school.dto.AddressDto;
@@ -63,7 +65,7 @@ public class  Generator {
         monitor.setLastName("lastname");
         monitor.setPhoneNumber("748596322");
         var hourly = new Hourly();
-        hourly.setDay(Day.FRIDAY);
+        hourly.setDay(Day.TUESDAY);
         hourly.setBegin(LocalTime.now());
         hourly.setEnd(LocalTime.now().plusHours(5));
         monitor.getWorkDays().add(hourly);
@@ -73,6 +75,16 @@ public class  Generator {
         absent.setMotif("motif");
         monitor.getAbsents().add(absent);
         return monitor;
+    }
+
+    public static EventDto event(){
+        var event = new EventDto();
+        event.setEventDate(LocalDate.now());
+        event.setBegin(LocalTime.now());
+        event.setEnd(LocalTime.now().plusHours(1));
+        event.setRelatedUserId("613383809b162658348d87cb");
+        event.setType(EventType.STUDENT);
+        return event;
     }
 
 }

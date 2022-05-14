@@ -2,6 +2,8 @@ package com.driving.planning.config.database;
 
 import com.driving.planning.common.hourly.Hourly;
 import com.driving.planning.common.hourly.HourlyCodec;
+import com.driving.planning.event.domain.EventType;
+import com.driving.planning.event.domain.EventTypeCodec;
 import com.driving.planning.monitor.absent.Absent;
 import com.driving.planning.monitor.absent.AbsentCodec;
 import com.driving.planning.student.reservation.Reservation;
@@ -22,6 +24,9 @@ public class PlanningCodecProvider implements CodecProvider {
         }
         if (aClass == Absent.class){
             return (Codec<T>) new AbsentCodec();
+        }
+        if (aClass == EventType.class){
+            return (Codec<T>) new EventTypeCodec();
         }
         return null;
     }
