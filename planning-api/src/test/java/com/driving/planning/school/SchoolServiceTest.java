@@ -1,29 +1,31 @@
 package com.driving.planning.school;
 
 import com.driving.planning.Generator;
-import com.driving.planning.MongodbTestResource;
 import com.driving.planning.common.exception.PlanningException;
 import com.driving.planning.common.hourly.Day;
 import com.driving.planning.common.hourly.Hourly;
-import com.driving.planning.config.database.Tenant;
 import com.driving.planning.school.domain.Address;
 import com.driving.planning.school.domain.School;
 import com.driving.planning.school.dto.AddressDto;
 import com.driving.planning.school.dto.SchoolDto;
-import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.mockito.ArgumentCaptor;
 
-import static org.mockito.Mockito.*;
-
 import javax.inject.Inject;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Month;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import static org.mockito.Mockito.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @QuarkusTest
@@ -148,6 +150,22 @@ import java.util.Optional;
         var school = generateSchool();
         when(repository.findByName(name)).thenReturn(Optional.of(school));
         Assertions.assertThat(schoolService.isNameUsed(name, school.getPseudo())).isFalse();
+    }
+
+    @Test
+    void isOpen(){
+        var school = generateSchool();
+        when(repository.findByPseudo(name)).thenReturn(Optional.of(school));
+        var dateTime = LocalDateTime.of(LocalDate.of(2022, Month.MAY, 9), LocalTime.now().plusHours(1));
+        Assertions.assertThat(schoolService.isSchoolOpened(name, dateTime)).isTrue();
+    }
+
+    @Test
+    void isClose(){
+        var school = generateSchool();
+        when(repository.findByPseudo(name)).thenReturn(Optional.of(school));
+        var dateTime = LocalDateTime.of(LocalDate.of(2022, Month.MAY, 9), LocalTime.now().minusHours(1));
+        Assertions.assertThat(schoolService.isSchoolOpened(name, dateTime)).isFalse();
     }
 
     public School generateSchool(){

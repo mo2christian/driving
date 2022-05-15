@@ -10,12 +10,16 @@ import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.core.Response;
-import java.util.*;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Traced
 @ApplicationScoped
 public class SchoolService {
+
+    private static final String SCHOOL_NOT_FOUND = "School not found";
 
     private final SchoolRepository repository;
 
@@ -50,7 +54,7 @@ public class SchoolService {
     public void update(SchoolDto schoolDto){
         var school = repository.findByPseudo(schoolDto.getPseudo());
         if (school.isEmpty()){
-            throw new PlanningException(Response.Status.NOT_FOUND, "School not found");
+            throw new PlanningException(Response.Status.NOT_FOUND, SCHOOL_NOT_FOUND);
         }
         repository.update(schoolMapper.toEntity(schoolDto));
     }
@@ -62,7 +66,7 @@ public class SchoolService {
 
     public void delete(@NotNull String pseudo){
         var school = repository.findByPseudo(pseudo)
-                .orElseThrow(() -> new PlanningException(Response.Status.NOT_FOUND, "School not found"));
+                .orElseThrow(() -> new PlanningException(Response.Status.NOT_FOUND, SCHOOL_NOT_FOUND));
         repository.delete(school.getPseudo());
         repository.deleteDatabase(school.getPseudo());
     }
@@ -70,6 +74,19 @@ public class SchoolService {
     public void createSchool(@Valid SchoolDto dto){
         var school = schoolMapper.toEntity(dto);
         repository.createSchool(school);
+    }
+
+    public boolean isSchoolOpened(@NotNull String pseudo, @NotNull final LocalDateTime dateTime){
+        var school = get(pseudo)
+                .orElseThrow(() -> new PlanningException(Response.Status.NOT_FOUND, SCHOOL_NOT_FOUND));
+        return school.getWorkDays()
+                .stream()
+                .anyMatch(wd -> {
+                    var time = dateTime.toLocalTime();
+                    return wd.getDay().getDayOfWeek() == dateTime.getDayOfWeek()
+                            && (wd.getBegin().isBefore(time) || wd.getBegin().equals(time))
+                            && (wd.getEnd().isAfter(time) || wd.getEnd().equals(time));
+                });
     }
 
 }

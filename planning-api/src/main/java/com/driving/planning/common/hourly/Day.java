@@ -40,7 +40,14 @@ public enum Day {
         return Stream.of(Day.values())
                 .filter(d -> d.value.equalsIgnoreCase(value))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("Unkown day " + value));
+                .orElseThrow(() -> new IllegalArgumentException("Unknown day " + value));
+    }
+
+    public static Day formDayOfWeek(DayOfWeek dow){
+        return Stream.of(Day.values())
+                .filter(d -> d.dayOfWeek == dow)
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("Unknown day " + dow));
     }
 
 }
