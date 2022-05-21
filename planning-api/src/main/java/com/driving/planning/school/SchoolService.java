@@ -76,17 +76,19 @@ public class SchoolService {
         repository.createSchool(school);
     }
 
+    public boolean isSchoolClosed(@NotNull String pseudo, @NotNull final LocalDateTime dateTime){
+        return !isSchoolOpened(pseudo, dateTime);
+    }
+
     public boolean isSchoolOpened(@NotNull String pseudo, @NotNull final LocalDateTime dateTime){
         var school = get(pseudo)
                 .orElseThrow(() -> new PlanningException(Response.Status.NOT_FOUND, SCHOOL_NOT_FOUND));
+        var time = dateTime.toLocalTime();
         return school.getWorkDays()
                 .stream()
-                .anyMatch(wd -> {
-                    var time = dateTime.toLocalTime();
-                    return wd.getDay().getDayOfWeek() == dateTime.getDayOfWeek()
-                            && (wd.getBegin().isBefore(time) || wd.getBegin().equals(time))
-                            && (wd.getEnd().isAfter(time) || wd.getEnd().equals(time));
-                });
+                .anyMatch(wd -> wd.getDay().getDayOfWeek() == dateTime.getDayOfWeek()
+                        && (wd.getBegin().isBefore(time) || wd.getBegin().equals(time))
+                        && (wd.getEnd().isAfter(time) || wd.getEnd().equals(time)));
     }
 
 }

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Objects;
 
 public class Absent implements Serializable {
@@ -14,23 +14,31 @@ public class Absent implements Serializable {
 
     private String motif;
 
-    @JsonFormat(pattern = DatePattern.DATE_TIME)
-    @NotNull
-    private LocalDateTime start;
+    private String reference;
 
-    @JsonFormat(pattern = DatePattern.DATE_TIME)
-    @NotNull
-    private LocalDateTime end;
+    @JsonFormat(pattern = DatePattern.DATE)
+    private @NotNull LocalDate start;
+
+    @JsonFormat(pattern = DatePattern.DATE)
+    private @NotNull LocalDate end;
 
     public Absent() {
     }
 
-    public Absent(LocalDateTime start, LocalDateTime end) {
+    public Absent(@NotNull LocalDate start, @NotNull LocalDate end) {
         setStart(start);
         setEnd(end);
     }
 
-    public boolean include(LocalDateTime dateTime){
+    public String getReference() {
+        return reference;
+    }
+
+    public void setReference(String reference) {
+        this.reference = reference;
+    }
+
+    public boolean include(LocalDate dateTime){
         return (start.isEqual(dateTime) || start.isBefore(dateTime)) &&
                 (end.isEqual(dateTime) || end.isAfter(dateTime));
     }
@@ -43,30 +51,20 @@ public class Absent implements Serializable {
         this.motif = motif;
     }
 
-    public LocalDateTime getStart() {
+    public @NotNull LocalDate getStart() {
         return start;
     }
 
-    public void setStart(LocalDateTime start) {
+    public void setStart(@NotNull LocalDate start) {
         this.start = start;
-        if (this.start != null){
-            this.start = start
-                    .withSecond(0)
-                    .withNano(0);
-        }
     }
 
-    public LocalDateTime getEnd() {
+    public @NotNull LocalDate getEnd() {
         return end;
     }
 
-    public void setEnd(LocalDateTime end) {
+    public void setEnd(@NotNull LocalDate end) {
         this.end = end;
-        if (this.end != null){
-            this.end = end
-                    .withSecond(0)
-                    .withNano(0);
-        }
     }
 
     @Override

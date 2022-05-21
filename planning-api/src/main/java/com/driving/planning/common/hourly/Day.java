@@ -43,7 +43,7 @@ public enum Day {
                 .orElseThrow(() -> new IllegalArgumentException("Unknown day " + value));
     }
 
-    public static Day formDayOfWeek(DayOfWeek dow){
+    public static Day fromDayOfWeek(DayOfWeek dow){
         return Stream.of(Day.values())
                 .filter(d -> d.dayOfWeek == dow)
                 .findAny()

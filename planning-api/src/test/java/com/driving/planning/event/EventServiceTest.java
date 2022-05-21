@@ -169,9 +169,9 @@ class EventServiceTest {
     @Test
     void hasNoPlace_checkDay(){
         var monitor = monitorWithWorkingDate();
-        monitor.getWorkDays().forEach(h -> {
-            h.setDay(Day.formDayOfWeek(LocalDate.now().plus(1, ChronoUnit.DAYS).getDayOfWeek()));
-        });
+        monitor.getWorkDays().forEach(h ->
+            h.setDay(Day.fromDayOfWeek(LocalDate.now().plus(1, ChronoUnit.DAYS).getDayOfWeek()))
+        );
         when(monitorService.list()).thenReturn(Collections.singletonList(monitor));
         var eventDto = Generator.event();
         Assertions.assertThat(eventService.isPLaceAvailable(eventDto)).isFalse();
@@ -207,7 +207,7 @@ class EventServiceTest {
     private MonitorDto monitorWithWorkingDate(){
         var dto = Generator.monitor();
         var hourly = new Hourly();
-        hourly.setDay(Day.formDayOfWeek(LocalDate.now().getDayOfWeek()));
+        hourly.setDay(Day.fromDayOfWeek(LocalDate.now().getDayOfWeek()));
         hourly.setBegin(LocalTime.of(8,0));
         hourly.setEnd(LocalTime.of(18,0));
         dto.getWorkDays().add(hourly);

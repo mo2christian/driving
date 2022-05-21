@@ -13,7 +13,7 @@ public class MongodbTestResource implements QuarkusTestResourceLifecycleManager 
 
     @Override
     public Map<String, String> start() {
-        mongoDBContainer = new MongoDBContainer(DockerImageName.parse("mongo:4.0.10"));
+        mongoDBContainer = new MongoDBContainer(DockerImageName.parse("mongo:4.4.10"));
         mongoDBContainer.start();
         Map<String, String> map = new HashMap<>();
         map.put("quarkus.mongodb.connection-string", mongoDBContainer.getReplicaSetUrl());

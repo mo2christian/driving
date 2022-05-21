@@ -3,7 +3,6 @@ package com.driving.planning.monitor;
 import com.driving.planning.MongodbTestResource;
 import com.driving.planning.common.hourly.Day;
 import com.driving.planning.common.hourly.Hourly;
-import com.driving.planning.monitor.absent.Absent;
 import com.driving.planning.monitor.domain.Monitor;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -12,7 +11,6 @@ import org.bson.types.ObjectId;
 import org.junit.jupiter.api.*;
 
 import javax.inject.Inject;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collections;
 
@@ -39,10 +37,6 @@ class MonitorRepositoryTest {
         hourly.setBegin(LocalTime.now());
         hourly.setEnd(LocalTime.now().plusHours(5));
         monitor.setWorkDays(Collections.singleton(hourly));
-        var absent = new Absent();
-        absent.setStart(LocalDateTime.now());
-        absent.setEnd(LocalDateTime.now().plusDays(3));
-        monitor.getAbsents().add(absent);
     }
 
     @Order(1)
@@ -53,8 +47,8 @@ class MonitorRepositoryTest {
         Assertions.assertThat(repository.list())
                 .hasSize(1)
                 .element(0)
-                .extracting(Monitor::getFirstName, Monitor::getLastName, Monitor::getPhoneNumber, Monitor::getWorkDays, Monitor::getAbsents)
-                .containsExactly(monitor.getFirstName(), monitor.getLastName(), monitor.getPhoneNumber(), monitor.getWorkDays(), monitor.getAbsents());
+                .extracting(Monitor::getFirstName, Monitor::getLastName, Monitor::getPhoneNumber, Monitor::getWorkDays)
+                .containsExactly(monitor.getFirstName(), monitor.getLastName(), monitor.getPhoneNumber(), monitor.getWorkDays());
         id = repository.list().get(0).getId();
     }
 
@@ -70,16 +64,12 @@ class MonitorRepositoryTest {
         hourly.setBegin(LocalTime.now());
         hourly.setEnd(LocalTime.now().plusHours(5));
         monitor.setWorkDays(Collections.singleton(hourly));
-        var absent = new Absent();
-        absent.setStart(LocalDateTime.now());
-        absent.setEnd(LocalDateTime.now().plusDays(5));
-        monitor.getAbsents().add(absent);
         repository.update(monitor);
         Assertions.assertThat(repository.list())
                 .hasSize(1)
                 .element(0)
-                .extracting(Monitor::getId, Monitor::getFirstName, Monitor::getLastName, Monitor::getPhoneNumber, Monitor::getWorkDays, Monitor::getAbsents)
-                .containsExactly(id, monitor.getFirstName(), monitor.getLastName(), monitor.getPhoneNumber(), monitor.getWorkDays(), monitor.getAbsents());
+                .extracting(Monitor::getId, Monitor::getFirstName, Monitor::getLastName, Monitor::getPhoneNumber, Monitor::getWorkDays)
+                .containsExactly(id, monitor.getFirstName(), monitor.getLastName(), monitor.getPhoneNumber(), monitor.getWorkDays());
     }
 
     @Order(3)

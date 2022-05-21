@@ -5,7 +5,6 @@ import com.driving.planning.common.hourly.Day;
 import com.driving.planning.common.hourly.Hourly;
 import com.driving.planning.event.domain.EventType;
 import com.driving.planning.event.dto.EventDto;
-import com.driving.planning.monitor.absent.Absent;
 import com.driving.planning.monitor.dto.MonitorDto;
 import com.driving.planning.school.dto.AddressDto;
 import com.driving.planning.school.dto.SchoolDto;
@@ -13,9 +12,9 @@ import com.driving.planning.student.StudentDto;
 import com.driving.planning.student.reservation.Reservation;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collections;
+import java.util.HashSet;
 
 public class  Generator {
 
@@ -41,7 +40,9 @@ public class  Generator {
         hourly.setDay(Day.MONDAY);
         hourly.setBegin(LocalTime.now());
         hourly.setEnd(LocalTime.now().plusHours(5));
-        schoolDto.setWorkDays(Collections.singleton(hourly));
+        var  h = new HashSet<Hourly>();
+        h.add(hourly);
+        schoolDto.setWorkDays(h);
         return schoolDto;
     }
 
@@ -69,11 +70,6 @@ public class  Generator {
         hourly.setBegin(LocalTime.now());
         hourly.setEnd(LocalTime.now().plusHours(5));
         monitor.getWorkDays().add(hourly);
-        var absent = new Absent();
-        absent.setStart(LocalDateTime.now());
-        absent.setEnd(LocalDateTime.now().plusDays(3));
-        absent.setMotif("motif");
-        monitor.getAbsents().add(absent);
         return monitor;
     }
 

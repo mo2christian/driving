@@ -7,6 +7,7 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static io.restassured.RestAssured.given;
@@ -63,7 +64,7 @@ class AbsentResourceIT {
 
     @Test
     void add(){
-        var now = LocalDateTime.now();
+        @javax.validation.constraints.NotNull LocalDate now = LocalDate.now();
         var absent = new Absent(now, now.plusDays(5));
         given()
                 .accept(ContentType.JSON)
@@ -78,7 +79,7 @@ class AbsentResourceIT {
 
     @Test
     void delete(){
-        var now = LocalDateTime.now();
+        @javax.validation.constraints.NotNull LocalDate now = LocalDate.now();
         var absent = new Absent(now, now.plusDays(5));
         given()
                 .accept(ContentType.JSON)

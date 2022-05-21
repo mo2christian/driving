@@ -1,7 +1,6 @@
 package com.driving.planning.monitor.domain;
 
 import com.driving.planning.common.hourly.Hourly;
-import com.driving.planning.monitor.absent.Absent;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
@@ -32,12 +31,8 @@ public class Monitor implements Serializable {
     @BsonProperty("work_days")
     private Set<Hourly> workDays;
 
-    @BsonProperty("absents")
-    private Set<Absent> absents;
-
     public Monitor(){
         workDays = new HashSet<>();
-        absents = new HashSet<>();
     }
 
     public ObjectId getId() {
@@ -72,16 +67,6 @@ public class Monitor implements Serializable {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
-    }
-
-    public Set<Absent> getAbsents() {
-        return absents;
-    }
-
-    public void setAbsents(Set<Absent> absents) {
-        if (absents != null){
-            this.absents = absents;
-        }
     }
 
     public String getLastName() {

@@ -2,7 +2,6 @@ package com.driving.planning.monitor.dto;
 
 import com.driving.planning.common.constraint.PhoneNumber;
 import com.driving.planning.common.hourly.Hourly;
-import com.driving.planning.monitor.absent.Absent;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import javax.validation.constraints.NotBlank;
@@ -28,11 +27,8 @@ public class MonitorDto implements Serializable {
 
     private Set<Hourly> workDays;
 
-    private Set<Absent> absents;
-
     public MonitorDto(){
         workDays = new HashSet<>();
-        absents = new HashSet<>();
     }
 
     public String getFirstName() {
@@ -74,16 +70,6 @@ public class MonitorDto implements Serializable {
     public void setWorkDays(Set<Hourly> workDays) {
         if (workDays != null){
             this.workDays = workDays;
-        }
-    }
-
-    public Set<Absent> getAbsents() {
-        return absents;
-    }
-
-    public void setAbsents(Set<Absent> absents) {
-        if (absents != null){
-            this.absents = absents;
         }
     }
 

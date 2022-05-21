@@ -29,6 +29,16 @@ public class EventDto {
 
     private String relatedUserId;
 
+    private String reference;
+
+    public String getReference() {
+        return reference;
+    }
+
+    public void setReference(String reference) {
+        this.reference = reference;
+    }
+
     public String getId() {
         return id;
     }
