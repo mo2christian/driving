@@ -48,7 +48,8 @@ public class MonitorRepository implements Repository<Monitor> {
                         Updates.set("first_name", monitor.getFirstName()),
                         Updates.set("last_name", monitor.getLastName()),
                         Updates.set("phone_number", monitor.getPhoneNumber()),
-                        Updates.set("work_days", monitor.getWorkDays())
+                        Updates.set("work_days", monitor.getWorkDays()),
+                        Updates.set("absents", monitor.getAbsents())
                 ));
     }
 

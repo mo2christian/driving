@@ -1,17 +1,22 @@
 package com.driving.planning.monitor.domain;
 
 import com.driving.planning.common.hourly.Hourly;
+import com.driving.planning.monitor.absent.Absent;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.bson.types.ObjectId;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @RegisterForReflection
 public class Monitor implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     public static final String COLLECTION_NAME = "monitor";
 
@@ -31,8 +36,20 @@ public class Monitor implements Serializable {
     @BsonProperty("work_days")
     private Set<Hourly> workDays;
 
+    @BsonProperty("absents")
+    private List<Absent> absents;
+
     public Monitor(){
         workDays = new HashSet<>();
+        absents = new ArrayList<>();
+    }
+
+    public List<Absent> getAbsents() {
+        return absents;
+    }
+
+    public void setAbsents(List<Absent> absents) {
+        this.absents = absents;
     }
 
     public ObjectId getId() {

@@ -23,6 +23,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.UUID;
 
 @ApplicationScoped
 public class AbsentResource implements AbsentEndpoint {
@@ -49,22 +50,23 @@ public class AbsentResource implements AbsentEndpoint {
     }
 
     @Override
-    public void add(@PathParam("id") String monitorId, @Valid Absent absent){
-        var monitor = monitorService.get(monitorId)
-                .orElseThrow(() -> new PlanningException(Response.Status.NOT_FOUND, "Monitor not found"));
-        if (eventService.hasEvent(monitorId, absent.getStart(), absent.getEnd())){
-            throw new PlanningException(Response.Status.BAD_REQUEST, "Monitor already have and event at that time");
-        }
+    public void add(@PathParam("id") String monitorId, @Valid AbsentRequest request){
         var school = schoolService.get(tenant.getName())
                 .orElseThrow(() -> new PlanningException(Response.Status.NOT_FOUND, "School not found"));
-        TransactionOptions txnOptions = TransactionOptions.builder()
+        var monitor = monitorService.get(monitorId)
+                .orElseThrow(() -> new PlanningException(Response.Status.NOT_FOUND, "Monitor not found"));
+        if (eventService.hasEvent(monitorId, request.getStart(), request.getEnd())){
+            throw new PlanningException(Response.Status.BAD_REQUEST, "Monitor already have and event at that time");
+        }
+        var txnOptions = TransactionOptions.builder()
                 .readPreference(ReadPreference.primary())
                 .readConcern(ReadConcern.LOCAL)
                 .writeConcern(WriteConcern.MAJORITY)
                 .build();
         TransactionBody<String> txBody = () -> {
-                var d = absent.getStart();
-                for (;d.isBefore(absent.getEnd()) || d.equals(absent.getEnd()); d = d.plusDays(1)){
+                var d = request.getStart();
+                var ref = UUID.randomUUID().toString();
+                for (;d.isBefore(request.getEnd()) || d.equals(request.getEnd()); d = d.plusDays(1)){
                     var wd = getWorkDay(school, d);
                     if (wd.isEmpty()){
                         continue;
@@ -72,8 +74,15 @@ public class AbsentResource implements AbsentEndpoint {
                     var event = toEvent(wd.get());
                     event.setRelatedUserId(monitorId);
                     event.setEventDate(d);
+                    event.setReference(ref);
                     eventService.add(event);
                 }
+                var absent = new Absent();
+                absent.setStart(request.getStart());
+                absent.setEnd(request.getEnd());
+                absent.setReference(ref);
+                monitor.getAbsents().add(absent);
+                monitorService.update(monitor);
                 return "Done";
         };
         try (var session = mongoClient.startSession()) {
@@ -88,7 +97,7 @@ public class AbsentResource implements AbsentEndpoint {
     }
 
     @Override
-    public void remove(@PathParam("id") String monitorId, @Valid Absent absent){
+    public void remove(@PathParam("id") String monitorId, @Valid AbsentRequest absent){
         var monitor = monitorService.get(monitorId)
                 .orElseThrow(() -> new PlanningException(Response.Status.NOT_FOUND, "Monitor not found"));
         monitorService.update(monitor);

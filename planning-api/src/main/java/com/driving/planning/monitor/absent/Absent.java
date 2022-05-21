@@ -1,34 +1,22 @@
 package com.driving.planning.monitor.absent;
 
-import com.driving.planning.common.DatePattern;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 
+@RegisterForReflection
 public class Absent implements Serializable {
 
-    public static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-    private String motif;
+    private @NotNull String reference;
 
-    private String reference;
-
-    @JsonFormat(pattern = DatePattern.DATE)
     private @NotNull LocalDate start;
 
-    @JsonFormat(pattern = DatePattern.DATE)
     private @NotNull LocalDate end;
-
-    public Absent() {
-    }
-
-    public Absent(@NotNull LocalDate start, @NotNull LocalDate end) {
-        setStart(start);
-        setEnd(end);
-    }
 
     public String getReference() {
         return reference;
@@ -38,32 +26,19 @@ public class Absent implements Serializable {
         this.reference = reference;
     }
 
-    public boolean include(LocalDate dateTime){
-        return (start.isEqual(dateTime) || start.isBefore(dateTime)) &&
-                (end.isEqual(dateTime) || end.isAfter(dateTime));
-    }
-
-    public String getMotif() {
-        return motif;
-    }
-
-    public void setMotif(String motif) {
-        this.motif = motif;
-    }
-
-    public @NotNull LocalDate getStart() {
+    public LocalDate getStart() {
         return start;
     }
 
-    public void setStart(@NotNull LocalDate start) {
+    public void setStart(LocalDate start) {
         this.start = start;
     }
 
-    public @NotNull LocalDate getEnd() {
+    public LocalDate getEnd() {
         return end;
     }
 
-    public void setEnd(@NotNull LocalDate end) {
+    public void setEnd(LocalDate end) {
         this.end = end;
     }
 
@@ -72,11 +47,11 @@ public class Absent implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Absent absent = (Absent) o;
-        return Objects.equals(start, absent.start) && Objects.equals(end, absent.end);
+        return reference.equals(absent.reference);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(start, end);
+        return Objects.hash(reference);
     }
 }

@@ -5,6 +5,7 @@ import com.driving.planning.common.hourly.Day;
 import com.driving.planning.common.hourly.Hourly;
 import com.driving.planning.event.domain.EventType;
 import com.driving.planning.event.dto.EventDto;
+import com.driving.planning.monitor.absent.Absent;
 import com.driving.planning.monitor.dto.MonitorDto;
 import com.driving.planning.school.dto.AddressDto;
 import com.driving.planning.school.dto.SchoolDto;
@@ -70,6 +71,11 @@ public class  Generator {
         hourly.setBegin(LocalTime.now());
         hourly.setEnd(LocalTime.now().plusHours(5));
         monitor.getWorkDays().add(hourly);
+        var absent = new Absent();
+        absent.setStart(LocalDate.now());
+        absent.setEnd(LocalDate.now().plusDays(3));
+        absent.setReference("ref");
+        monitor.getAbsents().add(absent);
         return monitor;
     }
 

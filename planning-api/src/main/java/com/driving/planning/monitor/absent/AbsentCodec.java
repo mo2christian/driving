@@ -45,6 +45,7 @@ public class AbsentCodec implements CollectibleCodec<Absent> {
         var absent = new Absent();
         absent.setStart(LocalDate.parse(document.get("start", String.class), dayFormatter));
         absent.setEnd(LocalDate.parse(document.get("end", String.class), dayFormatter));
+        absent.setReference(document.getString("ref"));
         return absent;
     }
 
@@ -53,6 +54,7 @@ public class AbsentCodec implements CollectibleCodec<Absent> {
         var doc = new Document();
         doc.put("start", dayFormatter.format(absent.getStart()));
         doc.put("end", dayFormatter.format(absent.getEnd()));
+        doc.put("ref", absent.getReference());
         documentCodec.encode(bsonWriter, doc, encoderContext);
     }
 

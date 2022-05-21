@@ -40,7 +40,7 @@ class AbsentResourceTest {
     @Test
     void add(){
         @javax.validation.constraints.NotNull LocalDate now = LocalDate.now();
-        var absent = new Absent(now, now.plusDays(1));
+        var absent = new AbsentRequest(now, now.plusDays(1));
         when(monitorService.get("id")).thenReturn(Optional.of(new MonitorDto()));
         var h1 = new Hourly();
         h1.setDay(Day.fromDayOfWeek(absent.getStart().getDayOfWeek()));
@@ -70,12 +70,25 @@ class AbsentResourceTest {
                 .element(0)
                 .extracting(EventDto::getEventDate, EventDto::getRelatedUserId, EventDto::getType)
                 .contains(absent.getStart(), "id", EventType.MONITOR);
+
+        ArgumentCaptor<MonitorDto> monitorCaptor = ArgumentCaptor.forClass(MonitorDto.class);
+        verify(monitorService, atLeastOnce()).update(monitorCaptor.capture());
+        assertThat(monitorCaptor.getValue().getAbsents())
+                .hasSize(1)
+                .element(0)
+                .extracting(Absent::getStart, Absent::getEnd)
+                .contains(absent.getStart(), absent.getEnd());
+        assertThat(monitorCaptor.getValue().getAbsents())
+                .hasSize(1)
+                .element(0)
+                .extracting(Absent::getReference)
+                .isNotNull();
     }
 
     @Test
     void addNotFound(){
         @javax.validation.constraints.NotNull LocalDate now = LocalDate.now();
-        var absent = new Absent(now, now.plusDays(5));
+        var absent = new AbsentRequest(now, now.plusDays(5));
         when(monitorService.get("id")).thenThrow(new PlanningException(Response.Status.NOT_FOUND, "Not found"));
         given()
                 .accept(ContentType.JSON)
@@ -91,7 +104,7 @@ class AbsentResourceTest {
     @Test
     void delete(){
         @javax.validation.constraints.NotNull LocalDate now = LocalDate.now();
-        var absent = new Absent(now, now.plusDays(5));
+        var absent = new AbsentRequest(now, now.plusDays(5));
         var monitor = new MonitorDto();
         when(monitorService.get("id")).thenReturn(Optional.of(monitor));
 
@@ -113,7 +126,7 @@ class AbsentResourceTest {
     @Test
     void removeNotFound(){
         @javax.validation.constraints.NotNull LocalDate now = LocalDate.now();
-        var absent = new Absent(now, now.plusDays(5));
+        var absent = new AbsentRequest(now, now.plusDays(5));
         when(monitorService.get("id")).thenThrow(new PlanningException(Response.Status.NOT_FOUND, "Not found"));
         given()
                 .accept(ContentType.JSON)
@@ -128,7 +141,7 @@ class AbsentResourceTest {
 
     @Test
     void wrongParams(){
-        var absent = new Absent();
+        var absent = new AbsentRequest();
         given()
                 .accept(ContentType.JSON)
                 .contentType(ContentType.JSON)

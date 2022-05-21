@@ -35,8 +35,8 @@ class MonitorServiceTest {
         verify(repository, atMostOnce()).insert(monitorCaptor.capture());
         Monitor monitor = monitorCaptor.getValue();
         assertThat(monitorDto)
-                .extracting(MonitorDto::getFirstName, MonitorDto::getLastName, MonitorDto::getPhoneNumber, MonitorDto::getWorkDays)
-                .containsExactly(monitor.getFirstName(), monitor.getLastName(), monitor.getPhoneNumber(), monitor.getWorkDays());
+                .extracting(MonitorDto::getFirstName, MonitorDto::getLastName, MonitorDto::getPhoneNumber, MonitorDto::getWorkDays, MonitorDto::getAbsents)
+                .containsExactly(monitor.getFirstName(), monitor.getLastName(), monitor.getPhoneNumber(), monitor.getWorkDays(), monitor.getAbsents());
     }
 
     @Test
@@ -53,8 +53,8 @@ class MonitorServiceTest {
         verify(repository, atMostOnce()).update(monitorCaptor.capture());
         Monitor monitor = monitorCaptor.getValue();
         assertThat(monitorDto)
-                .extracting(MonitorDto::getId, MonitorDto::getFirstName, MonitorDto::getLastName, MonitorDto::getPhoneNumber, MonitorDto::getWorkDays)
-                .containsExactly(monitor.getId().toString(), monitor.getFirstName(), monitor.getLastName(), monitor.getPhoneNumber(), monitor.getWorkDays());
+                .extracting(MonitorDto::getId, MonitorDto::getFirstName, MonitorDto::getLastName, MonitorDto::getPhoneNumber, MonitorDto::getWorkDays, MonitorDto::getAbsents)
+                .containsExactly(monitor.getId().toString(), monitor.getFirstName(), monitor.getLastName(), monitor.getPhoneNumber(), monitor.getWorkDays(), monitor.getAbsents());
     }
 
     @Test
@@ -87,8 +87,8 @@ class MonitorServiceTest {
         when(repository.findById(id)).thenReturn(Optional.of(monitor));
         assertThat(service.get(id)).isNotEmpty()
                 .get()
-                .extracting(MonitorDto::getId, MonitorDto::getFirstName, MonitorDto::getLastName, MonitorDto::getPhoneNumber, MonitorDto::getWorkDays)
-                .containsExactly(monitor.getId().toString(), monitor.getFirstName(), monitor.getLastName(), monitor.getPhoneNumber(), monitor.getWorkDays());
+                .extracting(MonitorDto::getId, MonitorDto::getFirstName, MonitorDto::getLastName, MonitorDto::getPhoneNumber, MonitorDto::getWorkDays, MonitorDto::getAbsents)
+                .containsExactly(monitor.getId().toString(), monitor.getFirstName(), monitor.getLastName(), monitor.getPhoneNumber(), monitor.getWorkDays(), monitor.getAbsents());
     }
 
     @Test

@@ -65,7 +65,7 @@ class AbsentResourceIT {
     @Test
     void add(){
         @javax.validation.constraints.NotNull LocalDate now = LocalDate.now();
-        var absent = new Absent(now, now.plusDays(5));
+        var absent = new AbsentRequest(now, now.plusDays(5));
         given()
                 .accept(ContentType.JSON)
                 .contentType(ContentType.JSON)
@@ -80,7 +80,7 @@ class AbsentResourceIT {
     @Test
     void delete(){
         @javax.validation.constraints.NotNull LocalDate now = LocalDate.now();
-        var absent = new Absent(now, now.plusDays(5));
+        var absent = new AbsentRequest(now, now.plusDays(5));
         given()
                 .accept(ContentType.JSON)
                 .contentType(ContentType.JSON)
