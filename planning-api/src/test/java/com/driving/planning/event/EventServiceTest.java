@@ -204,6 +204,38 @@ class EventServiceTest {
                 .isEqualTo(Response.Status.BAD_REQUEST);
     }
 
+    @Test
+    void deleteEvent(){
+        var event = Generator.event();
+        eventService.deleteByRef(event.getReference());
+        ArgumentCaptor<String> refCaptor = ArgumentCaptor.forClass(String.class);
+        verify(eventRepository, times(1)).deleteByRef(refCaptor.capture());
+        Assertions.assertThat(refCaptor.getValue()).isEqualTo(event.getReference());
+    }
+
+    @Test
+    void haveEvent(){
+        var event = new Event();
+        event.setEventDate(LocalDate.now());
+        event.setRelatedUserId("userId");
+        when(eventRepository.listByUserId(event.getRelatedUserId())).thenReturn(Collections.singletonList(event));
+        Assertions.assertThat(eventService.hasEvent(event.getRelatedUserId(), event.getEventDate(), event.getEventDate())).isTrue();
+    }
+
+    @Test
+    void haveNotEvent(){
+        var event = new Event();
+        event.setEventDate(LocalDate.now());
+        event.setRelatedUserId("userId");
+
+        var date = event.getEventDate().plusDays(5);
+        when(eventRepository.listByUserId(event.getRelatedUserId())).thenReturn(Collections.singletonList(event));
+        Assertions.assertThat(eventService.hasEvent(event.getRelatedUserId(), date, date)).isFalse();
+
+        when(eventRepository.listByUserId(event.getRelatedUserId())).thenReturn(Collections.emptyList());
+        Assertions.assertThat(eventService.hasEvent(event.getRelatedUserId(), date, date)).isFalse();
+    }
+
     private MonitorDto monitorWithWorkingDate(){
         var dto = Generator.monitor();
         var hourly = new Hourly();

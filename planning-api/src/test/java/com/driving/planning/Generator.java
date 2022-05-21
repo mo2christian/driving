@@ -86,6 +86,7 @@ public class  Generator {
         event.setEnd(LocalTime.now().plusHours(1));
         event.setRelatedUserId("613383809b162658348d87cb");
         event.setType(EventType.STUDENT);
+        event.setReference("REF");
         return event;
     }
 

@@ -32,6 +32,17 @@ public class Event {
     @BsonProperty("user_id")
     private String relatedUserId;
 
+    @BsonProperty("ref")
+    private String reference;
+
+    public String getReference() {
+        return reference;
+    }
+
+    public void setReference(String reference) {
+        this.reference = reference;
+    }
+
     public ObjectId getId() {
         return id;
     }

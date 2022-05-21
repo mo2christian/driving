@@ -137,6 +137,10 @@ public class EventService {
                 .collect(Collectors.toList());
     }
 
+    public void deleteByRef(@NotNull String ref){
+        repository.deleteByRef(ref);
+    }
+
     private boolean between(LocalTime begin, LocalTime value, LocalTime end){
         return (begin.isBefore(value) || begin.equals(value)) && value.isBefore(end);
     }

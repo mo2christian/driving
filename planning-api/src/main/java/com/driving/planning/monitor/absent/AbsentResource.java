@@ -97,10 +97,12 @@ public class AbsentResource implements AbsentEndpoint {
     }
 
     @Override
-    public void remove(@PathParam("id") String monitorId, @Valid AbsentRequest absent){
+    public void remove(@PathParam("id") String monitorId, @PathParam("ref") String ref){
         var monitor = monitorService.get(monitorId)
                 .orElseThrow(() -> new PlanningException(Response.Status.NOT_FOUND, "Monitor not found"));
+        monitor.getAbsents().removeIf(a -> a.getReference().equalsIgnoreCase(ref));
         monitorService.update(monitor);
+        eventService.deleteByRef(ref);
     }
 
     private Optional<Hourly> getWorkDay(SchoolDto schoolDto, LocalDate date){

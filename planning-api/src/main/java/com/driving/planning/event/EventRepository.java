@@ -90,6 +90,12 @@ public class EventRepository implements Repository<Event> {
         return toList(cursor);
     }
 
+    public void deleteByRef(String ref){
+        logger.debugf("Delete event by ref %s", ref);
+        mongoDatabase.getCollection(Event.COLLECTION_NAME, Event.class)
+                .deleteMany(Filters.eq("ref", ref));
+    }
+
     private List<Event> toList(Iterator<Event> iterator){
         var list = new ArrayList<Event>();
         while (iterator.hasNext()){

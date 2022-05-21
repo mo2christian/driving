@@ -129,6 +129,7 @@ class EventResourceTest {
                 .body("events[0].begin", Matchers.is(timeFormatter.format(event.getBegin())))
                 .body("events[0].end", Matchers.is(timeFormatter.format(event.getEnd())))
                 .body("events[0].type", Matchers.is(event.getType().name()))
+                .body("events[0].reference", Matchers.is(event.getReference()))
                 .body("events.size()", Matchers.is(1));
     }
 

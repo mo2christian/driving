@@ -7,6 +7,7 @@ import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
@@ -22,13 +23,18 @@ class EventRepositoryTest {
     @Inject
     EventRepository eventRepository;
 
+    final String REF = "ref";
+
     @Test
+    @Order(1)
     void insert(){
         var event = new Event();
         event.setEventDate(LocalDate.now());
         event.setBegin(LocalTime.now());
         event.setEnd(LocalTime.now().plusHours(1));
         event.setType(EventType.MONITOR);
+        event.setReference(REF);
+
         eventRepository.insert(event);
 
         Assertions.assertThat(eventRepository.list())
@@ -38,6 +44,14 @@ class EventRepositoryTest {
                 .hasSize(1);
 
         Assertions.assertThat(eventRepository.listByDate(event.getEventDate().plusDays(1)))
+                .isEmpty();
+    }
+
+    @Test
+    @Order(2)
+    void delete(){
+        eventRepository.deleteByRef(REF);
+        Assertions.assertThat(eventRepository.list())
                 .isEmpty();
     }
 

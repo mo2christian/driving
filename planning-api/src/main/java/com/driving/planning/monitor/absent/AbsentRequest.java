@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Objects;
 
 public class AbsentRequest implements Serializable {
 
@@ -38,11 +37,6 @@ public class AbsentRequest implements Serializable {
         this.reference = reference;
     }
 
-    public boolean include(LocalDate dateTime){
-        return (start.isEqual(dateTime) || start.isBefore(dateTime)) &&
-                (end.isEqual(dateTime) || end.isAfter(dateTime));
-    }
-
     public String getMotif() {
         return motif;
     }
@@ -67,16 +61,4 @@ public class AbsentRequest implements Serializable {
         this.end = end;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        AbsentRequest absent = (AbsentRequest) o;
-        return Objects.equals(start, absent.start) && Objects.equals(end, absent.end);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(start, end);
-    }
 }

@@ -31,8 +31,10 @@ public interface AbsentEndpoint {
             content = @Content(schema = @Schema(implementation = String.class)))
     @Parameter(in = ParameterIn.PATH, name = "id", required = true,
             content = @Content(schema = @Schema(implementation = String.class)))
+    @Parameter(in = ParameterIn.PATH, name = "ref", required = true,
+            content = @Content(schema = @Schema(implementation = String.class)))
     @DELETE
-    @Path("/{id}/absents")
-    void remove(@PathParam("id") String monitorId, @Valid AbsentRequest absent);
+    @Path("/{id}/absents/{ref}")
+    void remove(@PathParam("id") String monitorId, @PathParam("ref") String ref);
 
 }
