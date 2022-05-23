@@ -43,7 +43,7 @@ public class SchoolResource {
         this.accountService = accountService;
     }
 
-    @Operation(description = "List driving school")
+    @Operation(description = "List driving school", operationId = "getSchools")
     @APIResponse(responseCode = "200", description = "List of driving school",
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON,
@@ -55,7 +55,7 @@ public class SchoolResource {
         return new SchoolResponse(schoolService.list());
     }
 
-    @Operation(description = "Create driving school")
+    @Operation(description = "Create driving school", operationId = "addSchool")
     @RequestBody(name = "school", description = "School to create",
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON,
@@ -74,7 +74,7 @@ public class SchoolResource {
         accountService.createAccount(pseudo, request.getAccount());
     }
 
-    @Operation(description = "Update driving school")
+    @Operation(description = "Update driving school", operationId = "updateSchool")
     @RequestBody(name = "school", description = "School to update",
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON,
@@ -94,7 +94,7 @@ public class SchoolResource {
         schoolService.update(schoolDto);
     }
 
-    @Operation(description = "Delete driving school")
+    @Operation(description = "Delete driving school", operationId = "deleteSchool")
     @Parameter(name = "pseudo", in = ParameterIn.PATH, required = true,
             schema = @Schema(required = true, implementation = String.class))
     @APIResponse(responseCode = "201", description = "School deleted")
@@ -106,7 +106,7 @@ public class SchoolResource {
         schoolService.delete(dto.getPseudo());
     }
 
-    @Operation(description = "Get specific driving school")
+    @Operation(description = "Get specific driving school", operationId = "getSchoolByID")
     @Parameter(name = "id", in = ParameterIn.PATH, required = true,
             schema = @Schema(required = true, implementation = String.class))
     @APIResponse(responseCode = "200", description = "School returned")

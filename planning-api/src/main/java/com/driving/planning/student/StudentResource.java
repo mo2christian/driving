@@ -33,7 +33,7 @@ public class StudentResource {
         this.logger = logger;
     }
 
-    @Operation(description = "List students")
+    @Operation(description = "List students", operationId = "getStudents")
     @APIResponse(responseCode = "200", description = "List of students",
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON,
@@ -50,7 +50,7 @@ public class StudentResource {
         return response;
     }
 
-    @Operation(description = "Add student")
+    @Operation(description = "Add student", operationId = "addStudent")
     @Parameter(in = ParameterIn.HEADER, name = "x-app-tenant", required = true,
             content = @Content(schema = @Schema(implementation = String.class))
     )
@@ -69,7 +69,7 @@ public class StudentResource {
         studentService.add(studentDto);
     }
 
-    @Operation(description = "Update student")
+    @Operation(description = "Update student", operationId = "updateStudent")
     @RequestBody(name = "Student", description = "Student informations",
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON,
@@ -90,7 +90,7 @@ public class StudentResource {
         studentService.update(studentDto);
     }
 
-    @Operation(description = "Delete student")
+    @Operation(description = "Delete student", operationId = "deleteStudent")
     @Parameter(in = ParameterIn.HEADER, name = "x-app-tenant", required = true,
             content = @Content(schema = @Schema(implementation = String.class)))
     @Parameter(in = ParameterIn.PATH, name = "id", required = true,

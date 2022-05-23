@@ -22,7 +22,7 @@ import javax.ws.rs.core.Response;
 @Tag(name = "Event", description = "Event endpoint")
 public interface EventEndpoint {
 
-    @Operation(description = "Add event")
+    @Operation(description = "Add event", operationId = "addEvent")
     @Parameter(in = ParameterIn.HEADER, name = "x-app-tenant", required = true,
             content = @Content(schema = @Schema(implementation = String.class)))
     @RequestBody(name = "Event", content = @Content(
@@ -35,7 +35,7 @@ public interface EventEndpoint {
     @POST
     Response add(@Valid EventDto dto);
 
-    @Operation(description = "Add event")
+    @Operation(description = "Get event", operationId = "getEvents")
     @Parameter(in = ParameterIn.HEADER, name = "x-app-tenant", required = true,
             content = @Content(schema = @Schema(implementation = String.class)))
     @APIResponse(responseCode = "200", description = "Insert success")

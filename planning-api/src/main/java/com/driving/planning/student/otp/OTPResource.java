@@ -39,7 +39,7 @@ public class OTPResource {
         this.logger = logger;
     }
 
-    @Operation(description = "Send otp to student")
+    @Operation(description = "Send otp to student", operationId = "sendOTP")
     @APIResponse(responseCode = "204", description = "OTP send")
     @APIResponse(responseCode = "400", description = "Tenant Header not found")
     @APIResponse(responseCode = "404", description = "Email or number not found")
@@ -68,7 +68,7 @@ public class OTPResource {
         }
     }
 
-    @Operation(description = "Verify otp to student")
+    @Operation(description = "Verify otp to student", operationId = "verifyOTP")
     @APIResponse(responseCode = "204", description = "OTP send")
     @APIResponse(responseCode = "400", description = "Tenant Header not found")
     @APIResponse(responseCode = "404", description = "Email or number not found")

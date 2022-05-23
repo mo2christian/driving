@@ -37,7 +37,7 @@
 						</goals>
 						<configuration>
 							<!-- specify the swagger yaml -->
-							<inputSpec>https://planning-api.monlabo.biz/swagger</inputSpec>
+							<inputSpec>http://localhost:8080/swagger</inputSpec>
 
 							<!-- target to generate java client code -->
 							<generatorName>spring</generatorName>
@@ -61,7 +61,10 @@
 								<performBeanValidation>false</performBeanValidation>
 								<useBeanValidation>false</useBeanValidation>
 							</configOptions>
-
+							<importMappings>
+								<typeMapping>LocalTime=java.time.LocalTime</typeMapping>
+								<typeMapping>LocalDate=java.time.LocalDate</typeMapping>
+							</importMappings>
 						</configuration>
 					</execution>
 

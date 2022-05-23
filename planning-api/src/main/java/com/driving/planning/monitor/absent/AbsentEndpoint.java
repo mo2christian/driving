@@ -17,7 +17,7 @@ import javax.ws.rs.core.MediaType;
 @Tag(name = "Monitor", description = "Monitor endpoint")
 public interface AbsentEndpoint {
 
-    @Operation(description = "Add absent")
+    @Operation(description = "Add absent", operationId = "addAbsent")
     @Parameter(in = ParameterIn.HEADER, name = "x-app-tenant", required = true,
             content = @Content(schema = @Schema(implementation = String.class)))
     @Parameter(in = ParameterIn.PATH, name = "id", required = true,
@@ -26,7 +26,7 @@ public interface AbsentEndpoint {
     @Path("/{id}/absents")
     void add(@PathParam("id") String monitorId, @Valid AbsentRequest absent);
 
-    @Operation(description = "Delete absent")
+    @Operation(description = "Delete absent", operationId = "deleteAbsent")
     @Parameter(in = ParameterIn.HEADER, name = "x-app-tenant", required = true,
             content = @Content(schema = @Schema(implementation = String.class)))
     @Parameter(in = ParameterIn.PATH, name = "id", required = true,
