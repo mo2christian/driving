@@ -21,7 +21,7 @@ import javax.ws.rs.core.MediaType;
 @Tag(name = "Monitor", description = "Monitor endpoint")
 public interface MonitorEndpoint {
 
-    @Operation(description = "List monitors")
+    @Operation(description = "List monitors", operationId = "getMonitors")
     @Parameter(in = ParameterIn.HEADER, name = "x-app-tenant", required = true,
             content = @Content(schema = @Schema(implementation = String.class)))
     @APIResponse(
@@ -34,7 +34,7 @@ public interface MonitorEndpoint {
     @GET
     MonitorResponse list();
 
-    @Operation(description = "Add monitor")
+    @Operation(description = "Add monitor", operationId = "addMonitor")
     @Parameter(in = ParameterIn.HEADER, name = "x-app-tenant", required = true,
             content = @Content(schema = @Schema(implementation = String.class)))
     @RequestBody(name = "Monitor", content = @Content(
@@ -46,7 +46,7 @@ public interface MonitorEndpoint {
     @POST
     void add(@Valid MonitorDto monitorDto);
 
-    @Operation(description = "Modify monitor")
+    @Operation(description = "Get monitor by ID", operationId = "getMonitorById")
     @Parameter(in = ParameterIn.HEADER, name = "x-app-tenant", required = true,
             content = @Content(schema = @Schema(implementation = String.class)))
     @Parameter(in = ParameterIn.PATH, name = "id", required = true)
@@ -56,7 +56,7 @@ public interface MonitorEndpoint {
     @GET
     MonitorDto get(@PathParam("id") String id);
 
-    @Operation(description = "Modify monitor")
+    @Operation(description = "Modify monitor", operationId = "updateMonitor")
     @Parameter(in = ParameterIn.HEADER, name = "x-app-tenant", required = true,
             content = @Content(schema = @Schema(implementation = String.class)))
     @Parameter(in = ParameterIn.PATH, name = "id", required = true)
@@ -71,7 +71,7 @@ public interface MonitorEndpoint {
     @POST
     void update(@PathParam("id") String id, @Valid MonitorDto dto);
 
-    @Operation(description = "Delete monitor")
+    @Operation(description = "Delete monitor", operationId = "deleteMonitor")
     @Parameter(in = ParameterIn.HEADER, name = "x-app-tenant", required = true,
             content = @Content(schema = @Schema(implementation = String.class)))
     @Parameter(in = ParameterIn.PATH, name = "id", required = true)

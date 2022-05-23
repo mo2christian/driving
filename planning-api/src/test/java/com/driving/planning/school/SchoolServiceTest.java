@@ -156,7 +156,7 @@ import static org.mockito.Mockito.*;
     void isOpen(){
         var school = generateSchool();
         when(repository.findByPseudo(name)).thenReturn(Optional.of(school));
-        var dateTime = LocalDateTime.of(LocalDate.of(2022, Month.MAY, 9), LocalTime.now().plusHours(1));
+        var dateTime = LocalDateTime.of(LocalDate.of(2022, Month.MAY, 9), LocalTime.of(10, 0));
         Assertions.assertThat(schoolService.isSchoolOpened(name, dateTime)).isTrue();
     }
 
@@ -164,7 +164,7 @@ import static org.mockito.Mockito.*;
     void isClose(){
         var school = generateSchool();
         when(repository.findByPseudo(name)).thenReturn(Optional.of(school));
-        var dateTime = LocalDateTime.of(LocalDate.of(2022, Month.MAY, 9), LocalTime.now().minusHours(1));
+        var dateTime = LocalDateTime.of(LocalDate.of(2022, Month.MAY, 9), LocalTime.of(14,15));
         Assertions.assertThat(schoolService.isSchoolOpened(name, dateTime)).isFalse();
     }
 
@@ -180,8 +180,8 @@ import static org.mockito.Mockito.*;
         school.setAddress(address);
         var hourly = new Hourly();
         hourly.setDay(Day.MONDAY);
-        hourly.setBegin(LocalTime.now());
-        hourly.setEnd(LocalTime.now().plusHours(5));
+        hourly.setBegin(LocalTime.of(8, 0));
+        hourly.setEnd(LocalTime.of(12, 0));
         school.setWorkDays(Collections.singleton(hourly));
         return school;
     }

@@ -30,7 +30,7 @@ public class AccountResource {
     @Inject
     AccountService accountService;
 
-    @Operation(description = "List accounts")
+    @Operation(description = "List accounts", operationId="getAccounts")
     @APIResponse(responseCode = "200", description = "List of admin",
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON,
@@ -51,7 +51,7 @@ public class AccountResource {
         );
     }
 
-    @Operation(description = "Check account status")
+    @Operation(description = "Check account status", operationId = "isValidAccount")
     @Parameter(in = ParameterIn.HEADER, name = "x-app-tenant", required = true,
             content = @Content(schema = @Schema(implementation = String.class))
     )

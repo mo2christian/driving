@@ -34,7 +34,7 @@ public class ReservationResource {
         this.logger = logger;
     }
 
-    @Operation(description = "Reserve a period")
+    @Operation(description = "Reserve a period", operationId = "addReservation")
     @Parameter(in = ParameterIn.HEADER, name = "x-app-tenant", required = true,
             content = @Content(schema = @Schema(implementation = String.class)))
     @Parameter(in = ParameterIn.PATH, name = "id", required = true,
@@ -49,7 +49,7 @@ public class ReservationResource {
         studentService.update(student);
     }
 
-    @Operation(description = "Delete a reservation")
+    @Operation(description = "Delete a reservation", operationId = "deleteReservation")
     @Parameter(in = ParameterIn.HEADER, name = "x-app-tenant", required = true,
             content = @Content(schema = @Schema(implementation = String.class)))
     @Parameter(in = ParameterIn.PATH, name = "id", required = true,

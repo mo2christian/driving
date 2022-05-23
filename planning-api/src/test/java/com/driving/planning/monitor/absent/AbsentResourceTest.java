@@ -2,27 +2,18 @@ package com.driving.planning.monitor.absent;
 
 import com.driving.planning.Generator;
 import com.driving.planning.common.exception.PlanningException;
-import com.driving.planning.common.hourly.Day;
-import com.driving.planning.common.hourly.Hourly;
-import com.driving.planning.event.EventService;
-import com.driving.planning.event.domain.EventType;
-import com.driving.planning.event.dto.EventDto;
 import com.driving.planning.monitor.MonitorService;
 import com.driving.planning.monitor.dto.MonitorDto;
-import com.driving.planning.school.SchoolService;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 import javax.ws.rs.core.Response;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.Optional;
 
 import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @QuarkusTest
@@ -32,28 +23,14 @@ class AbsentResourceTest {
     MonitorService monitorService;
 
     @InjectMock
-    SchoolService schoolService;
-
-    @InjectMock
-    EventService eventService;
+    AbsentService absentService;
 
     @Test
     void add(){
-        LocalDate now = LocalDate.now();
-        var absent = new AbsentRequest(now, now.plusDays(1));
         when(monitorService.get("id")).thenReturn(Optional.of(new MonitorDto()));
-        var h1 = new Hourly();
-        h1.setDay(Day.fromDayOfWeek(absent.getStart().getDayOfWeek()));
-        h1.setBegin(LocalTime.of(8, 0));
-        h1.setEnd(LocalTime.of(18, 0));
-        var h2 = new Hourly();
-        h2.setDay(Day.fromDayOfWeek(absent.getEnd().getDayOfWeek()));
-        h2.setBegin(LocalTime.of(8, 0));
-        h2.setEnd(LocalTime.of(18, 0));
-        var school = Generator.school();
-        school.getWorkDays().add(h1);
-        school.getWorkDays().add(h2);
-        when(schoolService.get("tenant")).thenReturn(Optional.of(school));
+        var absent = new AbsentRequest();
+        absent.setStart(LocalDate.now());
+        absent.setEnd(LocalDate.now().plusDays(2));
         given()
                 .accept(ContentType.JSON)
                 .contentType(ContentType.JSON)
@@ -63,26 +40,7 @@ class AbsentResourceTest {
                 .post("/api/v1/monitors/{id}/absents", "id")
                 .then()
                 .statusCode(204);
-
-        ArgumentCaptor<EventDto> dtoCaptor = ArgumentCaptor.forClass(EventDto.class);
-        verify(eventService, times(2)).add(dtoCaptor.capture());
-        assertThat(dtoCaptor.getAllValues())
-                .element(0)
-                .extracting(EventDto::getEventDate, EventDto::getRelatedUserId, EventDto::getType)
-                .contains(absent.getStart(), "id", EventType.MONITOR);
-
-        ArgumentCaptor<MonitorDto> monitorCaptor = ArgumentCaptor.forClass(MonitorDto.class);
-        verify(monitorService, atLeastOnce()).update(monitorCaptor.capture());
-        assertThat(monitorCaptor.getValue().getAbsents())
-                .hasSize(1)
-                .element(0)
-                .extracting(Absent::getStart, Absent::getEnd)
-                .contains(absent.getStart(), absent.getEnd());
-        assertThat(monitorCaptor.getValue().getAbsents())
-                .hasSize(1)
-                .element(0)
-                .extracting(Absent::getReference)
-                .isNotNull();
+        verify(absentService, times(1)).addAbsent(any(), any());
     }
 
     @Test
@@ -114,16 +72,9 @@ class AbsentResourceTest {
                 .delete("/api/v1/monitors/{id}/absents/{ref}", "id", monitor.getAbsents().get(0).getReference())
                 .then()
                 .statusCode(204);
-        ArgumentCaptor<MonitorDto> dtoCaptor = ArgumentCaptor.forClass(MonitorDto.class);
-        verify(monitorService, atMostOnce()).update(dtoCaptor.capture());
-        assertThat(dtoCaptor.getValue())
-                .isNotNull();
-        assertThat(dtoCaptor.getValue().getAbsents())
-                .isEmpty();
-        ArgumentCaptor<String> refCaptor = ArgumentCaptor.forClass(String.class);
-        verify(eventService, atLeastOnce()).deleteByRef(refCaptor.capture());
-        assertThat(refCaptor.getValue())
-                .isEqualTo("ref");
+
+        verify(absentService, times(1)).removeAbsent(any(), eq("ref"));
+
     }
 
     @Test
