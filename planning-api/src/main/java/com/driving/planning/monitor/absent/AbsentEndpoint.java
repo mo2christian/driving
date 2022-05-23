@@ -24,15 +24,17 @@ public interface AbsentEndpoint {
             content = @Content(schema = @Schema(implementation = String.class)))
     @POST
     @Path("/{id}/absents")
-    void add(@PathParam("id") String monitorId, @Valid Absent absent);
+    void add(@PathParam("id") String monitorId, @Valid AbsentRequest absent);
 
     @Operation(description = "Delete absent")
     @Parameter(in = ParameterIn.HEADER, name = "x-app-tenant", required = true,
             content = @Content(schema = @Schema(implementation = String.class)))
     @Parameter(in = ParameterIn.PATH, name = "id", required = true,
             content = @Content(schema = @Schema(implementation = String.class)))
+    @Parameter(in = ParameterIn.PATH, name = "ref", required = true,
+            content = @Content(schema = @Schema(implementation = String.class)))
     @DELETE
-    @Path("/{id}/absents")
-    void remove(@PathParam("id") String monitorId, @Valid Absent absent);
+    @Path("/{id}/absents/{ref}")
+    void remove(@PathParam("id") String monitorId, @PathParam("ref") String ref);
 
 }

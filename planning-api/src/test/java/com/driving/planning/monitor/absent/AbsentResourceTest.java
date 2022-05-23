@@ -1,8 +1,15 @@
 package com.driving.planning.monitor.absent;
 
+import com.driving.planning.Generator;
 import com.driving.planning.common.exception.PlanningException;
+import com.driving.planning.common.hourly.Day;
+import com.driving.planning.common.hourly.Hourly;
+import com.driving.planning.event.EventService;
+import com.driving.planning.event.domain.EventType;
+import com.driving.planning.event.dto.EventDto;
 import com.driving.planning.monitor.MonitorService;
 import com.driving.planning.monitor.dto.MonitorDto;
+import com.driving.planning.school.SchoolService;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import io.restassured.http.ContentType;
@@ -10,7 +17,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import javax.ws.rs.core.Response;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Optional;
 
 import static io.restassured.RestAssured.given;
@@ -23,11 +31,29 @@ class AbsentResourceTest {
     @InjectMock
     MonitorService monitorService;
 
+    @InjectMock
+    SchoolService schoolService;
+
+    @InjectMock
+    EventService eventService;
+
     @Test
     void add(){
-        var now = LocalDateTime.now();
-        var absent = new Absent(now, now.plusDays(5));
+        LocalDate now = LocalDate.now();
+        var absent = new AbsentRequest(now, now.plusDays(1));
         when(monitorService.get("id")).thenReturn(Optional.of(new MonitorDto()));
+        var h1 = new Hourly();
+        h1.setDay(Day.fromDayOfWeek(absent.getStart().getDayOfWeek()));
+        h1.setBegin(LocalTime.of(8, 0));
+        h1.setEnd(LocalTime.of(18, 0));
+        var h2 = new Hourly();
+        h2.setDay(Day.fromDayOfWeek(absent.getEnd().getDayOfWeek()));
+        h2.setBegin(LocalTime.of(8, 0));
+        h2.setEnd(LocalTime.of(18, 0));
+        var school = Generator.school();
+        school.getWorkDays().add(h1);
+        school.getWorkDays().add(h2);
+        when(schoolService.get("tenant")).thenReturn(Optional.of(school));
         given()
                 .accept(ContentType.JSON)
                 .contentType(ContentType.JSON)
@@ -38,18 +64,31 @@ class AbsentResourceTest {
                 .then()
                 .statusCode(204);
 
-        ArgumentCaptor<MonitorDto> dtoCaptor = ArgumentCaptor.forClass(MonitorDto.class);
-        verify(monitorService, atMostOnce()).update(dtoCaptor.capture());
-        assertThat(dtoCaptor.getValue())
+        ArgumentCaptor<EventDto> dtoCaptor = ArgumentCaptor.forClass(EventDto.class);
+        verify(eventService, times(2)).add(dtoCaptor.capture());
+        assertThat(dtoCaptor.getAllValues())
+                .element(0)
+                .extracting(EventDto::getEventDate, EventDto::getRelatedUserId, EventDto::getType)
+                .contains(absent.getStart(), "id", EventType.MONITOR);
+
+        ArgumentCaptor<MonitorDto> monitorCaptor = ArgumentCaptor.forClass(MonitorDto.class);
+        verify(monitorService, atLeastOnce()).update(monitorCaptor.capture());
+        assertThat(monitorCaptor.getValue().getAbsents())
+                .hasSize(1)
+                .element(0)
+                .extracting(Absent::getStart, Absent::getEnd)
+                .contains(absent.getStart(), absent.getEnd());
+        assertThat(monitorCaptor.getValue().getAbsents())
+                .hasSize(1)
+                .element(0)
+                .extracting(Absent::getReference)
                 .isNotNull();
-        assertThat(dtoCaptor.getValue().getAbsents())
-                .contains(absent);
     }
 
     @Test
     void addNotFound(){
-        var now = LocalDateTime.now();
-        var absent = new Absent(now, now.plusDays(5));
+        LocalDate now = LocalDate.now();
+        var absent = new AbsentRequest(now, now.plusDays(5));
         when(monitorService.get("id")).thenThrow(new PlanningException(Response.Status.NOT_FOUND, "Not found"));
         given()
                 .accept(ContentType.JSON)
@@ -64,19 +103,15 @@ class AbsentResourceTest {
 
     @Test
     void delete(){
-        var now = LocalDateTime.now();
-        var absent = new Absent(now, now.plusDays(5));
-        var monitor = new MonitorDto();
-        monitor.getAbsents().add(absent);
+        var monitor = Generator.monitor();
         when(monitorService.get("id")).thenReturn(Optional.of(monitor));
 
         given()
                 .accept(ContentType.JSON)
                 .contentType(ContentType.JSON)
                 .header("x-app-tenant", "tenant")
-                .body(absent)
                 .when()
-                .delete("/api/v1/monitors/{id}/absents", "id")
+                .delete("/api/v1/monitors/{id}/absents/{ref}", "id", monitor.getAbsents().get(0).getReference())
                 .then()
                 .statusCode(204);
         ArgumentCaptor<MonitorDto> dtoCaptor = ArgumentCaptor.forClass(MonitorDto.class);
@@ -84,37 +119,24 @@ class AbsentResourceTest {
         assertThat(dtoCaptor.getValue())
                 .isNotNull();
         assertThat(dtoCaptor.getValue().getAbsents())
-                .doesNotContain(absent);
-    }
-
-    @Test
-    void removeNotFound(){
-        var now = LocalDateTime.now();
-        var absent = new Absent(now, now.plusDays(5));
-        when(monitorService.get("id")).thenThrow(new PlanningException(Response.Status.NOT_FOUND, "Not found"));
-        given()
-                .accept(ContentType.JSON)
-                .contentType(ContentType.JSON)
-                .header("x-app-tenant", "tenant")
-                .body(absent)
-                .when()
-                .delete("/api/v1/monitors/{id}/absents", "id")
-                .then()
-                .statusCode(404);
+                .isEmpty();
+        ArgumentCaptor<String> refCaptor = ArgumentCaptor.forClass(String.class);
+        verify(eventService, atLeastOnce()).deleteByRef(refCaptor.capture());
+        assertThat(refCaptor.getValue())
+                .isEqualTo("ref");
     }
 
     @Test
     void wrongParams(){
-        var absent = new Absent();
+        when(monitorService.get("id")).thenReturn(Optional.empty());
         given()
                 .accept(ContentType.JSON)
                 .contentType(ContentType.JSON)
                 .header("x-app-tenant", "tenant")
-                .body(absent)
                 .when()
-                .delete("/api/v1/monitors/{id}/absents", "id")
+                .delete("/api/v1/monitors/{id}/absents/{ref}", "id", "ref")
                 .then()
-                .statusCode(400);
+                .statusCode(404);
     }
 
 }

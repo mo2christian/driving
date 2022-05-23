@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,11 +57,7 @@ public class EventRepository implements Repository<Event> {
         var cursor = mongoDatabase.getCollection(Event.COLLECTION_NAME, Event.class)
                 .find()
                 .cursor();
-        var list = new ArrayList<Event>();
-        while (cursor.hasNext()){
-            list.add(cursor.next());
-        }
-        return list;
+        return toList(cursor);
     }
 
     @Override
@@ -83,9 +80,26 @@ public class EventRepository implements Repository<Event> {
         var cursor = mongoDatabase.getCollection(Event.COLLECTION_NAME, Event.class)
                 .find(Filters.eq("event_date", date))
                 .iterator();
+        return toList(cursor);
+    }
+
+    public List<Event> listByUserId(String userId){
+        var cursor = mongoDatabase.getCollection(Event.COLLECTION_NAME, Event.class)
+                .find(Filters.eq("user_id", userId))
+                .iterator();
+        return toList(cursor);
+    }
+
+    public void deleteByRef(String ref){
+        logger.debugf("Delete event by ref %s", ref);
+        mongoDatabase.getCollection(Event.COLLECTION_NAME, Event.class)
+                .deleteMany(Filters.eq("ref", ref));
+    }
+
+    private List<Event> toList(Iterator<Event> iterator){
         var list = new ArrayList<Event>();
-        while (cursor.hasNext()){
-            list.add(cursor.next());
+        while (iterator.hasNext()){
+            list.add(iterator.next());
         }
         return list;
     }

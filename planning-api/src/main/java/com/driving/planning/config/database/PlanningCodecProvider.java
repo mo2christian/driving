@@ -4,8 +4,8 @@ import com.driving.planning.common.hourly.Hourly;
 import com.driving.planning.common.hourly.HourlyCodec;
 import com.driving.planning.event.domain.EventType;
 import com.driving.planning.event.domain.EventTypeCodec;
-import com.driving.planning.monitor.absent.Absent;
 import com.driving.planning.monitor.absent.AbsentCodec;
+import com.driving.planning.monitor.absent.AbsentRequest;
 import com.driving.planning.student.reservation.Reservation;
 import com.driving.planning.student.reservation.ReservationCodec;
 import org.bson.codecs.Codec;
@@ -22,7 +22,7 @@ public class PlanningCodecProvider implements CodecProvider {
         if (aClass == Reservation.class){
             return (Codec<T>) new ReservationCodec();
         }
-        if (aClass == Absent.class){
+        if (aClass == AbsentRequest.class){
             return (Codec<T>) new AbsentCodec();
         }
         if (aClass == EventType.class){

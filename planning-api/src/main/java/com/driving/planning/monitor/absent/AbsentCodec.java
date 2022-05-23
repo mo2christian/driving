@@ -11,7 +11,7 @@ import org.bson.codecs.CollectibleCodec;
 import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class AbsentCodec implements CollectibleCodec<Absent> {
@@ -43,8 +43,9 @@ public class AbsentCodec implements CollectibleCodec<Absent> {
     public Absent decode(BsonReader bsonReader, DecoderContext decoderContext) {
         var document = documentCodec.decode(bsonReader, decoderContext);
         var absent = new Absent();
-        absent.setStart(LocalDateTime.parse(document.get("start", String.class), dayFormatter));
-        absent.setEnd(LocalDateTime.parse(document.get("end", String.class), dayFormatter));
+        absent.setStart(LocalDate.parse(document.get("start", String.class), dayFormatter));
+        absent.setEnd(LocalDate.parse(document.get("end", String.class), dayFormatter));
+        absent.setReference(document.getString("ref"));
         return absent;
     }
 
@@ -53,6 +54,7 @@ public class AbsentCodec implements CollectibleCodec<Absent> {
         var doc = new Document();
         doc.put("start", dayFormatter.format(absent.getStart()));
         doc.put("end", dayFormatter.format(absent.getEnd()));
+        doc.put("ref", absent.getReference());
         documentCodec.encode(bsonWriter, doc, encoderContext);
     }
 

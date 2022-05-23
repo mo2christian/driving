@@ -8,11 +8,15 @@ import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.bson.types.ObjectId;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @RegisterForReflection
 public class Monitor implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     public static final String COLLECTION_NAME = "monitor";
 
@@ -33,11 +37,19 @@ public class Monitor implements Serializable {
     private Set<Hourly> workDays;
 
     @BsonProperty("absents")
-    private Set<Absent> absents;
+    private List<Absent> absents;
 
     public Monitor(){
         workDays = new HashSet<>();
-        absents = new HashSet<>();
+        absents = new ArrayList<>();
+    }
+
+    public List<Absent> getAbsents() {
+        return absents;
+    }
+
+    public void setAbsents(List<Absent> absents) {
+        this.absents = absents;
     }
 
     public ObjectId getId() {
@@ -72,16 +84,6 @@ public class Monitor implements Serializable {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
-    }
-
-    public Set<Absent> getAbsents() {
-        return absents;
-    }
-
-    public void setAbsents(Set<Absent> absents) {
-        if (absents != null){
-            this.absents = absents;
-        }
     }
 
     public String getLastName() {

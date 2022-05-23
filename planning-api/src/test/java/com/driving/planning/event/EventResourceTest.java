@@ -1,20 +1,22 @@
 package com.driving.planning.event;
 
 import com.driving.planning.Generator;
-import com.driving.planning.common.exception.PlanningException;
+import com.driving.planning.common.DatePattern;
 import com.driving.planning.event.domain.EventType;
 import com.driving.planning.event.dto.EventDto;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
-import org.assertj.core.api.Assertions;
+import io.restassured.http.ContentType;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
-import javax.ws.rs.core.Response;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 
+import static io.restassured.RestAssured.given;
 import static org.mockito.Mockito.*;
 
 @QuarkusTest
@@ -29,7 +31,14 @@ class EventResourceTest {
     @Test
     void add(){
         var event = Generator.event();
-        eventEndpoint.add(event);
+        given()
+                .accept(ContentType.JSON)
+                .contentType(ContentType.JSON)
+                .body(event)
+                .when()
+                .post("/api/v1/events")
+                .then()
+                .statusCode(201);
         verify(eventService, times(1)).add(any(EventDto.class));
     }
 
@@ -37,46 +46,91 @@ class EventResourceTest {
     void addBadParams(){
         var event = Generator.event();
         event.setEnd(event.getBegin().minusMinutes(30));
-        Assertions.assertThatThrownBy(() -> eventEndpoint.add(event))
-                .isInstanceOf(PlanningException.class)
-                .extracting("status")
-                .isEqualTo(Response.Status.BAD_REQUEST);
+        given()
+                .accept(ContentType.JSON)
+                .contentType(ContentType.JSON)
+                .body(event)
+                .when()
+                .post("/api/v1/events")
+                .then()
+                .statusCode(400);
 
         event.setEnd(event.getBegin());
-        Assertions.assertThatThrownBy(() -> eventEndpoint.add(event))
-                .isInstanceOf(PlanningException.class)
-                .extracting("status")
-                .isEqualTo(Response.Status.BAD_REQUEST);
+        given()
+                .accept(ContentType.JSON)
+                .contentType(ContentType.JSON)
+                .body(event)
+                .when()
+                .post("/api/v1/events")
+                .then()
+                .statusCode(400);
     }
 
     @Test
     void addNullValues(){
         final var event = Generator.event();
         event.setType(null);
-        Assertions.assertThatThrownBy(() -> eventEndpoint.add(event))
-                .isInstanceOf(Exception.class);
+        given()
+                .accept(ContentType.JSON)
+                .contentType(ContentType.JSON)
+                .body(event)
+                .when()
+                .post("/api/v1/events")
+                .then()
+                .statusCode(400);
 
         event.setType(EventType.STUDENT);
         event.setEventDate(null);
-        Assertions.assertThatThrownBy(() -> eventEndpoint.add(event))
-                .isInstanceOf(Exception.class);
+        given()
+                .accept(ContentType.JSON)
+                .contentType(ContentType.JSON)
+                .body(event)
+                .when()
+                .post("/api/v1/events")
+                .then()
+                .statusCode(400);
 
         event.setEventDate(LocalDate.now());
         event.setBegin(null);
-        Assertions.assertThatThrownBy(() -> eventEndpoint.add(event))
-                .isInstanceOf(Exception.class);
+        given()
+                .accept(ContentType.JSON)
+                .contentType(ContentType.JSON)
+                .body(event)
+                .when()
+                .post("/api/v1/events")
+                .then()
+                .statusCode(400);
 
         event.setBegin(LocalTime.now());
         event.setEnd(null);
-        Assertions.assertThatThrownBy(() -> eventEndpoint.add(event))
-                .isInstanceOf(Exception.class);
+        given()
+                .accept(ContentType.JSON)
+                .contentType(ContentType.JSON)
+                .body(event)
+                .when()
+                .post("/api/v1/events")
+                .then()
+                .statusCode(400);
     }
 
     @Test
     void list(){
-        when(eventService.list()).thenReturn(Collections.singletonList(Generator.event()));
-        Assertions.assertThat(eventEndpoint.list())
-                .matches(resp -> resp.getEvents().size() == 1);
+        var event = Generator.event();
+        var dateFormatter = DateTimeFormatter.ofPattern(DatePattern.DATE);
+        var timeFormatter = DateTimeFormatter.ofPattern(DatePattern.TIME);
+        when(eventService.list()).thenReturn(Collections.singletonList(event));
+        given()
+                .accept(ContentType.JSON)
+                .when()
+                .get("/api/v1/events")
+                .then()
+                .statusCode(200)
+                .body("events[0].eventDate", Matchers.is(dateFormatter.format(event.getEventDate())))
+                .body("events[0].begin", Matchers.is(timeFormatter.format(event.getBegin())))
+                .body("events[0].end", Matchers.is(timeFormatter.format(event.getEnd())))
+                .body("events[0].type", Matchers.is(event.getType().name()))
+                .body("events[0].reference", Matchers.is(event.getReference()))
+                .body("events.size()", Matchers.is(1));
     }
 
 }

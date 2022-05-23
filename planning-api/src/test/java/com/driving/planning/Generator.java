@@ -13,9 +13,9 @@ import com.driving.planning.student.StudentDto;
 import com.driving.planning.student.reservation.Reservation;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collections;
+import java.util.HashSet;
 
 public class  Generator {
 
@@ -41,7 +41,9 @@ public class  Generator {
         hourly.setDay(Day.MONDAY);
         hourly.setBegin(LocalTime.now());
         hourly.setEnd(LocalTime.now().plusHours(5));
-        schoolDto.setWorkDays(Collections.singleton(hourly));
+        var  h = new HashSet<Hourly>();
+        h.add(hourly);
+        schoolDto.setWorkDays(h);
         return schoolDto;
     }
 
@@ -70,9 +72,9 @@ public class  Generator {
         hourly.setEnd(LocalTime.now().plusHours(5));
         monitor.getWorkDays().add(hourly);
         var absent = new Absent();
-        absent.setStart(LocalDateTime.now());
-        absent.setEnd(LocalDateTime.now().plusDays(3));
-        absent.setMotif("motif");
+        absent.setStart(LocalDate.now());
+        absent.setEnd(LocalDate.now().plusDays(3));
+        absent.setReference("ref");
         monitor.getAbsents().add(absent);
         return monitor;
     }
@@ -84,6 +86,7 @@ public class  Generator {
         event.setEnd(LocalTime.now().plusHours(1));
         event.setRelatedUserId("613383809b162658348d87cb");
         event.setType(EventType.STUDENT);
+        event.setReference("REF");
         return event;
     }
 

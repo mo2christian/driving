@@ -33,13 +33,9 @@ class MonitorResourceTest {
     @Test
     void list(){
         var monitorDto = Generator.monitor();
-        var absent = monitorDto.getAbsents().stream()
-                .findFirst()
-                .orElseThrow();
         var hourly = getFirst(monitorDto.getWorkDays());
         monitorDto.setId("id");
         var timeFormatter = DateTimeFormatter.ofPattern(DatePattern.TIME);
-        var dayFormatter = DateTimeFormatter.ofPattern(DatePattern.DATE_TIME);
         when(service.list()).thenReturn(Collections.singletonList(monitorDto));
         given()
                 .accept(ContentType.JSON)
@@ -56,23 +52,15 @@ class MonitorResourceTest {
                 .body("monitors[0].workDays.size()", Matchers.is(1))
                 .body("monitors[0].workDays[0].day", Matchers.is(hourly.getDay().getValue()))
                 .body("monitors[0].workDays[0].begin", Matchers.is(timeFormatter.format(hourly.getBegin())))
-                .body("monitors[0].workDays[0].end", Matchers.is(timeFormatter.format(hourly.getEnd())))
-                .body("monitors[0].absents.size()", Matchers.is(1))
-                .body("monitors[0].absents[0].start", Matchers.is(dayFormatter.format(absent.getStart())))
-                .body("monitors[0].absents[0].end", Matchers.is(dayFormatter.format(absent.getEnd())))
-                .body("monitors[0].absents[0].motif", Matchers.is(absent.getMotif()));
+                .body("monitors[0].workDays[0].end", Matchers.is(timeFormatter.format(hourly.getEnd())));
     }
 
     @Test
     void get(){
         var monitorDto = Generator.monitor();
-        var absent = monitorDto.getAbsents().stream()
-                .findFirst()
-                .orElseThrow();
         var hourly = getFirst(monitorDto.getWorkDays());
         monitorDto.setId("id");
         var timeFormatter = DateTimeFormatter.ofPattern(DatePattern.TIME);
-        var dayFormatter = DateTimeFormatter.ofPattern(DatePattern.DATE_TIME);
         when(service.get(monitorDto.getId())).thenReturn(Optional.of(monitorDto));
         given()
                 .accept(ContentType.JSON)
@@ -88,11 +76,7 @@ class MonitorResourceTest {
                 .body("workDays.size()", Matchers.is(1))
                 .body("workDays[0].day", Matchers.is(hourly.getDay().getValue()))
                 .body("workDays[0].begin", Matchers.is(timeFormatter.format(hourly.getBegin())))
-                .body("workDays[0].end", Matchers.is(timeFormatter.format(hourly.getEnd())))
-                .body("absents.size()", Matchers.is(1))
-                .body("absents[0].start", Matchers.is(dayFormatter.format(absent.getStart())))
-                .body("absents[0].end", Matchers.is(dayFormatter.format(absent.getEnd())))
-                .body("absents[0].motif", Matchers.is(absent.getMotif()));
+                .body("workDays[0].end", Matchers.is(timeFormatter.format(hourly.getEnd())));
     }
 
     @Test

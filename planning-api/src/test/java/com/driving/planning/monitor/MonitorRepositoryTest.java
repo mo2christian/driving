@@ -12,7 +12,7 @@ import org.bson.types.ObjectId;
 import org.junit.jupiter.api.*;
 
 import javax.inject.Inject;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Collections;
 
@@ -40,8 +40,9 @@ class MonitorRepositoryTest {
         hourly.setEnd(LocalTime.now().plusHours(5));
         monitor.setWorkDays(Collections.singleton(hourly));
         var absent = new Absent();
-        absent.setStart(LocalDateTime.now());
-        absent.setEnd(LocalDateTime.now().plusDays(3));
+        absent.setStart(LocalDate.now());
+        absent.setEnd(LocalDate.now().plusDays(3));
+        absent.setReference("ref");
         monitor.getAbsents().add(absent);
     }
 
@@ -71,8 +72,9 @@ class MonitorRepositoryTest {
         hourly.setEnd(LocalTime.now().plusHours(5));
         monitor.setWorkDays(Collections.singleton(hourly));
         var absent = new Absent();
-        absent.setStart(LocalDateTime.now());
-        absent.setEnd(LocalDateTime.now().plusDays(5));
+        absent.setStart(LocalDate.now());
+        absent.setEnd(LocalDate.now().plusDays(5));
+        absent.setReference("ref1");
         monitor.getAbsents().add(absent);
         repository.update(monitor);
         Assertions.assertThat(repository.list())
