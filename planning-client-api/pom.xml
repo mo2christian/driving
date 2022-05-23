@@ -37,7 +37,7 @@
 						</goals>
 						<configuration>
 							<!-- specify the swagger yaml -->
-							<inputSpec>http://localhost:8080/swagger</inputSpec>
+							<inputSpec>https://planning-api.monlabo.biz/swagger</inputSpec>
 
 							<!-- target to generate java client code -->
 							<generatorName>spring</generatorName>

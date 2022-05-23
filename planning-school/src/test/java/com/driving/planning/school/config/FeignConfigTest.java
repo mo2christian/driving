@@ -33,7 +33,7 @@ class FeignConfigTest {
     @Test
     void handleError(){
         var account = new AccountDto();
-        Assertions.assertThatThrownBy(() -> accountApiClient.apiV1AccountsCheckPost("test", account))
+        Assertions.assertThatThrownBy(() -> accountApiClient.isValidAccount("test", account))
                 .isInstanceOf(ApiException.class);
     }
 

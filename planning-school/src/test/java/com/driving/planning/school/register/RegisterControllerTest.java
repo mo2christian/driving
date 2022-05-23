@@ -82,7 +82,7 @@ class RegisterControllerTest {
             .andExpect(redirectedUrl("/login"));
 
         ArgumentCaptor<SchoolRequest> request = ArgumentCaptor.forClass(SchoolRequest.class);
-        Mockito.verify(schoolApiClient, Mockito.atLeastOnce()).apiV1SchoolsPost(request.capture());
+        Mockito.verify(schoolApiClient, Mockito.atLeastOnce()).addSchool(request.capture());
         assertThat(request.getValue())
                 .isNotNull();
         assertThat(request.getValue().getAccount())
@@ -123,7 +123,7 @@ class RegisterControllerTest {
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("subscription"));
-        Mockito.verify(schoolApiClient, Mockito.never()).apiV1SchoolsPost(Mockito.any());
+        Mockito.verify(schoolApiClient, Mockito.never()).addSchool(Mockito.any());
     }
 
     @ParameterizedTest
