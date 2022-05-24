@@ -6,12 +6,12 @@ on:
       - '!main'
     paths:
       - planning-school/**
-      - .github/workflows/**
+      - .github/workflows/school*
   pull_request:
     types: [ opened, synchronize, reopened ]
     paths:
       - planning-school/**
-      - .github/workflows/**
+      - .github/workflows/school*
 jobs:
   tests:
     name: Unit and integration tests

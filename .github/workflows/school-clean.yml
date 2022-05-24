@@ -4,7 +4,7 @@ on:
     types: [ closed ]
     paths:
       - planning-school/**
-      - .github/workflows/**
+      - .github/workflows/school*
 jobs:
   delete-stage:
     permissions:

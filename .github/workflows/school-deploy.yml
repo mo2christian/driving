@@ -4,7 +4,7 @@ on:
     branches: [main]
     paths:
       - planning-school/**
-      - .github/workflows/**
+      - .github/workflows/school*
 jobs:
   create-image:
     name: Create docker image
