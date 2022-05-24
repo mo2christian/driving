@@ -35,7 +35,7 @@ class AuthenticationTest {
     @Test
     void auth() throws Exception{
         var text = new Text();
-        when(accountApiClient.apiV1AccountsCheckPost(anyString(), any(AccountDto.class)))
+        when(accountApiClient.isValidAccount(anyString(), any(AccountDto.class)))
                 .thenReturn(ResponseEntity.ok(text));
         mockMvc.perform(post("/login")
                         .param("username", "user")
@@ -47,7 +47,7 @@ class AuthenticationTest {
 
         ArgumentCaptor<String> pseudoCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<AccountDto> dtoCaptor = ArgumentCaptor.forClass(AccountDto.class);
-        verify(accountApiClient, atLeastOnce()).apiV1AccountsCheckPost(pseudoCaptor.capture(), dtoCaptor.capture());
+        verify(accountApiClient, atLeastOnce()).isValidAccount(pseudoCaptor.capture(), dtoCaptor.capture());
 
         assertThat(pseudoCaptor.getValue()).isEqualTo("school");
         assertThat(dtoCaptor.getValue())
@@ -59,7 +59,7 @@ class AuthenticationTest {
 
     @Test
     void authFailed() throws Exception {
-        when(accountApiClient.apiV1AccountsCheckPost(anyString(), any(AccountDto.class)))
+        when(accountApiClient.isValidAccount(anyString(), any(AccountDto.class)))
                 .thenThrow(new ApiException());
         mockMvc.perform(post("/login")
                         .param("username", "user")

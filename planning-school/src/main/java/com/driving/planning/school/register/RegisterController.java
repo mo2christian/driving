@@ -75,7 +75,7 @@ public class RegisterController {
         var schoolRequest = new SchoolRequest()
                 .school(schoolDto)
                 .account(accountDto);
-        schoolApiClient.apiV1SchoolsPost(schoolRequest);
+        schoolApiClient.addSchool(schoolRequest);
         return "redirect:/login";
     }
 

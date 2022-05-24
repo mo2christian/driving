@@ -35,7 +35,7 @@ class LoginControllerTest {
                 .name("name");
         var school = new SchoolResponse();
         school.setSchools(List.of(dto));
-        when(schoolApiClient.apiV1SchoolsGet()).thenReturn(ResponseEntity.ok(school));
+        when(schoolApiClient.getSchools()).thenReturn(ResponseEntity.ok(school));
         mockMvc.perform(get("/login"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("login"))
@@ -44,7 +44,7 @@ class LoginControllerTest {
 
     @Test
     void loginWithError() throws Exception {
-        when(schoolApiClient.apiV1SchoolsGet()).thenThrow(ApiException.class);
+        when(schoolApiClient.getSchools()).thenThrow(ApiException.class);
         mockMvc.perform(get("/login"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("login"))

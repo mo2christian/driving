@@ -29,7 +29,7 @@ public class LoginController {
         log.debug("Init login page");
         List<SchoolDto> schools = new ArrayList<>();
         try{
-            schools = Objects.requireNonNull(schoolApiClient.apiV1SchoolsGet()
+            schools = Objects.requireNonNull(schoolApiClient.getSchools()
                             .getBody())
                     .getSchools();
         }

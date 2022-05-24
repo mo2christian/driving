@@ -68,14 +68,14 @@ public class MonitorController {
                 .lastName(form.getLastName())
                 .phoneNumber(form.getPhoneNumber())
                 .workDays(workDays);
-        monitorApiClient.apiV1MonitorsPost(getSchoolID(), dto);
+        monitorApiClient.addMonitor(getSchoolID(), dto);
         return "redirect:/monitor";
     }
 
     @ModelAttribute("request")
     public MonitorForm getForm(){
         var form = new MonitorForm();
-        var school = schoolApiClient.apiV1SchoolsIdGet(getSchoolID())
+        var school = schoolApiClient.getSchoolByID(getSchoolID())
                 .getBody();
         if (school == null){
             throw new ApiException(String.format("Unable to retrieve school %s", getSchoolID()));
@@ -94,7 +94,7 @@ public class MonitorController {
 
     @ModelAttribute("monitors")
     public List<MonitorDto> getMonitorList(){
-        MonitorResponse response = monitorApiClient.apiV1MonitorsGet(getSchoolID())
+        MonitorResponse response = monitorApiClient.getMonitors(getSchoolID())
                 .getBody();
         if (response != null){
             return response.getMonitors();

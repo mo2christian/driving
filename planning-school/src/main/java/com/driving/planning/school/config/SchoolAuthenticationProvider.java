@@ -29,7 +29,7 @@ public class SchoolAuthenticationProvider implements AuthenticationProvider {
                 .email((String)authentication.getPrincipal())
                 .password((String)authentication.getCredentials());
         try{
-            accountApiClient.apiV1AccountsCheckPost(details.getSchool(), account);
+            accountApiClient.isValidAccount(details.getSchool(), account);
         }
         catch(ApiException ex){
             log.debug("Error while checking account", ex);

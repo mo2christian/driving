@@ -58,7 +58,7 @@ class MonitorControllerTest {
                 .phoneNumber("147852369");
         response = new MonitorResponse()
                 .addMonitorsItem(monitor);
-        when(monitorApiClient.apiV1MonitorsGet(TENANT))
+        when(monitorApiClient.getMonitors(TENANT))
                 .thenReturn(ResponseEntity.ok(response));
 
         var workDays = new HashSet<Hourly>();
@@ -73,7 +73,7 @@ class MonitorControllerTest {
                 .name("school")
                 .pseudo(TENANT)
                 .workDays(workDays);
-        when(schoolApiClient.apiV1SchoolsIdGet(TENANT))
+        when(schoolApiClient.getSchoolByID(TENANT))
                 .thenReturn(ResponseEntity.ok(school));
     }
 
@@ -85,7 +85,7 @@ class MonitorControllerTest {
                 .andExpect(view().name("monitor"))
                 .andExpect(model().attribute("monitors", response.getMonitors()))
                 .andExpect(model().attributeExists("request"));
-        verify(monitorApiClient, Mockito.atMostOnce()).apiV1MonitorsGet(TENANT);
+        verify(monitorApiClient, Mockito.atMostOnce()).getMonitors(TENANT);
     }
 
     @Test
@@ -105,7 +105,7 @@ class MonitorControllerTest {
                 .andExpect(model().attribute("monitors", response.getMonitors()))
                 .andExpect(model().attributeExists("request"));
         ArgumentCaptor<MonitorDto> monitorCaptor = ArgumentCaptor.forClass(MonitorDto.class);
-        verify(monitorApiClient, atMostOnce()).apiV1MonitorsPost(eq(TENANT), monitorCaptor.capture());
+        verify(monitorApiClient, atMostOnce()).addMonitor(eq(TENANT), monitorCaptor.capture());
         assertThat(monitorCaptor.getValue())
                 .isNotNull()
                 .extracting(MonitorDto::getLastName, MonitorDto::getFirstName, MonitorDto::getPhoneNumber)
@@ -138,7 +138,7 @@ class MonitorControllerTest {
                 .andExpect(model().attribute("monitors", response.getMonitors()))
                 .andExpect(model().attributeExists("request"));
         ArgumentCaptor<MonitorDto> monitorCaptor = ArgumentCaptor.forClass(MonitorDto.class);
-        verify(monitorApiClient, atMostOnce()).apiV1MonitorsPost(eq(TENANT), monitorCaptor.capture());
+        verify(monitorApiClient, atMostOnce()).addMonitor(eq(TENANT), monitorCaptor.capture());
         assertThat(monitorCaptor.getValue())
                 .isNotNull()
                 .extracting(MonitorDto::getLastName, MonitorDto::getFirstName, MonitorDto::getPhoneNumber)
@@ -167,7 +167,7 @@ class MonitorControllerTest {
                 .andExpect(model().attribute("monitors", response.getMonitors()))
                 .andExpect(model().attributeExists("request"));
         ArgumentCaptor<MonitorDto> monitorCaptor = ArgumentCaptor.forClass(MonitorDto.class);
-        verify(monitorApiClient, never()).apiV1MonitorsPost(eq(TENANT), monitorCaptor.capture());
+        verify(monitorApiClient, never()).addMonitor(eq(TENANT), monitorCaptor.capture());
     }
 
     @ParameterizedTest
