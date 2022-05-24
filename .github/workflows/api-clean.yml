@@ -4,6 +4,7 @@ on:
     types: [ closed ]
     paths:
       - planning-api/**
+      - .github/workflows/api*
 jobs:
   delete-stage:
     permissions:
@@ -19,8 +20,6 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.IDENTITY_POOL }}
           service_account: ${{ secrets.SERVICE_ACCOUNT }}
-      - name: Setup Gcloud
-        uses: google-github-actions/setup-gcloud@v0.3.0
       - name: Delete service
         run: |
           gcloud run services delete --region=${{ secrets.REGION }} --quiet planning-api-${{ github.event.pull_request.number }}

@@ -124,14 +124,19 @@
 	</dependencyManagement>
 	<repositories>
 		<repository>
+			<id>maven.repo</id>
+			<name>Maven Repository</name>
+			<url>https://repo.maven.apache.org/maven2</url>
+		</repository>
+		<repository>
+			<id>repository.spring.release</id>
+			<name>Spring GA Repository</name>
+			<url>http://repo.spring.io/release</url>
+		</repository>
+		<repository>
 			<id>artifact-registry</id>
+			<name>Driving Repository</name>
 			<url>artifactregistry://europe-west1-maven.pkg.dev/driving-monlabo-biz/auto</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
 		</repository>
 	</repositories>
 	<build>
