@@ -4,7 +4,7 @@ on:
     types: [ closed ]
     paths:
       - planning-api/**
-      - .github/workflows/**
+      - .github/workflows/api*
 jobs:
   delete-stage:
     permissions:

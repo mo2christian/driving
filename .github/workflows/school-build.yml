@@ -35,7 +35,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
+          key: ${{ runner.os }}-sonar-school-tests
           restore-keys: ${{ runner.os }}-sonar
       - name: Authenticate to Google Cloud
         id: auth

@@ -6,12 +6,12 @@ on:
       - '!main'
     paths:
       - planning-api/**
-      - .github/workflows/**
+      - .github/workflows/api*
   pull_request:
     types: [ opened, synchronize, reopened ]
     paths:
       - planning-api/**
-      - .github/workflows/**
+      - .github/workflows/api*
 jobs:
   tests:
     name: Unit and integration tests
@@ -30,7 +30,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
+          key: ${{ runner.os }}-sonar-api-tests
           restore-keys: ${{ runner.os }}-sonar
       - name: Make maven executable
         working-directory: planning-api

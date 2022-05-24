@@ -4,7 +4,7 @@ on:
     branches: [main]
     paths:
       - planning-api/**
-      - .github/workflows/**
+      - .github/workflows/api*
 jobs:
   create-image:
     name: Create docker image
@@ -26,7 +26,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
+          key: ${{ runner.os }}-sonar-api-create-image
           restore-keys: ${{ runner.os }}-sonar
       - name: Run unit tests, sonar analyse and package
         id: build
