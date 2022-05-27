@@ -17,6 +17,8 @@ spec:
       - env:
         - name: PLANNING_API_URL
           value: https://planning-api.monlabo.biz
+        - name: ZIPKIN_URL
+          value: https://zipkin.monlabo.biz/
         image: IMAGE
         ports:
         - containerPort: 8080
