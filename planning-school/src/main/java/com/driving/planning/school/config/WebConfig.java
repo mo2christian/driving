@@ -1,5 +1,6 @@
 package com.driving.planning.school.config;
 
+import com.driving.planning.school.common.converter.String2LocalDate;
 import com.driving.planning.school.common.converter.String2LocalTime;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
@@ -27,5 +28,6 @@ public class WebConfig implements WebMvcConfigurer {
     public void addFormatters(FormatterRegistry registry) {
         WebMvcConfigurer.super.addFormatters(registry);
         registry.addConverter(new String2LocalTime());
+        registry.addConverter(new String2LocalDate());
     }
 }

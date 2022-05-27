@@ -2,6 +2,8 @@ package com.driving.planning.monitor;
 
 import com.driving.planning.Generator;
 import com.driving.planning.common.DatePattern;
+import com.driving.planning.common.hourly.Day;
+import com.driving.planning.common.hourly.Hourly;
 import com.driving.planning.monitor.dto.MonitorDto;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
@@ -15,6 +17,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 
 import java.lang.reflect.Field;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Optional;
@@ -144,6 +147,66 @@ class MonitorResourceTest {
                 .post("/api/v1/monitors/{id}", id)
                 .then()
                 .statusCode(404);
+    }
+
+    @Test
+    void update_with_workday_modify(){
+        var id = "test";
+        var dto = Generator.monitor();
+        dto.setId(id);
+        when(service.get(id)).thenReturn(Optional.of(dto));
+        var updateDto = Generator.monitor();
+        updateDto.getWorkDays().clear();
+        given()
+                .contentType(ContentType.JSON)
+                .header("x-app-tenant", "tenant")
+                .body(updateDto)
+                .when()
+                .post("/api/v1/monitors/{id}", id)
+                .then()
+                .statusCode(400);
+        verify(service, never()).update(any());
+
+        var hourly = new Hourly();
+        hourly.setBegin(LocalTime.now());
+        hourly.setEnd(LocalTime.now().plusHours(5));
+        hourly.setDay(Day.MONDAY);
+        updateDto.getWorkDays().add(hourly);
+        given()
+                .contentType(ContentType.JSON)
+                .header("x-app-tenant", "tenant")
+                .body(updateDto)
+                .when()
+                .post("/api/v1/monitors/{id}", id)
+                .then()
+                .statusCode(400);
+        verify(service, never()).update(any());
+    }
+
+    @Test
+    void compare_hour(){
+        var h1 = new Hourly();
+        h1.setDay(Day.MONDAY);
+        h1.setBegin(LocalTime.now());
+        h1.setEnd(LocalTime.now().plusHours(5));
+        var h2 = new Hourly();
+        Assertions.assertThat(h1)
+                .isNotEqualTo(h2);
+        Assertions.assertThat(h2)
+                .isNotEqualTo(h1);
+        h2.setDay(h1.getDay());
+        Assertions.assertThat(h1)
+                .isNotEqualTo(h2);
+        Assertions.assertThat(h2)
+                .isNotEqualTo(h1);
+        h2.setBegin(h1.getBegin());
+        Assertions.assertThat(h1)
+                .isNotEqualTo(h2);
+        h2.setEnd(h1.getEnd());
+        Assertions.assertThat(h1)
+                .isEqualTo(h2);
+        Assertions.assertThat(h2)
+                .isEqualTo(h1);
     }
 
     @Test

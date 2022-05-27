@@ -2,7 +2,9 @@ package com.driving.planning.school.common;
 
 public enum TimeConstants {
 
-    HOUR_FORMAT("HH:mm");
+    HOUR_FORMAT("HH:mm"),
+
+    DATE_FORMAT("yyyy-MM-dd");
 
     private final String value;
 

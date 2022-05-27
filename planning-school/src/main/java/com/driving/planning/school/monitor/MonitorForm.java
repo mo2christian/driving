@@ -2,9 +2,7 @@ package com.driving.planning.school.monitor;
 
 import com.driving.planning.school.common.constraint.PhoneNumber;
 import com.driving.planning.school.common.form.WorkDayForm;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -33,5 +31,9 @@ public class MonitorForm {
     @Valid
     @Size(min = 1, max = 7)
     private List<WorkDayForm> workDays;
+
+    private boolean disabled = false;
+
+    private String monitorId;
 
 }

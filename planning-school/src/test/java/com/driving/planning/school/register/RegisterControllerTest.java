@@ -54,12 +54,12 @@ class RegisterControllerTest {
         registration.setPhoneNumber("147852369");
         registration.setZipCode("25874");
         for (var day : Day.values()){
-            var workday = new WorkDayForm();
-            workday.setDay(day);
-            workday.setSelected(day != Day.SU);
-            workday.setBegin(LocalTime.of(8,0));
-            workday.setEnd(LocalTime.of(17, 0));
-            registration.getWorkDays().add(workday);
+            var wd = new WorkDayForm();
+            wd.setSelected(day != Day.SU);
+            wd.setBegin(LocalTime.of(8,0));
+            wd.setEnd(LocalTime.of(17,0));
+            wd.setDay(day);
+            registration.getWorkDays().add(wd);
         }
     }
 
