@@ -34,7 +34,7 @@ public class AccountService {
     }
 
     public List<AccountDto> list(){
-        return repository.list()
+        return repository.listAll()
                 .stream()
                 .map(mapper::toDto)
                 .collect(Collectors.toList());
@@ -53,7 +53,7 @@ public class AccountService {
         repository.createInSchema(schema, account);
     }
 
-    private String hash(String value) {
+    public String hash(String value) {
         try{
             var md = MessageDigest.getInstance("SHA-512");
             md.update(value.getBytes());

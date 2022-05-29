@@ -1,7 +1,6 @@
 package com.driving.planning.config.cache;
 
 import com.driving.planning.HazelcastTestResource;
-import com.driving.planning.ZipkinTestResource;
 import com.driving.planning.config.database.Tenant;
 import com.hazelcast.client.HazelcastClientNotActiveException;
 import io.quarkus.test.common.QuarkusTestResource;
@@ -19,7 +18,6 @@ import static org.mockito.Mockito.*;
 
 @QuarkusTest
 @QuarkusTestResource(value = HazelcastTestResource.class)
-@QuarkusTestResource(value = ZipkinTestResource.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Disabled
 class CacheTest {

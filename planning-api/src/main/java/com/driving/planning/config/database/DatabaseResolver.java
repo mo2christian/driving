@@ -24,11 +24,5 @@ public class DatabaseResolver {
         return mongoClient.getDatabase(tenant.getName());
     }
 
-    @Produces
-    @RequestScoped
-    public Tenant get(){
-        return new Tenant("base");
-    }
-
 }
 

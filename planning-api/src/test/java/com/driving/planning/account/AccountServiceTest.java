@@ -1,23 +1,20 @@
 package com.driving.planning.account;
 
-import com.driving.planning.MongodbTestResource;
+import com.driving.planning.account.domain.Account;
 import com.driving.planning.account.dto.AccountDto;
-import com.driving.planning.config.database.Tenant;
-import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.mockito.ArgumentCaptor;
 
 import javax.inject.Inject;
+import java.util.Collections;
+import java.util.Optional;
 
-import static org.mockito.Mockito.when;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
-@QuarkusTestResource(MongodbTestResource.class)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @QuarkusTest
 class AccountServiceTest {
 
@@ -25,42 +22,41 @@ class AccountServiceTest {
     AccountService accountService;
 
     @InjectMock
-    Tenant tenant;
+    AccountRepository accountRepository;
 
-    @Order(1)
     @Test
     void list(){
-        selectPseudoSchema();
+        when(accountRepository.listAll()).thenReturn(Collections.emptyList());
         assertThat(accountService.list()).isEmpty();
     }
 
-    @Order(2)
     @Test
     void createAccount(){
         var dto = generateAccount();
-        selectPseudoSchema();
         accountService.createAccount("pseudo", dto);
-        assertThat(accountService.list())
-                .hasSize(1)
-                .element(0)
-                .extracting(AccountDto::getPassword)
+        ArgumentCaptor<Account> accountCaptor = ArgumentCaptor.forClass(Account.class);
+        verify(accountRepository, times(1)).createInSchema(eq("pseudo"), accountCaptor.capture());
+        assertThat(accountCaptor.getValue())
+                .extracting(Account::getPassword)
                 .isNotEqualTo(dto.getPassword());
     }
 
-    @Order(3)
     @Test
     void checkValidAccount(){
+
         var dto = generateAccount();
-        selectPseudoSchema();
+        var account = new Account();
+        account.setEmail(dto.getEmail());
+        account.setPassword(accountService.hash(dto.getPassword()));
+        when(accountRepository.findByEmail(anyString())).thenReturn(Optional.of(account));
         assertThat(accountService.isValidAccount(dto)).isTrue();
     }
 
     @Order(3)
     @Test
     void checkInvalidAccount(){
+        when(accountRepository.findByEmail(anyString())).thenReturn(Optional.empty());
         var dto = generateAccount();
-        dto.setPassword("wrongpwd");
-        selectPseudoSchema();
         assertThat(accountService.isValidAccount(dto)).isFalse();
     }
 
@@ -69,10 +65,6 @@ class AccountServiceTest {
         dto.setEmail("test@test.com");
         dto.setPassword("test");
         return dto;
-    }
-
-    private void selectPseudoSchema(){
-        when(tenant.getName()).thenReturn("pseudo");
     }
 
 }
