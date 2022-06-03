@@ -89,7 +89,7 @@ public class EventService {
                 throw new PlanningException(Response.Status.BAD_REQUEST, "Place not found for the event");
             }
             var event = mapper.toEntity(dto);
-            repository.insert(event);
+            repository.persist(event);
             return "Done";
         };
         try (var session = mongoClient.startSession()) {
@@ -126,7 +126,7 @@ public class EventService {
     }
 
     public List<EventDto> list(){
-        return repository.list()
+        return repository.listAll()
                 .stream()
                 .map(mapper::toDto)
                 .sorted((e1, e2) -> {

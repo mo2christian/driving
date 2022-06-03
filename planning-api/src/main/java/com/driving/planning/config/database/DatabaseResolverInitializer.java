@@ -1,6 +1,7 @@
 package com.driving.planning.config.database;
 
 import com.driving.planning.account.domain.Account;
+import com.driving.planning.event.domain.Event;
 import io.quarkus.mongodb.panache.common.MongoEntity;
 import io.quarkus.runtime.StartupEvent;
 
@@ -20,9 +21,10 @@ public class DatabaseResolverInitializer {
 
     public void init(@Observes StartupEvent event){
         alterAnnotation(Account.class, tenant);
+        alterAnnotation(Event.class, tenant);
     }
 
-    private void alterAnnotation(Class clazzToLookFor, Tenant tenant){
+    public static void alterAnnotation(Class<?> clazzToLookFor, Tenant tenant){
         final String ANNOTATION_DATA = "annotationData";
         final String ANNOTATIONS = "annotations";
         try {
@@ -33,9 +35,9 @@ public class DatabaseResolverInitializer {
             annotations.setAccessible(true);
             Map<Class<? extends Annotation>, Annotation> map =
                     (Map<Class<? extends Annotation>, Annotation>) annotations.get(annotationData);
-            map.put(MongoEntity.class, new DynamicMongoEntity((MongoEntity) clazzToLookFor.getDeclaredAnnotation(MongoEntity.class), tenant));
+            map.put(MongoEntity.class, new DynamicMongoEntity(clazzToLookFor.getDeclaredAnnotation(MongoEntity.class), tenant));
         } catch (Exception  e) {
-            e.printStackTrace();
+            throw new IllegalStateException(e);
         }
     }
 
