@@ -1,6 +1,7 @@
 package com.driving.planning.monitor.absent;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import org.bson.codecs.pojo.annotations.BsonProperty;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -12,11 +13,11 @@ public class Absent implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private @NotNull String reference;
+    private @NotNull @BsonProperty("ref") String reference;
 
-    private @NotNull LocalDate start;
+    private @NotNull @BsonProperty("start") LocalDate start;
 
-    private @NotNull LocalDate end;
+    private @NotNull @BsonProperty("end") LocalDate end;
 
     public String getReference() {
         return reference;

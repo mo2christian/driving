@@ -4,8 +4,7 @@ import com.driving.planning.Generator;
 import com.driving.planning.school.dto.SchoolRequest;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,6 +12,7 @@ import java.time.LocalDateTime;
 import static io.restassured.RestAssured.given;
 
 @QuarkusIntegrationTest
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AbsentResourceIT {
 
     private static String tenant;
@@ -63,6 +63,7 @@ class AbsentResourceIT {
     }
 
     @Test
+    @Order(1)
     void add(){
         @javax.validation.constraints.NotNull LocalDate now = LocalDate.now();
         var absent = new AbsentRequest(now, now.plusDays(5));
@@ -78,6 +79,7 @@ class AbsentResourceIT {
     }
 
     @Test
+    @Order(2)
     void delete(){
         @javax.validation.constraints.NotNull LocalDate now = LocalDate.now();
         var absent = new AbsentRequest(now, now.plusDays(5));
@@ -87,7 +89,7 @@ class AbsentResourceIT {
                 .header("x-app-tenant", tenant)
                 .body(absent)
                 .when()
-                .delete("/api/v1/monitors/{id}/absents", "60f6ab7f443a1d3e27b6cbaf")
+                .delete("/api/v1/monitors/{id}/absents/{ref}", "60f6ab7f443a1d3e27b6cbaf", "ref")
                 .then()
                 .statusCode(404);
     }

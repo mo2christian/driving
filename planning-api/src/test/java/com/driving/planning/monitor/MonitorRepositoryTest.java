@@ -3,6 +3,8 @@ package com.driving.planning.monitor;
 import com.driving.planning.MongodbTestResource;
 import com.driving.planning.common.hourly.Day;
 import com.driving.planning.common.hourly.Hourly;
+import com.driving.planning.config.database.DatabaseResolverInitializer;
+import com.driving.planning.config.database.Tenant;
 import com.driving.planning.monitor.absent.Absent;
 import com.driving.planning.monitor.domain.Monitor;
 import io.quarkus.test.common.QuarkusTestResource;
@@ -28,6 +30,12 @@ class MonitorRepositoryTest {
 
     Monitor monitor;
 
+    @BeforeAll
+    static void before(){
+        var tenant = new Tenant("base");
+        DatabaseResolverInitializer.alterAnnotation(Monitor.class, tenant);
+    }
+
     @BeforeEach
     void init(){
         monitor = new Monitor();
@@ -49,14 +57,14 @@ class MonitorRepositoryTest {
     @Order(1)
     @Test
     void insert(){
-        repository.insert(monitor);
+        repository.persist(monitor);
 
-        Assertions.assertThat(repository.list())
+        Assertions.assertThat(repository.listAll())
                 .hasSize(1)
                 .element(0)
                 .extracting(Monitor::getFirstName, Monitor::getLastName, Monitor::getPhoneNumber, Monitor::getWorkDays, Monitor::getAbsents)
                 .containsExactly(monitor.getFirstName(), monitor.getLastName(), monitor.getPhoneNumber(), monitor.getWorkDays(), monitor.getAbsents());
-        id = repository.list().get(0).getId();
+        id = repository.listAll().get(0).getId();
     }
 
     @Order(2)
@@ -77,7 +85,7 @@ class MonitorRepositoryTest {
         absent.setReference("ref1");
         monitor.getAbsents().add(absent);
         repository.update(monitor);
-        Assertions.assertThat(repository.list())
+        Assertions.assertThat(repository.listAll())
                 .hasSize(1)
                 .element(0)
                 .extracting(Monitor::getId, Monitor::getFirstName, Monitor::getLastName, Monitor::getPhoneNumber, Monitor::getWorkDays, Monitor::getAbsents)
@@ -87,9 +95,9 @@ class MonitorRepositoryTest {
     @Order(3)
     @Test
     void delete(){
-        repository.delete(id);
+        repository.deleteById(id);
 
-        Assertions.assertThat(repository.list())
+        Assertions.assertThat(repository.listAll())
                 .isEmpty();
     }
 

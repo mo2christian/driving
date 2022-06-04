@@ -2,7 +2,7 @@ package com.driving.planning.monitor.domain;
 
 import com.driving.planning.common.hourly.Hourly;
 import com.driving.planning.monitor.absent.Absent;
-import io.quarkus.runtime.annotations.RegisterForReflection;
+import io.quarkus.mongodb.panache.common.MongoEntity;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.bson.types.ObjectId;
@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@RegisterForReflection
+@MongoEntity(collection = Monitor.COLLECTION_NAME)
 public class Monitor implements Serializable {
 
     private static final long serialVersionUID = 1L;

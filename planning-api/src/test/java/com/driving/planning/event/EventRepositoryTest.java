@@ -29,6 +29,7 @@ class EventRepositoryTest {
         var tenant = new Tenant("base");
         DatabaseResolverInitializer.alterAnnotation(Event.class, tenant);
     }
+
     @Test
     @Order(1)
     void insert(){

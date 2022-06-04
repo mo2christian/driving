@@ -2,6 +2,7 @@ package com.driving.planning.config.database;
 
 import com.driving.planning.account.domain.Account;
 import com.driving.planning.event.domain.Event;
+import com.driving.planning.monitor.domain.Monitor;
 import io.quarkus.mongodb.panache.common.MongoEntity;
 import io.quarkus.runtime.StartupEvent;
 
@@ -22,6 +23,7 @@ public class DatabaseResolverInitializer {
     public void init(@Observes StartupEvent event){
         alterAnnotation(Account.class, tenant);
         alterAnnotation(Event.class, tenant);
+        alterAnnotation(Monitor.class, tenant);
     }
 
     public static void alterAnnotation(Class<?> clazzToLookFor, Tenant tenant){
