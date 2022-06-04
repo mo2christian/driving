@@ -4,9 +4,7 @@ import com.driving.planning.common.DatePattern;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.bson.codecs.pojo.annotations.BsonProperty;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -17,22 +15,27 @@ public class Reservation implements Serializable {
 
     public static final long serialVersionUID = 1L;
 
+    @BsonProperty("ref")
+    private String reference;
+
     @BsonProperty("date")
-    @NotNull
-    @JsonFormat(pattern = DatePattern.DATE)
     private LocalDate date;
 
     @BsonProperty("begin")
-    @NotNull
-    @Schema(implementation = String.class, format = "partial-time")
     @JsonFormat(pattern = DatePattern.TIME)
     private LocalTime begin;
 
     @BsonProperty("end")
-    @NotNull
-    @Schema(implementation = String.class, format = "partial-time")
     @JsonFormat(pattern = DatePattern.TIME)
     private LocalTime end;
+
+    public String getReference() {
+        return reference;
+    }
+
+    public void setReference(String reference) {
+        this.reference = reference;
+    }
 
     public LocalDate getDate() {
         return date;
@@ -73,11 +76,11 @@ public class Reservation implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Reservation that = (Reservation) o;
-        return date.equals(that.date) && begin.equals(that.begin) && end.equals(that.end);
+        return Objects.equals(reference, that.reference);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(date, begin, end);
+        return Objects.hash(reference);
     }
 }

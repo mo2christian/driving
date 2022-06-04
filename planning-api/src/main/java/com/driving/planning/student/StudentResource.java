@@ -1,5 +1,7 @@
 package com.driving.planning.student;
 
+import com.driving.planning.student.dto.StudentDto;
+import com.driving.planning.student.dto.StudentResponse;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.ParameterIn;
 import org.eclipse.microprofile.openapi.annotations.media.Content;

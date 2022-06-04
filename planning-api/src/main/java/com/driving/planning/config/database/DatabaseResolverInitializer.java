@@ -3,7 +3,7 @@ package com.driving.planning.config.database;
 import com.driving.planning.account.domain.Account;
 import com.driving.planning.event.domain.Event;
 import com.driving.planning.monitor.domain.Monitor;
-import com.driving.planning.student.Student;
+import com.driving.planning.student.domain.Student;
 import com.driving.planning.student.otp.OTP;
 import io.quarkus.mongodb.panache.common.MongoEntity;
 import io.quarkus.runtime.StartupEvent;

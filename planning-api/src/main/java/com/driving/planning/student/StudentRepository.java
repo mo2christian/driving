@@ -2,6 +2,7 @@ package com.driving.planning.student;
 
 import com.driving.planning.common.constraint.PhoneNumber;
 import com.driving.planning.common.exception.PlanningException;
+import com.driving.planning.student.domain.Student;
 import io.quarkus.mongodb.panache.PanacheMongoRepository;
 import org.bson.types.ObjectId;
 import org.eclipse.microprofile.opentracing.Traced;

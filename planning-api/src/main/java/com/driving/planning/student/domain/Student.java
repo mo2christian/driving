@@ -1,4 +1,4 @@
-package com.driving.planning.student;
+package com.driving.planning.student.domain;
 
 import com.driving.planning.student.reservation.Reservation;
 import io.quarkus.mongodb.panache.common.MongoEntity;
@@ -7,7 +7,7 @@ import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.bson.types.ObjectId;
 
 import java.io.Serializable;
-import java.util.Set;
+import java.util.List;
 
 @MongoEntity(collection = Student.COLLECTION_NAME)
 public class Student implements Serializable {
@@ -31,7 +31,7 @@ public class Student implements Serializable {
     private String phoneNumber;
 
     @BsonProperty("reservations")
-    private Set<Reservation> reservations;
+    private List<Reservation> reservations;
 
     public Student(){
         //default constructor
@@ -77,11 +77,11 @@ public class Student implements Serializable {
         this.phoneNumber = phoneNumber;
     }
 
-    public Set<Reservation> getReservations() {
+    public List<Reservation> getReservations() {
         return reservations;
     }
 
-    public void setReservations(Set<Reservation> reservations) {
+    public void setReservations(List<Reservation> reservations) {
         this.reservations = reservations;
     }
 }

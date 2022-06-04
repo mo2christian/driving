@@ -1,4 +1,4 @@
-package com.driving.planning.student;
+package com.driving.planning.student.dto;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
