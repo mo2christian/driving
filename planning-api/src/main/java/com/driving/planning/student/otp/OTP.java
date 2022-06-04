@@ -1,10 +1,12 @@
 package com.driving.planning.student.otp;
 
+import io.quarkus.mongodb.panache.common.MongoEntity;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+@MongoEntity(collection = OTP.COLLECTION_NAME)
 public class OTP implements Serializable {
 
     public static final String COLLECTION_NAME = "otp";

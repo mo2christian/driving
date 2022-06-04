@@ -63,7 +63,7 @@ public class OTPService {
         var otp = new OTP();
         otp.setStudentId(studentDto.getId());
         otp.setContent(generateOTP());
-        otpRepository.insert(otp);
+        otpRepository.persist(otp);
         var mail = new Mail(MailTemplate.OTP, studentDto.getEmail());
         mail.addProperty("otp", otp.getContent());
         emailService.sendEmail(mail);
@@ -74,7 +74,7 @@ public class OTPService {
         var otp = new OTP();
         otp.setStudentId(studentDto.getId());
         otp.setContent(generateOTP());
-        otpRepository.insert(otp);
+        otpRepository.persist(otp);
         var sms = String.format("Votre code de vérification est : %s", otp.getContent());
         smsService.sendSMS(studentDto.getPhoneNumber(), sms);
     }

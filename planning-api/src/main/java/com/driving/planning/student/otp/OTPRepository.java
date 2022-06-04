@@ -1,44 +1,27 @@
 package com.driving.planning.student.otp;
 
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Filters;
+import io.quarkus.mongodb.panache.PanacheMongoRepository;
 import org.eclipse.microprofile.opentracing.Traced;
 import org.jboss.logging.Logger;
 
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.List;
 
 @Traced
-@RequestScoped
-public class OTPRepository {
-
-    private final MongoDatabase mongoDatabase;
+@ApplicationScoped
+public class OTPRepository implements PanacheMongoRepository<OTP> {
 
     private final Logger logger;
 
     @Inject
-    public OTPRepository(MongoDatabase mongoDatabase, Logger logger) {
-        this.mongoDatabase = mongoDatabase;
+    public OTPRepository(Logger logger) {
         this.logger = logger;
     }
 
-    public void insert(OTP otp){
-        logger.debug("Insert OTP");
-        mongoDatabase.getCollection(OTP.COLLECTION_NAME, OTP.class)
-                .insertOne(otp);
-    }
-
     public List<OTP> findByStudent(String studentId){
-        var iterator = mongoDatabase.getCollection(OTP.COLLECTION_NAME, OTP.class)
-                .find(Filters.eq("student_id", studentId))
-                .iterator();
-        var list = new ArrayList<OTP>();
-        while (iterator.hasNext()){
-            list.add(iterator.next());
-        }
-        return list;
+        logger.debugf("find OTP for user %s", studentId);
+        return list("student_id", studentId);
     }
 
 }

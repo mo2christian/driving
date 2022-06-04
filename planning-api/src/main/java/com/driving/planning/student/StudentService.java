@@ -32,7 +32,7 @@ public class StudentService {
     public void add(@Valid StudentDto dto){
         logger.debugf("Create student with email %s", dto.getEmail());
         var student = mapper.toEntity(dto);
-        repository.create(student);
+        repository.persist(student);
     }
 
     public void update(@Valid StudentDto dto){
@@ -49,7 +49,7 @@ public class StudentService {
         logger.debugf("Delete student %s", id);
         var student = repository.findById(id)
                 .orElseThrow(() -> new PlanningException(Response.Status.NOT_FOUND, "Student not found"));
-        repository.delete(student.getId());
+        repository.deleteById(student.getId());
     }
 
     public Optional<StudentDto> get(String id){
@@ -64,7 +64,7 @@ public class StudentService {
 
     public List<StudentDto> list(){
         logger.debug("List students");
-        return repository.list()
+        return repository.listAll()
                 .stream()
                 .map(mapper::toDto)
                 .collect(Collectors.toList());

@@ -49,7 +49,7 @@ class StudentServiceTest {
     void add(){
         studentService.add(studentDto);
         ArgumentCaptor<Student> studentCaptor = ArgumentCaptor.forClass(Student.class);
-        verify(studentRepository, times(1)).create(studentCaptor.capture());
+        verify(studentRepository, times(1)).persist(studentCaptor.capture());
         assertThat(studentCaptor.getValue()).isNotNull()
                 .extracting(Student::getEmail, Student::getFirstName, Student::getLastName, Student::getPhoneNumber, Student::getReservations)
                 .containsExactly(studentDto.getEmail(), studentDto.getFirstName(), studentDto.getLastName(), studentDto.getPhoneNumber(), studentDto.getReservations());
@@ -92,7 +92,7 @@ class StudentServiceTest {
         student.setId(new ObjectId(studentDto.getId()));
         when(studentRepository.findById(studentDto.getId())).thenReturn(Optional.of(student));
         studentService.delete(studentDto.getId());
-        verify(studentRepository, times(1)).delete(student.getId());
+        verify(studentRepository, times(1)).deleteById(student.getId());
     }
 
     @Test
@@ -104,7 +104,7 @@ class StudentServiceTest {
         student.setPhoneNumber(studentDto.getPhoneNumber());
         student.setId(new ObjectId(studentDto.getId()));
         student.setReservations(studentDto.getReservations());
-        when(studentRepository.list()).thenReturn(Collections.singletonList(student));
+        when(studentRepository.listAll()).thenReturn(Collections.singletonList(student));
         assertThat(studentService.list()).hasSize(1)
                 .element(0)
                 .extracting(StudentDto::getEmail, StudentDto::getFirstName, StudentDto::getLastName, StudentDto::getPhoneNumber, StudentDto::getId, StudentDto::getReservations)

@@ -3,6 +3,8 @@ package com.driving.planning.config.database;
 import com.driving.planning.account.domain.Account;
 import com.driving.planning.event.domain.Event;
 import com.driving.planning.monitor.domain.Monitor;
+import com.driving.planning.student.Student;
+import com.driving.planning.student.otp.OTP;
 import io.quarkus.mongodb.panache.common.MongoEntity;
 import io.quarkus.runtime.StartupEvent;
 
@@ -24,6 +26,8 @@ public class DatabaseResolverInitializer {
         alterAnnotation(Account.class, tenant);
         alterAnnotation(Event.class, tenant);
         alterAnnotation(Monitor.class, tenant);
+        alterAnnotation(Student.class, tenant);
+        alterAnnotation(OTP.class, tenant);
     }
 
     public static void alterAnnotation(Class<?> clazzToLookFor, Tenant tenant){

@@ -1,7 +1,7 @@
 package com.driving.planning.student;
 
 import com.driving.planning.student.reservation.Reservation;
-import io.quarkus.runtime.annotations.RegisterForReflection;
+import io.quarkus.mongodb.panache.common.MongoEntity;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.bson.types.ObjectId;
@@ -9,7 +9,7 @@ import org.bson.types.ObjectId;
 import java.io.Serializable;
 import java.util.Set;
 
-@RegisterForReflection
+@MongoEntity(collection = Student.COLLECTION_NAME)
 public class Student implements Serializable {
 
     public static final String COLLECTION_NAME = "student";

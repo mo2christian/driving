@@ -43,7 +43,7 @@ class OTPServiceTest {
         var student = Generator.student();
         otpService.sendOTPByMail(student);
         ArgumentCaptor<OTP> otpCaptor = ArgumentCaptor.forClass(OTP.class);
-        verify(otpRepository, atMostOnce()).insert(otpCaptor.capture());
+        verify(otpRepository, atMostOnce()).persist(otpCaptor.capture());
         var otp = otpCaptor.getValue();
         assertThat(otp.getStudentId()).isEqualTo(student.getId());
         assertThat(otp.getContent()).isNotEmpty();
@@ -73,7 +73,7 @@ class OTPServiceTest {
         var student = Generator.student();
         otpService.sendOTPBySMS(student);
         ArgumentCaptor<OTP> otpCaptor = ArgumentCaptor.forClass(OTP.class);
-        verify(otpRepository, atMostOnce()).insert(otpCaptor.capture());
+        verify(otpRepository, atMostOnce()).persist(otpCaptor.capture());
         var otp = otpCaptor.getValue();
         assertThat(otp.getStudentId()).isEqualTo(student.getId());
         assertThat(otp.getContent()).isNotEmpty();

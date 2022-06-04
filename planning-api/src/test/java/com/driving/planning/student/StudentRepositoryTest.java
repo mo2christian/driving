@@ -2,6 +2,8 @@ package com.driving.planning.student;
 
 import com.driving.planning.MongodbTestResource;
 import com.driving.planning.common.exception.PlanningException;
+import com.driving.planning.config.database.DatabaseResolverInitializer;
+import com.driving.planning.config.database.Tenant;
 import com.driving.planning.student.reservation.Reservation;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -28,6 +30,9 @@ class StudentRepositoryTest {
 
     @BeforeAll
     static void init(){
+        var tenant = new Tenant("base");
+        DatabaseResolverInitializer.alterAnnotation(Student.class, tenant);
+
         student = new Student();
         student.setEmail("toto@toto.com");
         student.setFirstName("fist");
@@ -44,12 +49,12 @@ class StudentRepositoryTest {
     @Test
     @Order(1)
     void insert(){
-        repository.create(student);
-        Assertions.assertThat(repository.list()).hasSize(1)
+        repository.persist(student);
+        Assertions.assertThat(repository.listAll()).hasSize(1)
                 .element(0)
                 .extracting(Student::getEmail, Student::getFirstName, Student::getLastName, Student::getPhoneNumber, Student::getReservations)
                 .containsExactly(student.getEmail(), student.getFirstName(), student.getLastName(), student.getPhoneNumber(), student.getReservations());
-        id = repository.list().get(0).getId();
+        id = repository.listAll().get(0).getId();
     }
 
     @Test
@@ -94,7 +99,7 @@ class StudentRepositoryTest {
         reservation.setEnd(LocalTime.now().plusHours(1));
         student.setReservations(Collections.singleton(reservation));
         repository.update(student);
-        Assertions.assertThat(repository.list()).hasSize(1)
+        Assertions.assertThat(repository.listAll()).hasSize(1)
                 .element(0)
                 .extracting(Student::getEmail, Student::getFirstName, Student::getLastName, Student::getPhoneNumber, Student::getReservations)
                 .containsExactly(student.getEmail(), student.getFirstName(), student.getLastName(), student.getPhoneNumber(), student.getReservations());
@@ -103,8 +108,8 @@ class StudentRepositoryTest {
     @Test
     @Order(4)
     void delete(){
-        repository.delete(id);
-        Assertions.assertThat(repository.list()).isEmpty();
+        repository.deleteById(id);
+        Assertions.assertThat(repository.listAll()).isEmpty();
     }
 
 }
