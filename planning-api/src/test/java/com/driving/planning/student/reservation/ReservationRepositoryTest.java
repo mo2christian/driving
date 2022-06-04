@@ -1,15 +1,14 @@
 package com.driving.planning.student.reservation;
 
 import com.driving.planning.MongodbTestResource;
+import com.driving.planning.config.database.DatabaseResolverInitializer;
+import com.driving.planning.config.database.Tenant;
 import com.driving.planning.student.Student;
 import com.driving.planning.student.StudentRepository;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
@@ -27,6 +26,12 @@ class ReservationRepositoryTest {
     @Inject
     StudentRepository studentRepository;
 
+    @BeforeAll
+    static void before(){
+        var tenant = new Tenant("base");
+        DatabaseResolverInitializer.alterAnnotation(Student.class, tenant);
+    }
+
     @BeforeEach
     void init(){
         var student = new Student();
@@ -41,7 +46,7 @@ class ReservationRepositoryTest {
         reservation.setEnd(LocalTime.of(11, 30));
         student.setReservations(Collections.singleton(reservation));
 
-        studentRepository.create(student);
+        studentRepository.persist(student);
     }
 
     @Test

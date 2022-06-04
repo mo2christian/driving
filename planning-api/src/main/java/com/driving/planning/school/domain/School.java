@@ -1,14 +1,14 @@
 package com.driving.planning.school.domain;
 
 import com.driving.planning.common.hourly.Hourly;
-import io.quarkus.runtime.annotations.RegisterForReflection;
+import io.quarkus.mongodb.panache.common.MongoEntity;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
 import java.util.Objects;
 import java.util.Set;
 
-@RegisterForReflection
+@MongoEntity(collection = School.COLLECTION_NAME, database = "base")
 public class School {
 
     public static final String COLLECTION_NAME = "school";

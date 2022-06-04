@@ -32,7 +32,7 @@ class MonitorServiceTest {
         MonitorDto monitorDto = Generator.monitor();
         service.add(monitorDto);
         ArgumentCaptor<Monitor> monitorCaptor = ArgumentCaptor.forClass(Monitor.class);
-        verify(repository, atMostOnce()).insert(monitorCaptor.capture());
+        verify(repository, atMostOnce()).persist(monitorCaptor.capture());
         Monitor monitor = monitorCaptor.getValue();
         assertThat(monitorDto)
                 .extracting(MonitorDto::getFirstName, MonitorDto::getLastName, MonitorDto::getPhoneNumber, MonitorDto::getWorkDays, MonitorDto::getAbsents)
@@ -68,7 +68,7 @@ class MonitorServiceTest {
         when(repository.findById(id)).thenReturn(Optional.of(monitor));
         ArgumentCaptor<ObjectId> idCaptor = ArgumentCaptor.forClass(ObjectId.class);
         service.delete(id);
-        verify(repository, atMostOnce()).delete(idCaptor.capture());
+        verify(repository, atMostOnce()).deleteById(idCaptor.capture());
         assertThat(idCaptor.getValue()).hasToString(id);
     }
 
@@ -100,7 +100,7 @@ class MonitorServiceTest {
         monitor.setPhoneNumber(monitorDto.getPhoneNumber());
         monitor.setFirstName(monitorDto.getFirstName());
         monitor.setLastName(monitorDto.getLastName());
-        when(repository.list()).thenReturn(Collections.singletonList(monitor));
+        when(repository.listAll()).thenReturn(Collections.singletonList(monitor));
         assertThat(service.list()).hasSize(1)
                 .element(0)
                 .extracting(MonitorDto::getId, MonitorDto::getFirstName, MonitorDto::getLastName, MonitorDto::getPhoneNumber, MonitorDto::getWorkDays)

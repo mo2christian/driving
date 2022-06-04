@@ -1,7 +1,10 @@
 package com.driving.planning.student.otp;
 
+import com.driving.planning.config.database.DatabaseResolverInitializer;
+import com.driving.planning.config.database.Tenant;
 import io.quarkus.test.junit.QuarkusTest;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
@@ -13,6 +16,12 @@ class OTPRepositoryTest {
     @Inject
     OTPRepository otpRepository;
 
+    @BeforeAll
+    static void before(){
+        var tenant = new Tenant("base");
+        DatabaseResolverInitializer.alterAnnotation(OTP.class, tenant);
+    }
+
     @Test
     void insert(){
         var content = "87459";
@@ -23,7 +32,7 @@ class OTPRepositoryTest {
                 .isBetween(LocalDateTime.now().minusMinutes(2), LocalDateTime.now());
         otp.setContent(content);
         otp.setStudentId(studentId);
-        otpRepository.insert(otp);
+        otpRepository.persist(otp);
 
         Assertions.assertThat(otpRepository.findByStudent(studentId))
                 .hasSize(1)

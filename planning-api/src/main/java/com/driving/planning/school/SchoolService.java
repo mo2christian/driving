@@ -33,7 +33,7 @@ public class SchoolService {
     }
 
     public List<SchoolDto> list(){
-        return repository.list()
+        return repository.listAll()
                 .stream()
                 .map(schoolMapper::toDto)
                 .collect(Collectors.toList());
@@ -73,7 +73,7 @@ public class SchoolService {
 
     public void createSchool(@Valid SchoolDto dto){
         var school = schoolMapper.toEntity(dto);
-        repository.createSchool(school);
+        repository.persist(school);
     }
 
     public boolean isSchoolClosed(@NotNull String pseudo, @NotNull final LocalDateTime dateTime){

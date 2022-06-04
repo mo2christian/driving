@@ -3,6 +3,7 @@ package com.driving.planning.student.reservation;
 import com.driving.planning.common.DatePattern;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import javax.validation.constraints.NotNull;
@@ -16,15 +17,18 @@ public class Reservation implements Serializable {
 
     public static final long serialVersionUID = 1L;
 
+    @BsonProperty("date")
     @NotNull
     @JsonFormat(pattern = DatePattern.DATE)
     private LocalDate date;
 
+    @BsonProperty("begin")
     @NotNull
     @Schema(implementation = String.class, format = "partial-time")
     @JsonFormat(pattern = DatePattern.TIME)
     private LocalTime begin;
 
+    @BsonProperty("end")
     @NotNull
     @Schema(implementation = String.class, format = "partial-time")
     @JsonFormat(pattern = DatePattern.TIME)

@@ -34,7 +34,7 @@ public class MonitorService {
     public void add(@Valid MonitorDto dto){
         logger.debugf("Create monitor with phone number %s", dto.getPhoneNumber());
         var monitor = mapper.toEntity(dto);
-        repository.insert(monitor);
+        repository.persist(monitor);
     }
 
     public void update(@Valid MonitorDto dto){
@@ -51,7 +51,7 @@ public class MonitorService {
         logger.debugf("Delete monitor %s", id);
         var monitor = repository.findById(id)
                 .orElseThrow(() -> new PlanningException(Response.Status.NOT_FOUND, "Monitor not found"));
-        repository.delete(monitor.getId());
+        repository.deleteById(monitor.getId());
     }
 
     public Optional<MonitorDto> get(@NotBlank String id){
@@ -66,7 +66,7 @@ public class MonitorService {
 
     public List<MonitorDto> list(){
         logger.debug("List monitor");
-        return repository.list()
+        return repository.listAll()
                 .stream()
                 .map(mapper::toDto)
                 .collect(Collectors.toList());

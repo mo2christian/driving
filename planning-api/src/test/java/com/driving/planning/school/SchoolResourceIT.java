@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
+import java.util.Random;
+
 import static io.restassured.RestAssured.given;
 
 @QuarkusIntegrationTest
@@ -34,6 +36,7 @@ class SchoolResourceIT {
     @Order(2)
     void saveSchool(){
         var schoolDto = Generator.school();
+        schoolDto.setName(schoolDto.getName() + new Random());
         SchoolRequest request = new SchoolRequest();
         request.setSchool(schoolDto);
         request.setAccount(Generator.account());

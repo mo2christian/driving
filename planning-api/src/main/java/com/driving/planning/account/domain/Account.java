@@ -1,10 +1,10 @@
 package com.driving.planning.account.domain;
 
 
-import io.quarkus.runtime.annotations.RegisterForReflection;
+import io.quarkus.mongodb.panache.common.MongoEntity;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
-@RegisterForReflection
+@MongoEntity(collection = Account.COLLECTION_NAME)
 public class Account {
 
     public static final String COLLECTION_NAME = "account";

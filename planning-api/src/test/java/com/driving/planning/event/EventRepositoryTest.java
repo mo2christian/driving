@@ -1,15 +1,14 @@
 package com.driving.planning.event;
 
 import com.driving.planning.MongodbTestResource;
+import com.driving.planning.config.database.DatabaseResolverInitializer;
+import com.driving.planning.config.database.Tenant;
 import com.driving.planning.event.domain.Event;
 import com.driving.planning.event.domain.EventType;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
@@ -25,6 +24,12 @@ class EventRepositoryTest {
 
     final String REF = "ref";
 
+    @BeforeAll
+    static void before(){
+        var tenant = new Tenant("base");
+        DatabaseResolverInitializer.alterAnnotation(Event.class, tenant);
+    }
+
     @Test
     @Order(1)
     void insert(){
@@ -35,9 +40,9 @@ class EventRepositoryTest {
         event.setType(EventType.MONITOR);
         event.setReference(REF);
 
-        eventRepository.insert(event);
+        eventRepository.persist(event);
 
-        Assertions.assertThat(eventRepository.list())
+        Assertions.assertThat(eventRepository.listAll())
                 .hasSize(1);
 
         Assertions.assertThat(eventRepository.listByDate(event.getEventDate()))
@@ -51,7 +56,7 @@ class EventRepositoryTest {
     @Order(2)
     void delete(){
         eventRepository.deleteByRef(REF);
-        Assertions.assertThat(eventRepository.list())
+        Assertions.assertThat(eventRepository.listAll())
                 .isEmpty();
     }
 

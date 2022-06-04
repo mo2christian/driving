@@ -63,7 +63,7 @@ class EventServiceTest {
         when(studentService.get(eventDto.getRelatedUserId())).thenReturn(Optional.of(Generator.student()));
         eventService.add(eventDto);
         ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
-        verify(eventRepository, times(1)).insert(eventCaptor.capture());
+        verify(eventRepository, times(1)).persist(eventCaptor.capture());
         var event = eventCaptor.getValue();
         Assertions.assertThat(eventDto)
                 .extracting(EventDto::getBegin, EventDto::getEnd, EventDto::getEventDate, EventDto::getType, EventDto::getRelatedUserId)
@@ -90,7 +90,7 @@ class EventServiceTest {
         when(monitorService.get(eventDto.getRelatedUserId())).thenReturn(Optional.of(Generator.monitor()));
         eventService.add(eventDto);
         ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
-        verify(eventRepository, times(1)).insert(eventCaptor.capture());
+        verify(eventRepository, times(1)).persist(eventCaptor.capture());
         var event = eventCaptor.getValue();
         Assertions.assertThat(eventDto)
                 .extracting(EventDto::getBegin, EventDto::getEnd, EventDto::getEventDate, EventDto::getType, EventDto::getRelatedUserId)
@@ -130,7 +130,7 @@ class EventServiceTest {
         when(monitorService.get(eventDto.getRelatedUserId())).thenReturn(Optional.of(Generator.monitor()));
         eventService.add(eventDto);
         ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
-        verify(eventRepository, times(1)).insert(eventCaptor.capture());
+        verify(eventRepository, times(1)).persist(eventCaptor.capture());
         var event = eventCaptor.getValue();
         Assertions.assertThat(eventDto)
                 .extracting(EventDto::getBegin, EventDto::getEnd, EventDto::getEventDate, EventDto::getType, EventDto::getRelatedUserId)
@@ -184,7 +184,7 @@ class EventServiceTest {
         var evt1 = eventMapper.toEntity(eventDto);
         eventDto.setEventDate(eventDto.getEventDate().plusDays(1));
         var evt2 = eventMapper.toEntity(eventDto);
-        when(eventRepository.list()).thenReturn(Arrays.asList(evt1, evt2));
+        when(eventRepository.listAll()).thenReturn(Arrays.asList(evt1, evt2));
         Assertions.assertThat(eventService.list())
                 .hasSize(2)
                 .element(0)

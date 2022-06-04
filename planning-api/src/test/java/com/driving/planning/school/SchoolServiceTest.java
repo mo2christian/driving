@@ -49,7 +49,7 @@ import static org.mockito.Mockito.*;
         ArgumentCaptor<School> schoolCaptor = ArgumentCaptor.forClass(School.class);
         var schoolDto = Generator.school();
         schoolService.createSchool(schoolDto);
-        verify(repository, atMostOnce()).createSchool(schoolCaptor.capture());
+        verify(repository, atMostOnce()).persist(schoolCaptor.capture());
         Assertions.assertThat(schoolCaptor.getValue())
                 .isNotNull()
                 .extracting(School::getPseudo, School::getName, School::getPhoneNumber, School::getWorkDays)
@@ -89,7 +89,7 @@ import static org.mockito.Mockito.*;
 
     @Test
     void list(){
-        when(repository.list()).thenReturn(Collections.singletonList(generateSchool()));
+        when(repository.listAll()).thenReturn(Collections.singletonList(generateSchool()));
         List<SchoolDto> schoolDtos = schoolService.list();
         Assertions.assertThat(schoolDtos)
                 .element(0)
