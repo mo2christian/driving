@@ -1,5 +1,7 @@
 package com.driving.planning.student;
 
+import com.driving.planning.student.domain.Student;
+import com.driving.planning.student.dto.StudentDto;
 import org.bson.types.ObjectId;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

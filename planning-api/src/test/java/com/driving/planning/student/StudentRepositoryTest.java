@@ -4,6 +4,7 @@ import com.driving.planning.MongodbTestResource;
 import com.driving.planning.common.exception.PlanningException;
 import com.driving.planning.config.database.DatabaseResolverInitializer;
 import com.driving.planning.config.database.Tenant;
+import com.driving.planning.student.domain.Student;
 import com.driving.planning.student.reservation.Reservation;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -43,7 +44,7 @@ class StudentRepositoryTest {
         reservation.setDate(LocalDate.now());
         reservation.setBegin(LocalTime.now());
         reservation.setEnd(LocalTime.now().plusHours(1));
-        student.setReservations(Collections.singleton(reservation));
+        student.setReservations(Collections.singletonList(reservation));
     }
 
     @Test
@@ -97,7 +98,7 @@ class StudentRepositoryTest {
         reservation.setDate(LocalDate.now().plusDays(3));
         reservation.setBegin(LocalTime.now());
         reservation.setEnd(LocalTime.now().plusHours(1));
-        student.setReservations(Collections.singleton(reservation));
+        student.setReservations(Collections.singletonList(reservation));
         repository.update(student);
         Assertions.assertThat(repository.listAll()).hasSize(1)
                 .element(0)

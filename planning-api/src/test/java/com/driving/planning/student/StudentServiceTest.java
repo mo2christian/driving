@@ -1,6 +1,8 @@
 package com.driving.planning.student;
 
 import com.driving.planning.common.exception.PlanningException;
+import com.driving.planning.student.domain.Student;
+import com.driving.planning.student.dto.StudentDto;
 import com.driving.planning.student.reservation.Reservation;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
@@ -42,7 +44,7 @@ class StudentServiceTest {
         reservation.setDate(LocalDate.now().plusDays(3));
         reservation.setBegin(LocalTime.now());
         reservation.setEnd(LocalTime.now().plusHours(1));
-        studentDto.setReservations(Collections.singleton(reservation));
+        studentDto.setReservations(Collections.singletonList(reservation));
     }
 
     @Test

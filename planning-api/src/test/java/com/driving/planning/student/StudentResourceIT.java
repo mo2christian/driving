@@ -3,12 +3,15 @@ package com.driving.planning.student;
 import com.driving.planning.Generator;
 import com.driving.planning.common.DatePattern;
 import com.driving.planning.school.dto.SchoolRequest;
+import com.driving.planning.student.reservation.ReservationRequest;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.http.ContentType;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 import static io.restassured.RestAssured.given;
@@ -107,7 +110,25 @@ class StudentResourceIT {
     }
 
     @Test
-    @Order(2)
+    @Order(3)
+    void addReservation(){
+        var request = new ReservationRequest();
+        request.setDate(LocalDate.now());
+        request.setBegin(LocalTime.of(11, 0));
+        request.setEnd(LocalTime.of(12, 0));
+        given()
+                .contentType(ContentType.JSON)
+                .header("x-app-tenant", tenant)
+                .body(request)
+                .when()
+                .post("/api/v1/students/{id}/reservations", id)
+                .then()
+                .statusCode(Matchers.anyOf(Matchers.is(200), Matchers.is(400)))
+                .log();
+    }
+
+    @Test
+    @Order(3)
     void listWithInvalidTenant(){
         given()
                 .accept(ContentType.JSON)
@@ -120,7 +141,7 @@ class StudentResourceIT {
     }
 
     @Test
-    @Order(3)
+    @Order(4)
     void delete(){
         given()
                 .contentType(ContentType.JSON)

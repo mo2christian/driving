@@ -1,8 +1,8 @@
 package com.driving.planning.student.otp;
 
 import com.driving.planning.Generator;
-import com.driving.planning.student.StudentDto;
 import com.driving.planning.student.StudentService;
+import com.driving.planning.student.dto.StudentDto;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import org.junit.jupiter.api.Test;

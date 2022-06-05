@@ -9,12 +9,11 @@ import com.driving.planning.monitor.absent.Absent;
 import com.driving.planning.monitor.dto.MonitorDto;
 import com.driving.planning.school.dto.AddressDto;
 import com.driving.planning.school.dto.SchoolDto;
-import com.driving.planning.student.StudentDto;
+import com.driving.planning.student.dto.StudentDto;
 import com.driving.planning.student.reservation.Reservation;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Collections;
 import java.util.HashSet;
 
 public class  Generator {
@@ -57,7 +56,7 @@ public class  Generator {
         reservation.setDate(LocalDate.now().plusDays(3));
         reservation.setBegin(LocalTime.now());
         reservation.setEnd(LocalTime.now().plusHours(1));
-        student.setReservations(Collections.singleton(reservation));
+        student.addReservation(reservation);
         return student;
     }
 

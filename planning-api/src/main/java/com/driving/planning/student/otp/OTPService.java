@@ -5,7 +5,7 @@ import com.driving.planning.common.mail.EmailService;
 import com.driving.planning.common.mail.Mail;
 import com.driving.planning.common.mail.MailTemplate;
 import com.driving.planning.common.sms.SMSService;
-import com.driving.planning.student.StudentDto;
+import com.driving.planning.student.dto.StudentDto;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.opentracing.Traced;
 import org.jboss.logging.Logger;

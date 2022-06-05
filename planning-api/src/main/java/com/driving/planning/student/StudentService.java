@@ -1,6 +1,7 @@
 package com.driving.planning.student;
 
 import com.driving.planning.common.exception.PlanningException;
+import com.driving.planning.student.dto.StudentDto;
 import org.eclipse.microprofile.opentracing.Traced;
 import org.jboss.logging.Logger;
 

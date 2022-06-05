@@ -2,6 +2,7 @@ package com.driving.planning.student;
 
 import com.driving.planning.Generator;
 import com.driving.planning.common.DatePattern;
+import com.driving.planning.student.dto.StudentDto;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import io.restassured.http.ContentType;
