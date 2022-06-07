@@ -126,7 +126,7 @@ public class MonitorController {
     }
 
     @ModelAttribute("monitorForm")
-    public MonitorForm getMonitorForm(){
+    private MonitorForm getMonitorForm(){
         var school = schoolApiClient.getSchoolByID(getSchoolID())
                 .getBody();
         if (school == null){
@@ -147,7 +147,7 @@ public class MonitorController {
     }
 
     @ModelAttribute("monitors")
-    public List<MonitorDto> getMonitors(){
+    private List<MonitorDto> getMonitors(){
         MonitorResponse response = monitorApiClient.getMonitors(getSchoolID())
                 .getBody();
         if (response != null){
@@ -157,12 +157,12 @@ public class MonitorController {
     }
 
     @ModelAttribute("absentForm")
-    public AbsentForm getAbsentForm(){
+    private AbsentForm getAbsentForm(){
         return new AbsentForm();
     }
 
     @ExceptionHandler(ApiException.class)
-    public String handleError(ApiException ex, Model model){
+    private String handleError(ApiException ex, Model model){
         model.addAttribute("error", ex.getMessage());
         return MONITOR_VIEW;
     }

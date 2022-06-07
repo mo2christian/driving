@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <meta charset="UTF-8">
+    <title>Student</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <span th:text="${error}" class="error">Error</span>
+    <table>
+        <thead>
+        <tr>
+            <td>First name</td>
+            <td>Last Name</td>
+            <td>Phone Number</td>
+            <td>Email</td>
+            <td>Reservations</td>
+            <td>Options</td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="student : ${students}">
+            <td th:text="${student.firstName}">FirstName</td>
+            <td th:text="${student.lastName}">Last Name</td>
+            <td th:text="${student.phoneNumber}">Phone Number</td>
+            <td>
+                <p th:each="reservation : ${student.reservations}">
+                    <span th:text="${reservation.start}">Start</span>
+                    <span th:text="${reservation.end}">Start</span>
+                    <span>
+                        <a th:href="@{/student/reservation/delete(id=${student.id},ref=${reservation.reference})}">Delete</a>
+                    </span>
+                </p>
+            </td>
+            <td> <a th:href="@{/student/show(id=${student.id})}">Update</a> </td>
+        </tr>
+        </tbody>
+    </table>
+    <form th:action="@{/student/action}" method="post" th:object="${studentForm}">
+        <ul>
+            <li th:each="err : ${#fields.errors('global')}" th:text="${err}" class="error"></li>
+        </ul>
+        <div class="form-group">
+            <label> FistName : </label>
+            <input type="text" name="firstName" class="form-control" th:field="*{firstName}"/>
+            <ul>
+                <li th:each="err : ${#fields.errors('firstName')}" th:text="${err}" class="error"></li>
+            </ul>
+        </div>
+        <div class="form-group">
+            <label> LastName : </label>
+            <input type="text" name="lastName" class="form-control" th:field="*{lastName}"/>
+            <ul>
+                <li th:each="err : ${#fields.errors('lastName')}" th:text="${err}" class="error"></li>
+            </ul>
+        </div>
+        <div class="form-group">
+            <label> Email : </label>
+            <input type="text" name="email" class="form-control" th:field="*{email}"/>
+            <ul>
+                <li th:each="err : ${#fields.errors('email')}" th:text="${err}" class="error"></li>
+            </ul>
+        </div>
+        <div class="form-group">
+            <label> Phone Number : </label>
+            <input type="text" name="phoneNumber" class="form-control" th:field="*{phoneNumber}"/>
+            <ul>
+                <li th:each="err : ${#fields.errors('phoneNumber')}" th:text="${err}" class="error"></li>
+            </ul>
+        </div>
+        <input type="hidden" name="operation" th:value="*{operation}"/>
+        <button type="submit" class="btn btn-primary" >Add</button>
+    </form>
+</div>

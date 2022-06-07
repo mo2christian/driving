@@ -20,4 +20,4 @@ test-api:
 
 generate-client-api:
 	cd planning-client-api
-	./mvnw clean install
+	./mvnw clean deploy
