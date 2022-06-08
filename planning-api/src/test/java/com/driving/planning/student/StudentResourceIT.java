@@ -111,6 +111,23 @@ class StudentResourceIT {
 
     @Test
     @Order(3)
+    void get(){
+        var student = Generator.student();
+        given()
+                .accept(ContentType.JSON)
+                .header("x-app-tenant", tenant)
+                .when()
+                .get("/api/v1/students/{id}", id)
+                .then()
+                .statusCode(200)
+                .body("email", Matchers.is(student.getEmail()))
+                .body("phoneNumber", Matchers.is(student.getPhoneNumber()))
+                .body("firstName", Matchers.is(student.getFirstName()))
+                .body("lastName", Matchers.is(student.getLastName()));
+    }
+
+    @Test
+    @Order(3)
     void addReservation(){
         var request = new ReservationRequest();
         request.setDate(LocalDate.now());

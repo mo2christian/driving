@@ -16,6 +16,7 @@ import org.mockito.ArgumentCaptor;
 import java.lang.reflect.Field;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static io.restassured.RestAssured.given;
@@ -51,6 +52,42 @@ class StudentResourceTest {
                 .body("students[0].reservations[0].date", Matchers.is(dateFormatter.format(reservation.getDate())))
                 .body("students[0].reservations[0].begin", Matchers.is(timeFormatter.format(reservation.getBegin())))
                 .body("students[0].reservations[0].end", Matchers.is(timeFormatter.format(reservation.getEnd())));
+    }
+
+    @Test
+    void get(){
+        var student = Generator.student();
+        var dateFormatter = DateTimeFormatter.ofPattern(DatePattern.DATE);
+        var timeFormatter = DateTimeFormatter.ofPattern(DatePattern.TIME);
+        var reservation = student.getReservations().stream().findFirst().orElseThrow();
+        when(studentService.get(anyString())).thenReturn(Optional.of(student));
+        given()
+                .accept(ContentType.JSON)
+                .header("x-app-tenant", "tenant")
+                .when()
+                .get("/api/v1/students/{id}", "id")
+                .then()
+                .statusCode(200)
+                .body("email", Matchers.is(student.getEmail()))
+                .body("phoneNumber", Matchers.is(student.getPhoneNumber()))
+                .body("firstName", Matchers.is(student.getFirstName()))
+                .body("lastName", Matchers.is(student.getLastName()))
+                .body("reservations.size()", Matchers.is(1))
+                .body("reservations[0].date", Matchers.is(dateFormatter.format(reservation.getDate())))
+                .body("reservations[0].begin", Matchers.is(timeFormatter.format(reservation.getBegin())))
+                .body("reservations[0].end", Matchers.is(timeFormatter.format(reservation.getEnd())));
+    }
+
+    @Test
+    void getNotFound(){
+        when(studentService.get(anyString())).thenReturn(Optional.empty());
+        given()
+                .accept(ContentType.JSON)
+                .header("x-app-tenant", "tenant")
+                .when()
+                .get("/api/v1/students/{id}", "id")
+                .then()
+                .statusCode(404);
     }
 
     @Test

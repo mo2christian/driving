@@ -17,7 +17,7 @@ public class DefaultExceptionMapper implements ExceptionMapper<Exception> {
 
     @Override
     public Response toResponse(Exception exception) {
-        logger.error("Unexpected error", exception);
+        logger.error("Unexpected error : %s", exception.getMessage(), exception);
         Text text = new Text();
         text.setMessage("Internal error");
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
