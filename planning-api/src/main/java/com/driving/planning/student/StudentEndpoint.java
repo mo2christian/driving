@@ -78,7 +78,7 @@ public interface StudentEndpoint {
     @DELETE
     void delete(@PathParam("id") String id);
 
-    @Operation(description = "Delete student", operationId = "deleteStudent")
+    @Operation(description = "Get student", operationId = "getStudent")
     @Parameter(in = ParameterIn.HEADER, name = "x-app-tenant", required = true,
             content = @Content(schema = @Schema(implementation = String.class)))
     @Parameter(in = ParameterIn.PATH, name = "id", required = true,
