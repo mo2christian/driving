@@ -26,6 +26,7 @@
             <td th:text="${student.firstName}">FirstName</td>
             <td th:text="${student.lastName}">Last Name</td>
             <td th:text="${student.phoneNumber}">Phone Number</td>
+            <td th:text="${student.email}">Phone Number</td>
             <td>
                 <p th:each="reservation : ${student.reservations}">
                     <span th:text="${reservation.start}">Start</span>
@@ -72,6 +73,7 @@
             </ul>
         </div>
         <input type="hidden" name="operation" th:value="*{operation}"/>
-        <button type="submit" class="btn btn-primary" >Add</button>
+        <input type="hidden" name="id" th:value="*{id}"/>
+        <button type="submit" class="btn btn-primary" >Submit</button>
     </form>
 </div>

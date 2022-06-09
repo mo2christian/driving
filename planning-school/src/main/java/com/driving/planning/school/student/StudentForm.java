@@ -23,6 +23,8 @@ public class StudentForm {
     @PhoneNumber
     private String phoneNumber;
 
+    private String id;
+
     private String operation = "add";
 
 }

@@ -6,6 +6,7 @@ import com.driving.planning.school.common.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,8 +38,15 @@ public class StudentController {
     }
 
     @GetMapping("/show")
-    public String show(@RequestParam("id") String id){
-        return REDIRECT_URL;
+    public String show(@RequestParam("id") String id, Model model){
+        var body = studentApiClient.getStudent(id, Utils.getSchoolID());
+        if (body == null){
+            throw new IllegalStateException();
+        }
+        var form = mapper.dtoToForm(body.getBody());
+        form.setOperation("update");
+        model.addAttribute("studentForm", form);
+        return STUDENT_VIEW;
     }
 
     @PostMapping(value = "/action", params = "operation=add")
@@ -48,6 +56,16 @@ public class StudentController {
         }
         var dto = mapper.formToDto(form);
         studentApiClient.addStudent(Utils.getSchoolID(), dto);
+        return REDIRECT_URL;
+    }
+
+    @PostMapping(value = "/action", params = "operation=update")
+    public String update(@Valid @ModelAttribute("studentForm") StudentForm form, BindingResult bindingResult){
+        if (bindingResult.hasErrors()){
+            return STUDENT_VIEW;
+        }
+        var dto = mapper.formToDto(form);
+        studentApiClient.updateStudent(form.getId(), Utils.getSchoolID(), dto);
         return REDIRECT_URL;
     }
 
