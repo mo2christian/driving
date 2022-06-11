@@ -1,6 +1,7 @@
 package com.driving.planning.school.student;
 
 import com.driving.planning.client.StudentApiClient;
+import com.driving.planning.client.model.ReservationRequest;
 import com.driving.planning.client.model.StudentDto;
 import com.driving.planning.school.common.Utils;
 import lombok.extern.slf4j.Slf4j;
@@ -49,8 +50,27 @@ public class StudentController {
         return STUDENT_VIEW;
     }
 
+    @PostMapping("/reservation/add")
+    public String addReservation(@Valid @ModelAttribute("reservationForm") ReservationForm form, BindingResult bindingResult){
+        if (bindingResult.hasErrors()){
+            return STUDENT_VIEW;
+        }
+        var reservation = new ReservationRequest()
+                .begin(form.getStart())
+                .end(form.getEnd())
+                .date(form.getDate());
+        studentApiClient.addReservation(form.getStudentId(), Utils.getSchoolID(), reservation);
+        return REDIRECT_URL;
+    }
+
+    @GetMapping("/reservation/delete")
+    public String deleteReservation(@RequestParam("id") String id, @RequestParam("ref") String ref){
+        studentApiClient.deleteReservation(id, ref, Utils.getSchoolID());
+        return REDIRECT_URL;
+    }
+
     @PostMapping(value = "/action", params = "operation=add")
-    public String add(@Valid @ModelAttribute("studentForm") StudentForm form, BindingResult bindingResult){
+    public String addStudent(@Valid @ModelAttribute("studentForm") StudentForm form, BindingResult bindingResult){
         if (bindingResult.hasErrors()){
             return STUDENT_VIEW;
         }
@@ -60,7 +80,7 @@ public class StudentController {
     }
 
     @PostMapping(value = "/action", params = "operation=update")
-    public String update(@Valid @ModelAttribute("studentForm") StudentForm form, BindingResult bindingResult){
+    public String updateStudent(@Valid @ModelAttribute("studentForm") StudentForm form, BindingResult bindingResult){
         if (bindingResult.hasErrors()){
             return STUDENT_VIEW;
         }
@@ -82,5 +102,10 @@ public class StudentController {
     @ModelAttribute("studentForm")
     private StudentForm getForm(){
         return new StudentForm();
+    }
+
+    @ModelAttribute("reservationForm")
+    private ReservationForm getReservationForm(){
+        return new ReservationForm();
     }
 }

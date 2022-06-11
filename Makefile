@@ -12,7 +12,7 @@ test-school:
 
 run-api:
 	cd planning-api
-	./mvnw quarkus:dev -Djdk.tls.client.protocols=TLSv1.2
+	./mvnw quarkus:dev -Djdk.tls.client.protocols=TLSv1.2 -Dquarkus.http.port=8888
 
 test-api:
 	cd planning-api

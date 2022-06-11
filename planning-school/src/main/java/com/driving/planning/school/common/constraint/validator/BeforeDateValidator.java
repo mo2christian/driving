@@ -1,5 +1,6 @@
 package com.driving.planning.school.common.constraint.validator;
 
+import com.driving.planning.school.common.TimeConstants;
 import com.driving.planning.school.common.constraint.BeforeDate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ReflectionUtils;
@@ -7,6 +8,7 @@ import org.springframework.util.ReflectionUtils;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Slf4j
 public class BeforeDateValidator implements ConstraintValidator<BeforeDate, Object> {
@@ -22,17 +24,25 @@ public class BeforeDateValidator implements ConstraintValidator<BeforeDate, Obje
     @Override
     public boolean isValid(Object object, ConstraintValidatorContext constraintValidatorContext) {
         try{
-            var before = getValue(object, constraintAnnotation.beforeField());
-            var after = getValue(object, constraintAnnotation.afterField());
-            return (before.isBefore(after)) || (constraintAnnotation.allowEqual() && before.isEqual(after));
+            if (TimeConstants.DATE_FORMAT == constraintAnnotation.dateFormat()){
+                var before = getValue(object, constraintAnnotation.beforeField(), LocalDate.class);
+                var after = getValue(object, constraintAnnotation.afterField(), LocalDate.class);
+                return (before.isBefore(after)) || (constraintAnnotation.allowEqual() && before.isEqual(after));
+            }
+            if (TimeConstants.HOUR_FORMAT == constraintAnnotation.dateFormat()){
+                var before = getValue(object, constraintAnnotation.beforeField(), LocalTime.class);
+                var after = getValue(object, constraintAnnotation.afterField(), LocalTime.class);
+                return (before.isBefore(after)) || (constraintAnnotation.allowEqual() && before.equals(after));
+            }
         }
         catch(IllegalArgumentException ex){
-            log.error("Unable to validate Absent form", ex);
+            log.error("Unable to validate form", ex);
         }
         return false;
     }
 
-    private LocalDate getValue(Object object, String fieldName){
+    @SuppressWarnings({"all"})
+    private <T>T getValue(Object object, String fieldName, Class<T> cls){
         Class<?> clazz = object.getClass();
         try{
             var field = ReflectionUtils.findField(clazz, fieldName);
@@ -41,10 +51,10 @@ public class BeforeDateValidator implements ConstraintValidator<BeforeDate, Obje
             }
             field.setAccessible(true);
             var value = field.get(object);
-            if (!(value instanceof LocalDate)){
-                throw new IllegalArgumentException(String.format("%s field in class %s is not of type LocalDate", fieldName, clazz));
+            if (!cls.isInstance(value)){
+                throw new IllegalArgumentException(String.format("%s field in class %s is not of type %s", fieldName, clazz, cls));
             }
-            return (LocalDate) value ;
+            return (T) value ;
         }
         catch(IllegalAccessException ex){
             throw new IllegalArgumentException(ex);

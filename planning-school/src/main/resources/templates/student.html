@@ -29,8 +29,9 @@
             <td th:text="${student.email}">Phone Number</td>
             <td>
                 <p th:each="reservation : ${student.reservations}">
-                    <span th:text="${reservation.start}">Start</span>
-                    <span th:text="${reservation.end}">Start</span>
+                    <span th:text="${reservation.date}">Date</span>
+                    <span th:text="${reservation.begin}">Begin</span>
+                    <span th:text="${reservation.end}">End</span>
                     <span>
                         <a th:href="@{/student/reservation/delete(id=${student.id},ref=${reservation.reference})}">Delete</a>
                     </span>
@@ -40,6 +41,41 @@
         </tr>
         </tbody>
     </table>
+    <form th:action="@{/student/reservation/add}" method="post" th:object="${reservationForm}">
+        <ul>
+            <li th:each="err : ${#fields.errors('global')}" th:text="${err}" class="error"></li>
+        </ul>
+        <div class="form-group">
+            <label> Student : </label>
+            <select name="studentId">
+                <option  th:each="student : ${students}" th:value="${student.id}" th:inline="text">
+                    [[${student.firstName}]] [[${student.lastName}]]
+                </option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label> Date : </label>
+            <input type="date" name="date" class="form-control" th:field="*{date}"/>
+            <ul>
+                <li th:each="err : ${#fields.errors('date')}" th:text="${err}" class="error"></li>
+            </ul>
+        </div>
+        <div class="form-group">
+            <label> Begin : </label>
+            <input type="time" name="start" class="form-control" th:field="*{start}"/>
+            <ul>
+                <li th:each="err : ${#fields.errors('start')}" th:text="${err}" class="error"></li>
+            </ul>
+        </div>
+        <div class="form-group">
+            <label> End : </label>
+            <input type="time" name="end" class="form-control" th:field="*{end}" required/>
+            <ul>
+                <li th:each="err : ${#fields.errors('end')}" th:text="${err}" class="error"></li>
+            </ul>
+        </div>
+        <button type="submit" class="btn btn-primary">Add</button>
+    </form>
     <form th:action="@{/student/action}" method="post" th:object="${studentForm}">
         <ul>
             <li th:each="err : ${#fields.errors('global')}" th:text="${err}" class="error"></li>
