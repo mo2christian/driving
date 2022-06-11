@@ -7,6 +7,8 @@ import org.jboss.logmanager.ExtLogRecord;
 
 import javax.inject.Singleton;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 @Singleton
 public class JsonLoggingProvider implements JsonProvider {
@@ -19,5 +21,10 @@ public class JsonLoggingProvider implements JsonProvider {
         generator.writeStringField("logging.googleapis.com/trace", String.format("projects/%s/traces/%s", projectId, event.getMdc("traceId")));
         generator.writeStringField("logging.googleapis.com/spanId", event.getMdc("spanId"));
         generator.writeStringField("severity", event.getLevel().getName());
+        if (event.getThrown() != null){
+            var writer = new StringWriter();
+            event.getThrown().printStackTrace(new PrintWriter(writer));
+            generator.writeStringField("message", writer.toString());
+        }
     }
 }
