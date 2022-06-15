@@ -31,7 +31,7 @@ class StudentResourceTest {
 
     @Test
     void list(){
-        var student = Generator.student();
+        var student = Generator.studentReservation();
         var dateFormatter = DateTimeFormatter.ofPattern(DatePattern.DATE);
         var timeFormatter = DateTimeFormatter.ofPattern(DatePattern.TIME);
         var reservation = student.getReservations().stream().findFirst().orElseThrow();
@@ -56,7 +56,7 @@ class StudentResourceTest {
 
     @Test
     void get(){
-        var student = Generator.student();
+        var student = Generator.studentReservation();
         var dateFormatter = DateTimeFormatter.ofPattern(DatePattern.DATE);
         var timeFormatter = DateTimeFormatter.ofPattern(DatePattern.TIME);
         var reservation = student.getReservations().stream().findFirst().orElseThrow();
@@ -104,8 +104,8 @@ class StudentResourceTest {
         ArgumentCaptor<StudentDto> studentCaptor = ArgumentCaptor.forClass(StudentDto.class);
         verify(studentService, times(1)).add(studentCaptor.capture());
         assertThat(studentCaptor.getValue()).isNotNull()
-                .extracting(StudentDto::getEmail, StudentDto::getFirstName, StudentDto::getLastName, StudentDto::getPhoneNumber, StudentDto::getReservations)
-                .containsExactly(dto.getEmail(), dto.getFirstName(), dto.getLastName(), dto.getPhoneNumber(), dto.getReservations());
+                .extracting(StudentDto::getEmail, StudentDto::getFirstName, StudentDto::getLastName, StudentDto::getPhoneNumber)
+                .containsExactly(dto.getEmail(), dto.getFirstName(), dto.getLastName(), dto.getPhoneNumber());
         assertThat(studentCaptor.getValue().getId()).isNull();
     }
 
@@ -154,10 +154,10 @@ class StudentResourceTest {
                 .then()
                 .statusCode(204);
         ArgumentCaptor<StudentDto> studentCaptor = ArgumentCaptor.forClass(StudentDto.class);
-        verify(studentService, times(1)).update(studentCaptor.capture());
+        verify(studentService, times(1)).updateStudent(studentCaptor.capture());
         assertThat(studentCaptor.getValue()).isNotNull()
-                .extracting(StudentDto::getEmail, StudentDto::getFirstName, StudentDto::getLastName, StudentDto::getPhoneNumber, StudentDto::getReservations)
-                .containsExactly(dto.getEmail(), dto.getFirstName(), dto.getLastName(), dto.getPhoneNumber(), dto.getReservations());
+                .extracting(StudentDto::getEmail, StudentDto::getFirstName, StudentDto::getLastName, StudentDto::getPhoneNumber)
+                .containsExactly(dto.getEmail(), dto.getFirstName(), dto.getLastName(), dto.getPhoneNumber());
         assertThat(studentCaptor.getValue().getId())
                 .isNotNull()
                 .isEqualTo(id);

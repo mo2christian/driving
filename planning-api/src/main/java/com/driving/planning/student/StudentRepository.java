@@ -25,6 +25,7 @@ public class StudentRepository implements PanacheMongoRepository<Student> {
     }
 
     public Optional<Student> findById(String id){
+        logger.debugf("Find student by Id %s", id);
         ObjectId obj;
         try{
             obj = new ObjectId(id);

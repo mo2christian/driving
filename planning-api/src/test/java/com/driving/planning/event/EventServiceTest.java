@@ -60,7 +60,7 @@ class EventServiceTest {
         var eventDto = Generator.event();
         eventDto.setType(EventType.STUDENT);
         when(monitorService.list()).thenReturn(Collections.singletonList(monitorWithWorkingDate()));
-        when(studentService.get(eventDto.getRelatedUserId())).thenReturn(Optional.of(Generator.student()));
+        when(studentService.get(eventDto.getRelatedUserId())).thenReturn(Optional.of(Generator.studentReservation()));
         eventService.add(eventDto);
         ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
         verify(eventRepository, times(1)).persist(eventCaptor.capture());
@@ -197,7 +197,7 @@ class EventServiceTest {
         var event = Generator.event();
         event.setType(EventType.STUDENT);
         when(schoolService.isSchoolOpened(anyString(), any())).thenReturn(false);
-        when(studentService.get(anyString())).thenReturn(Optional.of(Generator.student()));
+        when(studentService.get(anyString())).thenReturn(Optional.of(Generator.studentReservation()));
         Assertions.assertThatThrownBy(() -> eventService.add(event))
                 .isInstanceOf(PlanningException.class)
                 .extracting("status")

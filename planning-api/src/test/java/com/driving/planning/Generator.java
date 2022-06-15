@@ -10,6 +10,7 @@ import com.driving.planning.monitor.dto.MonitorDto;
 import com.driving.planning.school.dto.AddressDto;
 import com.driving.planning.school.dto.SchoolDto;
 import com.driving.planning.student.dto.StudentDto;
+import com.driving.planning.student.dto.StudentReservationDto;
 import com.driving.planning.student.reservation.Reservation;
 
 import java.time.LocalDate;
@@ -52,6 +53,16 @@ public class  Generator {
         student.setPhoneNumber("147852369");
         student.setFirstName("first");
         student.setLastName("last");
+        return student;
+    }
+
+    public static StudentReservationDto studentReservation(){
+        var student = new StudentReservationDto();
+        var dto = student();
+        student.setEmail(dto.getEmail());
+        student.setPhoneNumber(dto.getPhoneNumber());
+        student.setFirstName(dto.getFirstName());
+        student.setLastName(dto.getLastName());
         var reservation = new Reservation();
         reservation.setDate(LocalDate.now().plusDays(3));
         reservation.setBegin(LocalTime.now());

@@ -6,6 +6,7 @@ import com.driving.planning.event.domain.EventType;
 import com.driving.planning.event.dto.EventDto;
 import com.driving.planning.student.StudentService;
 import com.driving.planning.student.dto.StudentDto;
+import com.driving.planning.student.dto.StudentReservationDto;
 import com.mongodb.ReadConcern;
 import com.mongodb.ReadPreference;
 import com.mongodb.TransactionOptions;
@@ -45,14 +46,14 @@ public class ReservationService {
         this.logger = logger;
     }
 
-    public void removeReservation(@NotNull StudentDto student, @NotNull String ref){
+    public void removeReservation(@NotNull StudentReservationDto student, @NotNull String ref){
         logger.debugf("remove reservation %s", ref);
         student.getReservations().removeIf(r -> ref.equals(r.getReference()));
-        studentService.update(student);
+        studentService.updateStudentWithReservation(student);
         eventService.deleteByRef(ref);
     }
 
-    public String addReservation(@NotNull StudentDto student, @Valid ReservationRequest request){
+    public String addReservation(@NotNull StudentReservationDto student, @Valid ReservationRequest request){
         logger.debugf("add reservation to student %s", student.getEmail());
         var txnOptions = TransactionOptions.builder()
                 .readPreference(ReadPreference.primary())
@@ -72,11 +73,11 @@ public class ReservationService {
 
     private class AddEventTransaction implements TransactionBody<String> {
 
-        private final StudentDto student;
+        private final StudentReservationDto student;
 
         private final ReservationRequest request;
 
-        public AddEventTransaction(StudentDto student, ReservationRequest request) {
+        public AddEventTransaction(StudentReservationDto student, ReservationRequest request) {
             this.student = student;
             this.request = request;
         }
@@ -91,7 +92,7 @@ public class ReservationService {
             var reservation = toReservation(request);
             reservation.setReference(ref);
             student.addReservation(reservation);
-            studentService.update(student);
+            studentService.updateStudentWithReservation(student);
             return ref;
         }
 

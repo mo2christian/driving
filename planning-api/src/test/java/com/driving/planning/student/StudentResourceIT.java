@@ -83,7 +83,7 @@ class StudentResourceIT {
     @Test
     @Order(2)
     void list(){
-        var student = Generator.student();
+        var student = Generator.studentReservation();
         var dateFormatter = DateTimeFormatter.ofPattern(DatePattern.DATE);
         var timeFormatter = DateTimeFormatter.ofPattern(DatePattern.TIME);
         var reservation = student.getReservations().stream().findFirst().orElseThrow();
@@ -99,10 +99,7 @@ class StudentResourceIT {
                 .body("students[0].phoneNumber", Matchers.is(student.getPhoneNumber()))
                 .body("students[0].firstName", Matchers.is(student.getFirstName()))
                 .body("students[0].lastName", Matchers.is(student.getLastName()))
-                .body("students[0].reservations.size()", Matchers.is(1))
-                .body("students[0].reservations[0].date", Matchers.is(dateFormatter.format(reservation.getDate())))
-                .body("students[0].reservations[0].begin", Matchers.is(timeFormatter.format(reservation.getBegin())))
-                .body("students[0].reservations[0].end", Matchers.is(timeFormatter.format(reservation.getEnd())))
+                .body("students[0].reservations.size()", Matchers.is(0))
                 .extract()
                 .body()
                 .jsonPath()
@@ -123,7 +120,8 @@ class StudentResourceIT {
                 .body("email", Matchers.is(student.getEmail()))
                 .body("phoneNumber", Matchers.is(student.getPhoneNumber()))
                 .body("firstName", Matchers.is(student.getFirstName()))
-                .body("lastName", Matchers.is(student.getLastName()));
+                .body("lastName", Matchers.is(student.getLastName()))
+                .body("reservations.size()", Matchers.is(0));
     }
 
     @Test

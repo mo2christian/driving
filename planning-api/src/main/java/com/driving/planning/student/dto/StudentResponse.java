@@ -10,13 +10,13 @@ public class StudentResponse implements Serializable {
 
     public static final long serialVersionUID = 1L;
 
-    private List<StudentDto> students;
+    private List<StudentReservationDto> students;
 
-    public List<StudentDto> getStudents() {
+    public List<StudentReservationDto> getStudents() {
         return students;
     }
 
-    public void setStudents(List<StudentDto> students) {
+    public void setStudents(List<StudentReservationDto> students) {
         this.students = students;
     }
 }
