@@ -1,4 +1,4 @@
-package com.driving.planning.monitor.absent;
+package com.driving.planning.monitor.absence;
 
 import com.driving.planning.common.exception.PlanningException;
 import com.driving.planning.common.hourly.Hourly;
@@ -28,7 +28,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @ApplicationScoped
-public class AbsentService {
+public class AbsenceService {
 
     private final EventService eventService;
 
@@ -43,9 +43,9 @@ public class AbsentService {
     private final Tenant tenant;
 
     @Inject
-    public AbsentService(EventService eventService, MongoClient mongoClient,
-                         SchoolService schoolService, MonitorService monitorService,
-                         Logger logger, Tenant tenant) {
+    public AbsenceService(EventService eventService, MongoClient mongoClient,
+                          SchoolService schoolService, MonitorService monitorService,
+                          Logger logger, Tenant tenant) {
         this.eventService = eventService;
         this.mongoClient = mongoClient;
         this.schoolService = schoolService;
@@ -54,7 +54,7 @@ public class AbsentService {
         this.tenant = tenant;
     }
 
-    public boolean hasAbsent(@NotNull MonitorDto monitor, @Valid AbsentRequest request) {
+    public boolean hasAbsent(@NotNull MonitorDto monitor, @Valid AbsenceRequest request) {
         logger.debugf("Check in monitor %s has event", monitor);
         return eventService.hasEvent(monitor.getId(), request.getStart(), request.getEnd());
     }
@@ -66,7 +66,7 @@ public class AbsentService {
         eventService.deleteByRef(ref);
     }
 
-    public void addAbsent(@NotNull MonitorDto monitor, @Valid AbsentRequest request) {
+    public void addAbsent(@NotNull MonitorDto monitor, @Valid AbsenceRequest request) {
         logger.debugf("Add absent for monitor %s", monitor);
         if (hasAbsent(monitor, request)) {
             throw new PlanningException(Response.Status.BAD_REQUEST, "Monitor already have and event at that time");
@@ -88,11 +88,11 @@ public class AbsentService {
 
     private class AddEventTransaction implements TransactionBody<String> {
 
-        private final AbsentRequest request;
+        private final AbsenceRequest request;
 
         private final MonitorDto monitor;
 
-        public AddEventTransaction(AbsentRequest request, MonitorDto monitor) {
+        public AddEventTransaction(AbsenceRequest request, MonitorDto monitor) {
             this.request = request;
             this.monitor = monitor;
         }
@@ -114,7 +114,7 @@ public class AbsentService {
                 event.setReference(ref);
                 eventService.add(event);
             }
-            var absent = new Absent();
+            var absent = new Absence();
             absent.setStart(request.getStart());
             absent.setEnd(request.getEnd());
             absent.setReference(ref);

@@ -1,4 +1,4 @@
-package com.driving.planning.monitor.absent;
+package com.driving.planning.monitor.absence;
 
 import com.driving.planning.Generator;
 import com.driving.planning.school.dto.SchoolRequest;
@@ -13,7 +13,7 @@ import static io.restassured.RestAssured.given;
 
 @QuarkusIntegrationTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class AbsentResourceIT {
+class AbsenceResourceIT {
 
     private static String tenant;
 
@@ -66,7 +66,7 @@ class AbsentResourceIT {
     @Order(1)
     void add(){
         @javax.validation.constraints.NotNull LocalDate now = LocalDate.now();
-        var absent = new AbsentRequest(now, now.plusDays(5));
+        var absent = new AbsenceRequest(now, now.plusDays(5));
         given()
                 .accept(ContentType.JSON)
                 .contentType(ContentType.JSON)
@@ -82,7 +82,7 @@ class AbsentResourceIT {
     @Order(2)
     void delete(){
         @javax.validation.constraints.NotNull LocalDate now = LocalDate.now();
-        var absent = new AbsentRequest(now, now.plusDays(5));
+        var absent = new AbsenceRequest(now, now.plusDays(5));
         given()
                 .accept(ContentType.JSON)
                 .contentType(ContentType.JSON)

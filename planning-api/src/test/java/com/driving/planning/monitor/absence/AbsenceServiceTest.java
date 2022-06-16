@@ -1,4 +1,4 @@
-package com.driving.planning.monitor.absent;
+package com.driving.planning.monitor.absence;
 
 import com.driving.planning.Generator;
 import com.driving.planning.common.hourly.Day;
@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @QuarkusTest
-class AbsentServiceTest {
+class AbsenceServiceTest {
 
     @InjectMock
     MonitorService monitorService;
@@ -35,13 +35,13 @@ class AbsentServiceTest {
     SchoolService schoolService;
 
     @Inject
-    AbsentService absentService;
+    AbsenceService absenceService;
 
     @Test
     void removeEvent(){
         var monitor = Generator.monitor();
         var ref = monitor.getAbsents().get(0).getReference();
-        absentService.removeAbsent(monitor, ref);
+        absenceService.removeAbsent(monitor, ref);
         ArgumentCaptor<MonitorDto> dtoCaptor = ArgumentCaptor.forClass(MonitorDto.class);
         verify(monitorService, atMostOnce()).update(dtoCaptor.capture());
         assertThat(dtoCaptor.getValue())
@@ -57,7 +57,7 @@ class AbsentServiceTest {
     @Test
     void addEvent(){
         LocalDate now = LocalDate.now();
-        var absent = new AbsentRequest(now, now.plusDays(1));
+        var absent = new AbsenceRequest(now, now.plusDays(1));
         var monitor = new MonitorDto();
         monitor.setId("id");
         when(monitorService.get(monitor.getId())).thenReturn(Optional.of(monitor));
@@ -74,7 +74,7 @@ class AbsentServiceTest {
         school.getWorkDays().add(h2);
         when(schoolService.get(anyString())).thenReturn(Optional.of(school));
 
-        absentService.addAbsent(monitor, absent);
+        absenceService.addAbsent(monitor, absent);
 
         ArgumentCaptor<EventDto> dtoCaptor = ArgumentCaptor.forClass(EventDto.class);
         verify(eventService, times(2)).add(dtoCaptor.capture());
@@ -88,12 +88,12 @@ class AbsentServiceTest {
         assertThat(monitorCaptor.getValue().getAbsents())
                 .hasSize(1)
                 .element(0)
-                .extracting(Absent::getStart, Absent::getEnd)
+                .extracting(Absence::getStart, Absence::getEnd)
                 .contains(absent.getStart(), absent.getEnd());
         assertThat(monitorCaptor.getValue().getAbsents())
                 .hasSize(1)
                 .element(0)
-                .extracting(Absent::getReference)
+                .extracting(Absence::getReference)
                 .isNotNull();
     }
 

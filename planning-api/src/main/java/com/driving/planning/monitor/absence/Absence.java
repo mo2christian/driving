@@ -1,4 +1,4 @@
-package com.driving.planning.monitor.absent;
+package com.driving.planning.monitor.absence;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.bson.codecs.pojo.annotations.BsonProperty;
@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 @RegisterForReflection
-public class Absent implements Serializable {
+public class Absence implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -47,8 +47,8 @@ public class Absent implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Absent absent = (Absent) o;
-        return reference.equals(absent.reference);
+        Absence absence = (Absence) o;
+        return reference.equals(absence.reference);
     }
 
     @Override

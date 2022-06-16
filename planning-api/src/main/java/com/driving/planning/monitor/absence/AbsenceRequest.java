@@ -1,4 +1,4 @@
-package com.driving.planning.monitor.absent;
+package com.driving.planning.monitor.absence;
 
 import com.driving.planning.common.DatePattern;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -7,7 +7,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-public class AbsentRequest implements Serializable {
+public class AbsenceRequest implements Serializable {
 
     public static final long serialVersionUID = 1L;
 
@@ -21,10 +21,10 @@ public class AbsentRequest implements Serializable {
     @JsonFormat(pattern = DatePattern.DATE)
     private @NotNull LocalDate end;
 
-    public AbsentRequest() {
+    public AbsenceRequest() {
     }
 
-    public AbsentRequest(@NotNull LocalDate start, @NotNull LocalDate end) {
+    public AbsenceRequest(@NotNull LocalDate start, @NotNull LocalDate end) {
         setStart(start);
         setEnd(end);
     }

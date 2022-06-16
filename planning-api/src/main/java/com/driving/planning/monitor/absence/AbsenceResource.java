@@ -1,4 +1,4 @@
-package com.driving.planning.monitor.absent;
+package com.driving.planning.monitor.absence;
 
 import com.driving.planning.common.exception.PlanningException;
 import com.driving.planning.monitor.MonitorService;
@@ -10,31 +10,31 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
 @ApplicationScoped
-public class AbsentResource implements AbsentEndpoint {
+public class AbsenceResource implements AbsenceEndpoint {
 
     private final MonitorService monitorService;
 
-    private final AbsentService absentService;
+    private final AbsenceService absenceService;
 
     @Inject
-    public AbsentResource(MonitorService monitorService,
-                          AbsentService absentService) {
+    public AbsenceResource(MonitorService monitorService,
+                           AbsenceService absenceService) {
         this.monitorService = monitorService;
-        this.absentService = absentService;
+        this.absenceService = absenceService;
     }
 
     @Override
-    public void add(@PathParam("id") String monitorId, @Valid AbsentRequest request){
+    public void add(@PathParam("id") String monitorId, @Valid AbsenceRequest request){
         var monitor = monitorService.get(monitorId)
                 .orElseThrow(() -> new PlanningException(Response.Status.NOT_FOUND, "Monitor not found"));
-        absentService.addAbsent(monitor, request);
+        absenceService.addAbsent(monitor, request);
     }
 
     @Override
     public void remove(@PathParam("id") String monitorId, @PathParam("ref") String ref){
         var monitor = monitorService.get(monitorId)
                 .orElseThrow(() -> new PlanningException(Response.Status.NOT_FOUND, "Monitor not found"));
-        absentService.removeAbsent(monitor, ref);
+        absenceService.removeAbsent(monitor, ref);
     }
 
 }

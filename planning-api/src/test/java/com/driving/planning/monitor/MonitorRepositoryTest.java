@@ -5,7 +5,7 @@ import com.driving.planning.common.hourly.Day;
 import com.driving.planning.common.hourly.Hourly;
 import com.driving.planning.config.database.DatabaseResolverInitializer;
 import com.driving.planning.config.database.Tenant;
-import com.driving.planning.monitor.absent.Absent;
+import com.driving.planning.monitor.absence.Absence;
 import com.driving.planning.monitor.domain.Monitor;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -47,7 +47,7 @@ class MonitorRepositoryTest {
         hourly.setBegin(LocalTime.now());
         hourly.setEnd(LocalTime.now().plusHours(5));
         monitor.setWorkDays(Collections.singleton(hourly));
-        var absent = new Absent();
+        var absent = new Absence();
         absent.setStart(LocalDate.now());
         absent.setEnd(LocalDate.now().plusDays(3));
         absent.setReference("ref");
@@ -79,7 +79,7 @@ class MonitorRepositoryTest {
         hourly.setBegin(LocalTime.now());
         hourly.setEnd(LocalTime.now().plusHours(5));
         monitor.setWorkDays(Collections.singleton(hourly));
-        var absent = new Absent();
+        var absent = new Absence();
         absent.setStart(LocalDate.now());
         absent.setEnd(LocalDate.now().plusDays(5));
         absent.setReference("ref1");

@@ -1,4 +1,4 @@
-package com.driving.planning.monitor.absent;
+package com.driving.planning.monitor.absence;
 
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.ParameterIn;
@@ -15,7 +15,7 @@ import javax.ws.rs.core.MediaType;
 @Produces(MediaType.APPLICATION_JSON)
 @Path("/api/v1/monitors")
 @Tag(name = "Monitor", description = "Monitor endpoint")
-public interface AbsentEndpoint {
+public interface AbsenceEndpoint {
 
     @Operation(description = "Add absent", operationId = "addAbsent")
     @Parameter(in = ParameterIn.HEADER, name = "x-app-tenant", required = true,
@@ -23,8 +23,8 @@ public interface AbsentEndpoint {
     @Parameter(in = ParameterIn.PATH, name = "id", required = true,
             content = @Content(schema = @Schema(implementation = String.class)))
     @POST
-    @Path("/{id}/absents")
-    void add(@PathParam("id") String monitorId, @Valid AbsentRequest absent);
+    @Path("/{id}/absences")
+    void add(@PathParam("id") String monitorId, @Valid AbsenceRequest absent);
 
     @Operation(description = "Delete absent", operationId = "deleteAbsent")
     @Parameter(in = ParameterIn.HEADER, name = "x-app-tenant", required = true,
@@ -34,7 +34,7 @@ public interface AbsentEndpoint {
     @Parameter(in = ParameterIn.PATH, name = "ref", required = true,
             content = @Content(schema = @Schema(implementation = String.class)))
     @DELETE
-    @Path("/{id}/absents/{ref}")
+    @Path("/{id}/absences/{ref}")
     void remove(@PathParam("id") String monitorId, @PathParam("ref") String ref);
 
 }

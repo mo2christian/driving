@@ -1,4 +1,4 @@
-package com.driving.planning.monitor.absent;
+package com.driving.planning.monitor.absence;
 
 import com.driving.planning.Generator;
 import com.driving.planning.common.exception.PlanningException;
@@ -17,18 +17,18 @@ import static io.restassured.RestAssured.given;
 import static org.mockito.Mockito.*;
 
 @QuarkusTest
-class AbsentResourceTest {
+class AbsenceResourceTest {
 
     @InjectMock
     MonitorService monitorService;
 
     @InjectMock
-    AbsentService absentService;
+    AbsenceService absenceService;
 
     @Test
     void add(){
         when(monitorService.get("id")).thenReturn(Optional.of(new MonitorDto()));
-        var absent = new AbsentRequest();
+        var absent = new AbsenceRequest();
         absent.setStart(LocalDate.now());
         absent.setEnd(LocalDate.now().plusDays(2));
         given()
@@ -40,13 +40,13 @@ class AbsentResourceTest {
                 .post("/api/v1/monitors/{id}/absents", "id")
                 .then()
                 .statusCode(204);
-        verify(absentService, times(1)).addAbsent(any(), any());
+        verify(absenceService, times(1)).addAbsent(any(), any());
     }
 
     @Test
     void addNotFound(){
         LocalDate now = LocalDate.now();
-        var absent = new AbsentRequest(now, now.plusDays(5));
+        var absent = new AbsenceRequest(now, now.plusDays(5));
         when(monitorService.get("id")).thenThrow(new PlanningException(Response.Status.NOT_FOUND, "Not found"));
         given()
                 .accept(ContentType.JSON)
@@ -73,7 +73,7 @@ class AbsentResourceTest {
                 .then()
                 .statusCode(204);
 
-        verify(absentService, times(1)).removeAbsent(any(), eq("ref"));
+        verify(absenceService, times(1)).removeAbsent(any(), eq("ref"));
 
     }
 
