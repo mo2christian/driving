@@ -1,6 +1,7 @@
 package com.driving.planning.monitor;
 
 import com.driving.planning.common.exception.PlanningException;
+import com.driving.planning.monitor.dto.MonitorAbsenceDto;
 import com.driving.planning.monitor.dto.MonitorDto;
 import com.driving.planning.monitor.dto.MonitorResponse;
 import org.jboss.logging.Logger;
@@ -40,7 +41,7 @@ public class MonitorResource implements MonitorEndpoint {
     }
 
     @Override
-    public MonitorDto get(@PathParam("id") String id){
+    public MonitorAbsenceDto get(@PathParam("id") String id){
         logger.debugf("Get monitor %s", id);
         return service.get(id)
                 .orElseThrow(this::notFound);

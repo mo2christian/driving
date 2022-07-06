@@ -7,7 +7,7 @@ import com.driving.planning.event.EventService;
 import com.driving.planning.event.domain.EventType;
 import com.driving.planning.event.dto.EventDto;
 import com.driving.planning.monitor.MonitorService;
-import com.driving.planning.monitor.dto.MonitorDto;
+import com.driving.planning.monitor.dto.MonitorAbsenceDto;
 import com.driving.planning.school.SchoolService;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
@@ -40,13 +40,13 @@ class AbsenceServiceTest {
     @Test
     void removeEvent(){
         var monitor = Generator.monitor();
-        var ref = monitor.getAbsents().get(0).getReference();
+        var ref = monitor.getAbsences().get(0).getReference();
         absenceService.removeAbsent(monitor, ref);
-        ArgumentCaptor<MonitorDto> dtoCaptor = ArgumentCaptor.forClass(MonitorDto.class);
+        ArgumentCaptor<MonitorAbsenceDto> dtoCaptor = ArgumentCaptor.forClass(MonitorAbsenceDto.class);
         verify(monitorService, atMostOnce()).update(dtoCaptor.capture());
         assertThat(dtoCaptor.getValue())
                 .isNotNull();
-        assertThat(dtoCaptor.getValue().getAbsents())
+        assertThat(dtoCaptor.getValue().getAbsences())
                 .isEmpty();
         ArgumentCaptor<String> refCaptor = ArgumentCaptor.forClass(String.class);
         verify(eventService, atLeastOnce()).deleteByRef(refCaptor.capture());
@@ -58,7 +58,7 @@ class AbsenceServiceTest {
     void addEvent(){
         LocalDate now = LocalDate.now();
         var absent = new AbsenceRequest(now, now.plusDays(1));
-        var monitor = new MonitorDto();
+        var monitor = new MonitorAbsenceDto();
         monitor.setId("id");
         when(monitorService.get(monitor.getId())).thenReturn(Optional.of(monitor));
         var h1 = new Hourly();
@@ -83,14 +83,14 @@ class AbsenceServiceTest {
                 .extracting(EventDto::getEventDate, EventDto::getRelatedUserId, EventDto::getType)
                 .contains(absent.getStart(), monitor.getId(), EventType.MONITOR);
 
-        ArgumentCaptor<MonitorDto> monitorCaptor = ArgumentCaptor.forClass(MonitorDto.class);
+        ArgumentCaptor<MonitorAbsenceDto> monitorCaptor = ArgumentCaptor.forClass(MonitorAbsenceDto.class);
         verify(monitorService, times(1)).update(monitorCaptor.capture());
-        assertThat(monitorCaptor.getValue().getAbsents())
+        assertThat(monitorCaptor.getValue().getAbsences())
                 .hasSize(1)
                 .element(0)
                 .extracting(Absence::getStart, Absence::getEnd)
                 .contains(absent.getStart(), absent.getEnd());
-        assertThat(monitorCaptor.getValue().getAbsents())
+        assertThat(monitorCaptor.getValue().getAbsences())
                 .hasSize(1)
                 .element(0)
                 .extracting(Absence::getReference)

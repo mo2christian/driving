@@ -7,7 +7,7 @@ import com.driving.planning.event.EventService;
 import com.driving.planning.event.domain.EventType;
 import com.driving.planning.event.dto.EventDto;
 import com.driving.planning.monitor.MonitorService;
-import com.driving.planning.monitor.dto.MonitorDto;
+import com.driving.planning.monitor.dto.MonitorAbsenceDto;
 import com.driving.planning.school.SchoolService;
 import com.driving.planning.school.dto.SchoolDto;
 import com.mongodb.ReadConcern;
@@ -54,19 +54,19 @@ public class AbsenceService {
         this.tenant = tenant;
     }
 
-    public boolean hasAbsent(@NotNull MonitorDto monitor, @Valid AbsenceRequest request) {
+    public boolean hasAbsent(@NotNull MonitorAbsenceDto monitor, @Valid AbsenceRequest request) {
         logger.debugf("Check in monitor %s has event", monitor);
         return eventService.hasEvent(monitor.getId(), request.getStart(), request.getEnd());
     }
 
-    public void removeAbsent(@NotNull MonitorDto monitor, @NotNull String ref){
+    public void removeAbsent(@NotNull MonitorAbsenceDto monitor, @NotNull String ref){
         logger.debugf("Remove absent %s", ref);
-        monitor.getAbsents().removeIf(a -> a.getReference().equalsIgnoreCase(ref));
+        monitor.getAbsences().removeIf(a -> a.getReference().equalsIgnoreCase(ref));
         monitorService.update(monitor);
         eventService.deleteByRef(ref);
     }
 
-    public void addAbsent(@NotNull MonitorDto monitor, @Valid AbsenceRequest request) {
+    public void addAbsent(@NotNull MonitorAbsenceDto monitor, @Valid AbsenceRequest request) {
         logger.debugf("Add absent for monitor %s", monitor);
         if (hasAbsent(monitor, request)) {
             throw new PlanningException(Response.Status.BAD_REQUEST, "Monitor already have and event at that time");
@@ -90,9 +90,9 @@ public class AbsenceService {
 
         private final AbsenceRequest request;
 
-        private final MonitorDto monitor;
+        private final MonitorAbsenceDto monitor;
 
-        public AddEventTransaction(AbsenceRequest request, MonitorDto monitor) {
+        public AddEventTransaction(AbsenceRequest request, MonitorAbsenceDto monitor) {
             this.request = request;
             this.monitor = monitor;
         }
@@ -118,7 +118,7 @@ public class AbsenceService {
             absent.setStart(request.getStart());
             absent.setEnd(request.getEnd());
             absent.setReference(ref);
-            monitor.getAbsents().add(absent);
+            monitor.getAbsences().add(absent);
             monitorService.update(monitor);
             return "Done";
         }

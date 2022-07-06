@@ -6,7 +6,7 @@ import com.driving.planning.common.hourly.Hourly;
 import com.driving.planning.event.domain.EventType;
 import com.driving.planning.event.dto.EventDto;
 import com.driving.planning.monitor.absence.Absence;
-import com.driving.planning.monitor.dto.MonitorDto;
+import com.driving.planning.monitor.dto.MonitorAbsenceDto;
 import com.driving.planning.school.dto.AddressDto;
 import com.driving.planning.school.dto.SchoolDto;
 import com.driving.planning.student.dto.StudentDto;
@@ -71,8 +71,8 @@ public class  Generator {
         return student;
     }
 
-    public static MonitorDto monitor(){
-        var monitor = new MonitorDto();
+    public static MonitorAbsenceDto monitor(){
+        var monitor = new MonitorAbsenceDto();
         monitor.setFirstName("firstname");
         monitor.setLastName("lastname");
         monitor.setPhoneNumber("748596322");
@@ -85,7 +85,7 @@ public class  Generator {
         absent.setStart(LocalDate.now());
         absent.setEnd(LocalDate.now().plusDays(3));
         absent.setReference("ref");
-        monitor.getAbsents().add(absent);
+        monitor.getAbsences().add(absent);
         return monitor;
     }
 

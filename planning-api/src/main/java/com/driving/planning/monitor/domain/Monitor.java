@@ -44,11 +44,11 @@ public class Monitor implements Serializable {
         absences = new ArrayList<>();
     }
 
-    public List<Absence> getAbsents() {
+    public List<Absence> getAbsences() {
         return absences;
     }
 
-    public void setAbsents(List<Absence> absences) {
+    public void setAbsences(List<Absence> absences) {
         this.absences = absences;
     }
 

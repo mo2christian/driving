@@ -1,6 +1,7 @@
 package com.driving.planning.monitor;
 
 import com.driving.planning.common.exception.PlanningException;
+import com.driving.planning.monitor.dto.MonitorAbsenceDto;
 import com.driving.planning.monitor.dto.MonitorDto;
 import org.eclipse.microprofile.opentracing.Traced;
 import org.jboss.logging.Logger;
@@ -44,6 +45,7 @@ public class MonitorService {
             throw new PlanningException(Response.Status.NOT_FOUND, "Monitor not found");
         }
         var monitor = mapper.toEntity(dto);
+        monitor.setAbsences(optionalMonitor.get().getAbsences());
         repository.update(monitor);
     }
 
@@ -54,21 +56,21 @@ public class MonitorService {
         repository.deleteById(monitor.getId());
     }
 
-    public Optional<MonitorDto> get(@NotBlank String id){
+    public Optional<MonitorAbsenceDto> get(@NotBlank String id){
         logger.debugf("Get student with %s", id);
         var entity = repository.findById(id)
                 .orElse(null);
         if (entity == null){
             return Optional.empty();
         }
-        return Optional.of(mapper.toDto(entity));
+        return Optional.of(mapper.toMonitorAbsenceDto(entity));
     }
 
-    public List<MonitorDto> list(){
+    public List<MonitorAbsenceDto> list(){
         logger.debug("List monitor");
         return repository.listAll()
                 .stream()
-                .map(mapper::toDto)
+                .map(mapper::toMonitorAbsenceDto)
                 .collect(Collectors.toList());
     }
 }

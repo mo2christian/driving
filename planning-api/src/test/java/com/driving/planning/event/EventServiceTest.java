@@ -8,7 +8,7 @@ import com.driving.planning.event.domain.Event;
 import com.driving.planning.event.domain.EventType;
 import com.driving.planning.event.dto.EventDto;
 import com.driving.planning.monitor.MonitorService;
-import com.driving.planning.monitor.dto.MonitorDto;
+import com.driving.planning.monitor.dto.MonitorAbsenceDto;
 import com.driving.planning.school.SchoolService;
 import com.driving.planning.student.StudentService;
 import io.quarkus.test.junit.QuarkusTest;
@@ -236,7 +236,7 @@ class EventServiceTest {
         Assertions.assertThat(eventService.hasEvent(event.getRelatedUserId(), date, date)).isFalse();
     }
 
-    private MonitorDto monitorWithWorkingDate(){
+    private MonitorAbsenceDto monitorWithWorkingDate(){
         var dto = Generator.monitor();
         var hourly = new Hourly();
         hourly.setDay(Day.fromDayOfWeek(LocalDate.now().getDayOfWeek()));

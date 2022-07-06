@@ -4,6 +4,7 @@ import com.driving.planning.Generator;
 import com.driving.planning.common.DatePattern;
 import com.driving.planning.common.hourly.Day;
 import com.driving.planning.common.hourly.Hourly;
+import com.driving.planning.monitor.dto.MonitorAbsenceDto;
 import com.driving.planning.monitor.dto.MonitorDto;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
@@ -212,7 +213,7 @@ class MonitorResourceTest {
     @Test
     void delete(){
         var id = "id";
-        var dto = new MonitorDto();
+        var dto = new MonitorAbsenceDto();
         dto.setId(id);
         when(service.get(id)).thenReturn(Optional.of(dto));
         given()
@@ -238,7 +239,7 @@ class MonitorResourceTest {
     }
 
     private void setField(Object target, String field, Object value) throws NoSuchFieldException, IllegalAccessException {
-        Field f = target.getClass().getDeclaredField(field);
+        Field f = target.getClass().getSuperclass().getDeclaredField(field);
         f.setAccessible(true);
         f.set(target, value);
     }

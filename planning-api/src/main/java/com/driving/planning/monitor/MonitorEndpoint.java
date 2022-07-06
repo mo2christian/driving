@@ -1,5 +1,6 @@
 package com.driving.planning.monitor;
 
+import com.driving.planning.monitor.dto.MonitorAbsenceDto;
 import com.driving.planning.monitor.dto.MonitorDto;
 import com.driving.planning.monitor.dto.MonitorResponse;
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -50,17 +51,18 @@ public interface MonitorEndpoint {
     @Parameter(in = ParameterIn.HEADER, name = "x-app-tenant", required = true,
             content = @Content(schema = @Schema(implementation = String.class)))
     @Parameter(in = ParameterIn.PATH, name = "id", required = true)
-    @APIResponse(responseCode = "200", description = "Change done")
+    @APIResponse(responseCode = "200", description = "Change done",
+            content = @Content(schema = @Schema(implementation = MonitorAbsenceDto.class)))
     @APIResponse(responseCode = "404", description = "Monitor not found")
     @Path("{id}")
     @GET
-    MonitorDto get(@PathParam("id") String id);
+    MonitorAbsenceDto get(@PathParam("id") String id);
 
     @Operation(description = "Modify monitor", operationId = "updateMonitor")
     @Parameter(in = ParameterIn.HEADER, name = "x-app-tenant", required = true,
             content = @Content(schema = @Schema(implementation = String.class)))
     @Parameter(in = ParameterIn.PATH, name = "id", required = true)
-    @RequestBody(name = "Moniteur", content = @Content(
+    @RequestBody(name = "Monitor", content = @Content(
             mediaType = MediaType.APPLICATION_JSON,
             schema = @Schema(name = "Monitor", implementation = MonitorDto.class)
     ))
