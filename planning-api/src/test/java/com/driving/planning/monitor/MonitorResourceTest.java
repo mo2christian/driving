@@ -134,7 +134,7 @@ class MonitorResourceTest {
                 .statusCode(204);
 
         ArgumentCaptor<MonitorDto> captor = ArgumentCaptor.forClass(MonitorDto.class);
-        verify(service, atMostOnce()).update(captor.capture());
+        verify(service, atMostOnce()).updateMonitor(captor.capture());
         Assertions.assertThat(captor.getValue())
                 .extracting(MonitorDto::getId, MonitorDto::getFirstName, MonitorDto::getLastName, MonitorDto::getPhoneNumber, MonitorDto::getWorkDays)
                 .containsExactly(id, dto.getFirstName(), dto.getLastName(), dto.getPhoneNumber(), dto.getWorkDays());
@@ -166,7 +166,7 @@ class MonitorResourceTest {
                 .post("/api/v1/monitors/{id}", id)
                 .then()
                 .statusCode(400);
-        verify(service, never()).update(any());
+        verify(service, never()).updateMonitor(any());
 
         var hourly = new Hourly();
         hourly.setBegin(LocalTime.now());
@@ -181,7 +181,7 @@ class MonitorResourceTest {
                 .post("/api/v1/monitors/{id}", id)
                 .then()
                 .statusCode(400);
-        verify(service, never()).update(any());
+        verify(service, never()).updateMonitor(any());
     }
 
     @Test

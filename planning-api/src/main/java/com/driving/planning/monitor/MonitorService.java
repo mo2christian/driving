@@ -19,6 +19,8 @@ import java.util.stream.Collectors;
 @ApplicationScoped
 public class MonitorService {
 
+    private static final String NOT_FOUND_MSG = "Monitor not found";
+
     private final MonitorRepository repository;
 
     private final MonitorMapper mapper;
@@ -38,21 +40,31 @@ public class MonitorService {
         repository.persist(monitor);
     }
 
-    public void update(@Valid MonitorDto dto){
+    public void updateMonitor(@Valid MonitorDto dto){
         logger.debugf("Update monitor %s", dto.getId());
         var optionalMonitor = repository.findById(dto.getId());
         if (optionalMonitor.isEmpty()){
-            throw new PlanningException(Response.Status.NOT_FOUND, "Monitor not found");
+            throw new PlanningException(Response.Status.NOT_FOUND, NOT_FOUND_MSG);
         }
         var monitor = mapper.toEntity(dto);
         monitor.setAbsences(optionalMonitor.get().getAbsences());
         repository.update(monitor);
     }
 
+    public void updateMonitorWithAbsence(@Valid MonitorAbsenceDto dto){
+        logger.debugf("Update monitor %s with absence", dto.getId());
+        var optionalMonitor = repository.findById(dto.getId());
+        if (optionalMonitor.isEmpty()){
+            throw new PlanningException(Response.Status.NOT_FOUND, NOT_FOUND_MSG);
+        }
+        var monitor = mapper.toMonitorWithAbsence(dto);
+        repository.update(monitor);
+    }
+
     public void delete(@NotBlank String id){
         logger.debugf("Delete monitor %s", id);
         var monitor = repository.findById(id)
-                .orElseThrow(() -> new PlanningException(Response.Status.NOT_FOUND, "Monitor not found"));
+                .orElseThrow(() -> new PlanningException(Response.Status.NOT_FOUND, NOT_FOUND_MSG));
         repository.deleteById(monitor.getId());
     }
 

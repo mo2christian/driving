@@ -56,7 +56,7 @@ public class MonitorResource implements MonitorEndpoint {
             throw new PlanningException(Response.Status.BAD_REQUEST, "Cannot modify work days");
         }
         dto.setId(id);
-        service.update(dto);
+        service.updateMonitor(dto);
     }
 
     @Override

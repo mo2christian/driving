@@ -43,7 +43,7 @@ class AbsenceServiceTest {
         var ref = monitor.getAbsences().get(0).getReference();
         absenceService.removeAbsent(monitor, ref);
         ArgumentCaptor<MonitorAbsenceDto> dtoCaptor = ArgumentCaptor.forClass(MonitorAbsenceDto.class);
-        verify(monitorService, atMostOnce()).update(dtoCaptor.capture());
+        verify(monitorService, atMostOnce()).updateMonitorWithAbsence(dtoCaptor.capture());
         assertThat(dtoCaptor.getValue())
                 .isNotNull();
         assertThat(dtoCaptor.getValue().getAbsences())
@@ -84,7 +84,7 @@ class AbsenceServiceTest {
                 .contains(absent.getStart(), monitor.getId(), EventType.MONITOR);
 
         ArgumentCaptor<MonitorAbsenceDto> monitorCaptor = ArgumentCaptor.forClass(MonitorAbsenceDto.class);
-        verify(monitorService, times(1)).update(monitorCaptor.capture());
+        verify(monitorService, times(1)).updateMonitorWithAbsence(monitorCaptor.capture());
         assertThat(monitorCaptor.getValue().getAbsences())
                 .hasSize(1)
                 .element(0)

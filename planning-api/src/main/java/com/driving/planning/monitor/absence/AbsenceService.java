@@ -62,7 +62,7 @@ public class AbsenceService {
     public void removeAbsent(@NotNull MonitorAbsenceDto monitor, @NotNull String ref){
         logger.debugf("Remove absent %s", ref);
         monitor.getAbsences().removeIf(a -> a.getReference().equalsIgnoreCase(ref));
-        monitorService.update(monitor);
+        monitorService.updateMonitorWithAbsence(monitor);
         eventService.deleteByRef(ref);
     }
 
@@ -119,7 +119,7 @@ public class AbsenceService {
             absent.setEnd(request.getEnd());
             absent.setReference(ref);
             monitor.getAbsences().add(absent);
-            monitorService.update(monitor);
+            monitorService.updateMonitorWithAbsence(monitor);
             return "Done";
         }
 

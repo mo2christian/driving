@@ -47,10 +47,10 @@ class MonitorServiceTest {
         MonitorDto monitorDto = Generator.monitor();
         monitorDto.setId(id);
         when(repository.findById(id)).thenReturn(Optional.empty());
-        assertThatExceptionOfType(PlanningException.class).isThrownBy(() -> service.update(monitorDto));
+        assertThatExceptionOfType(PlanningException.class).isThrownBy(() -> service.updateMonitor(monitorDto));
 
         when(repository.findById(id)).thenReturn(Optional.of(new Monitor()));
-        service.update(monitorDto);
+        service.updateMonitor(monitorDto);
         ArgumentCaptor<Monitor> monitorCaptor = ArgumentCaptor.forClass(Monitor.class);
         verify(repository, atMostOnce()).update(monitorCaptor.capture());
         Monitor monitor = monitorCaptor.getValue();
