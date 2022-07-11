@@ -1,7 +1,8 @@
 package com.driving.planning.student.otp;
 
 import com.driving.planning.common.constraint.PhoneNumber;
-import com.driving.planning.common.exception.PlanningException;
+import com.driving.planning.common.exception.BadRequestException;
+import com.driving.planning.common.exception.NotFoundException;
 import com.driving.planning.student.StudentService;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.ParameterIn;
@@ -18,7 +19,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Response;
 import java.util.Optional;
 
 @ApplicationScoped
@@ -52,11 +52,11 @@ public class OTPResource {
     public void sendOTP(@PathParam("number") @PhoneNumber String phoneNumber, @QueryParam("canal") MethodType methodType){
         logger.infof("Send OTP by %s to %s", methodType, phoneNumber);
         var student = studentService.findByNumber(phoneNumber)
-                .orElseThrow(() -> new PlanningException(Response.Status.NOT_FOUND, "PhoneNumber not found"));
+                .orElseThrow(() -> new NotFoundException("PhoneNumber not found"));
         switch (methodType){
             case EMAIL:
                 if (student.getEmail() == null || student.getEmail().isBlank()){
-                    throw new PlanningException(Response.Status.METHOD_NOT_ALLOWED, "Not email available");
+                    throw new BadRequestException("Email not available");
                 }
                 otpService.sendOTPByMail(student);
                 break;
@@ -64,7 +64,7 @@ public class OTPResource {
                 otpService.sendOTPBySMS(student);
                 break;
             default:
-                throw new PlanningException(Response.Status.BAD_REQUEST, "Unexpected value: " + methodType);
+                throw new BadRequestException("Unexpected value: " + methodType);
         }
     }
 
@@ -81,13 +81,13 @@ public class OTPResource {
     public void verifyOTP(@PathParam("number") @PhoneNumber String phoneNumber, @QueryParam("otp") String otp){
         logger.infof("Validate OTP %s for user %s", otp, phoneNumber);
         var student = studentService.findByNumber(phoneNumber)
-                .orElseThrow(() -> new PlanningException(Response.Status.NOT_FOUND, "PhoneNumber not found"));
+                .orElseThrow(() -> new NotFoundException("PhoneNumber not found"));
         Optional<OTP> otpOptional = otpService.findValidOTP(student.getId())
                 .stream()
                 .filter(o -> otp.equals(o.getContent()))
                 .findFirst();
         if (otpOptional.isEmpty()){
-            throw new PlanningException(Response.Status.BAD_REQUEST, "OTP not found or expired");
+            throw new BadRequestException("OTP not found or expired");
         }
     }
 

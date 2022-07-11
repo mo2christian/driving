@@ -1,6 +1,6 @@
 package com.driving.planning.student;
 
-import com.driving.planning.common.exception.PlanningException;
+import com.driving.planning.common.exception.NotFoundException;
 import com.driving.planning.student.dto.StudentDto;
 import com.driving.planning.student.dto.StudentReservationDto;
 import org.eclipse.microprofile.opentracing.Traced;
@@ -9,7 +9,6 @@ import org.jboss.logging.Logger;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.validation.Valid;
-import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -43,7 +42,7 @@ public class StudentService {
         logger.debugf("Update student %s", dto.getId());
         var optionalStudent = repository.findById(dto.getId());
         if (optionalStudent.isEmpty()){
-            throw new PlanningException(Response.Status.NOT_FOUND, NOT_FOUND);
+            throw new NotFoundException(NOT_FOUND);
         }
         var student = mapper.toStudent(dto);
         student.setReservations(optionalStudent.get().getReservations());
@@ -54,7 +53,7 @@ public class StudentService {
         logger.debugf("Update student with reservation %s", dto.getId());
         var optionalStudent = repository.findById(dto.getId());
         if (optionalStudent.isEmpty()){
-            throw new PlanningException(Response.Status.NOT_FOUND, NOT_FOUND);
+            throw new NotFoundException(NOT_FOUND);
         }
         var student = mapper.toStudentWithReservation(dto);
         repository.update(student);
@@ -63,7 +62,7 @@ public class StudentService {
     public void delete(String id){
         logger.debugf("Delete student %s", id);
         var student = repository.findById(id)
-                .orElseThrow(() -> new PlanningException(Response.Status.NOT_FOUND, NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND));
         repository.deleteById(student.getId());
     }
 

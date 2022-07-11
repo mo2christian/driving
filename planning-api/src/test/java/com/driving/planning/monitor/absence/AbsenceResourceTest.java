@@ -1,7 +1,7 @@
 package com.driving.planning.monitor.absence;
 
 import com.driving.planning.Generator;
-import com.driving.planning.common.exception.PlanningException;
+import com.driving.planning.common.exception.NotFoundException;
 import com.driving.planning.monitor.MonitorService;
 import com.driving.planning.monitor.dto.MonitorAbsenceDto;
 import io.quarkus.test.junit.QuarkusTest;
@@ -9,7 +9,6 @@ import io.quarkus.test.junit.mockito.InjectMock;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 
-import javax.ws.rs.core.Response;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -47,7 +46,7 @@ class AbsenceResourceTest {
     void addNotFound(){
         LocalDate now = LocalDate.now();
         var absent = new AbsenceRequest(now, now.plusDays(5));
-        when(monitorService.get("id")).thenThrow(new PlanningException(Response.Status.NOT_FOUND, "Not found"));
+        when(monitorService.get("id")).thenThrow(new NotFoundException("Not found"));
         given()
                 .accept(ContentType.JSON)
                 .contentType(ContentType.JSON)

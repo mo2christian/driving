@@ -1,6 +1,6 @@
 package com.driving.planning.monitor;
 
-import com.driving.planning.common.exception.PlanningException;
+import com.driving.planning.common.exception.NotFoundException;
 import com.driving.planning.monitor.dto.MonitorAbsenceDto;
 import com.driving.planning.monitor.dto.MonitorDto;
 import org.eclipse.microprofile.opentracing.Traced;
@@ -10,7 +10,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -44,7 +43,7 @@ public class MonitorService {
         logger.debugf("Update monitor %s", dto.getId());
         var optionalMonitor = repository.findById(dto.getId());
         if (optionalMonitor.isEmpty()){
-            throw new PlanningException(Response.Status.NOT_FOUND, NOT_FOUND_MSG);
+            throw new NotFoundException(NOT_FOUND_MSG);
         }
         var monitor = mapper.toEntity(dto);
         monitor.setAbsences(optionalMonitor.get().getAbsences());
@@ -55,7 +54,7 @@ public class MonitorService {
         logger.debugf("Update monitor %s with absence", dto.getId());
         var optionalMonitor = repository.findById(dto.getId());
         if (optionalMonitor.isEmpty()){
-            throw new PlanningException(Response.Status.NOT_FOUND, NOT_FOUND_MSG);
+            throw new NotFoundException(NOT_FOUND_MSG);
         }
         var monitor = mapper.toMonitorWithAbsence(dto);
         repository.update(monitor);
@@ -64,7 +63,7 @@ public class MonitorService {
     public void delete(@NotBlank String id){
         logger.debugf("Delete monitor %s", id);
         var monitor = repository.findById(id)
-                .orElseThrow(() -> new PlanningException(Response.Status.NOT_FOUND, NOT_FOUND_MSG));
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND_MSG));
         repository.deleteById(monitor.getId());
     }
 

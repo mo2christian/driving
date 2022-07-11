@@ -1,5 +1,6 @@
 package com.driving.planning.student.reservation;
 
+import com.driving.planning.common.exception.InternalErrorException;
 import com.driving.planning.common.exception.PlanningException;
 import com.driving.planning.event.EventService;
 import com.driving.planning.event.domain.EventType;
@@ -20,7 +21,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.core.Response;
 import java.util.UUID;
 
 @Traced
@@ -67,7 +67,7 @@ public class ReservationService {
         PlanningException ex) {
             throw ex;
         } catch (Exception ex) {
-            throw new PlanningException(Response.Status.INTERNAL_SERVER_ERROR, "Unable to register reservation", ex);
+            throw new InternalErrorException("Unable to register reservation", ex);
         }
     }
 

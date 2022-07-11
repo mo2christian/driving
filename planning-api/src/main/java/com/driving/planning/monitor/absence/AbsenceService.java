@@ -1,5 +1,7 @@
 package com.driving.planning.monitor.absence;
 
+import com.driving.planning.common.exception.BadRequestException;
+import com.driving.planning.common.exception.InternalErrorException;
 import com.driving.planning.common.exception.PlanningException;
 import com.driving.planning.common.hourly.Hourly;
 import com.driving.planning.config.database.Tenant;
@@ -22,7 +24,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.core.Response;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
@@ -69,7 +70,7 @@ public class AbsenceService {
     public void addAbsent(@NotNull MonitorAbsenceDto monitor, @Valid AbsenceRequest request) {
         logger.debugf("Add absent for monitor %s", monitor);
         if (hasAbsent(monitor, request)) {
-            throw new PlanningException(Response.Status.BAD_REQUEST, "Monitor already have and event at that time");
+            throw new BadRequestException("Monitor already have and event at that time");
         }
         var txnOptions = TransactionOptions.builder()
                 .readPreference(ReadPreference.primary())
@@ -82,7 +83,7 @@ public class AbsenceService {
         } catch (PlanningException ex) {
             throw ex;
         } catch (Exception ex) {
-            throw new PlanningException(Response.Status.INTERNAL_SERVER_ERROR, "Unable to register absent", ex);
+            throw new InternalErrorException("Unable to register absent", ex);
         }
     }
 

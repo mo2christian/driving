@@ -1,5 +1,6 @@
 package com.driving.planning.common.mail;
 
+import com.driving.planning.common.exception.InternalErrorException;
 import com.sendgrid.Request;
 import com.sendgrid.Response;
 import com.sendgrid.SendGrid;
@@ -7,7 +8,6 @@ import io.quarkus.test.junit.QuarkusTest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
 
@@ -51,7 +51,7 @@ class EmailServiceTest {
             var receiver = "test@test.com";
             var mail = new Mail(MailTemplate.CONFIRM_INSCRIPTION, receiver);
             Assertions.assertThatThrownBy(() -> emailService.sendEmail(mail))
-                .isInstanceOf(EmailException.class);
+                .isInstanceOf(InternalErrorException.class);
         }
     }
 

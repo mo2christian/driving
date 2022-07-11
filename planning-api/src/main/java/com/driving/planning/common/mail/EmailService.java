@@ -1,5 +1,6 @@
 package com.driving.planning.common.mail;
 
+import com.driving.planning.common.exception.InternalErrorException;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.SendGrid;
@@ -48,7 +49,7 @@ public class EmailService {
             sg.api(request);
         } catch (IOException ex) {
             logger.errorf(ex,"Unable to send mail of type %s", message.getTemplate());
-            throw new EmailException("Unable to send mail", ex);
+            throw new InternalErrorException("Unable to send mail", ex);
         }
     }
 

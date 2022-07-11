@@ -4,7 +4,7 @@ import com.driving.planning.Generator;
 import com.driving.planning.account.AccountService;
 import com.driving.planning.account.dto.AccountDto;
 import com.driving.planning.common.DatePattern;
-import com.driving.planning.common.exception.PlanningException;
+import com.driving.planning.common.exception.BadRequestException;
 import com.driving.planning.school.dto.SchoolDto;
 import com.driving.planning.school.dto.SchoolRequest;
 import io.quarkus.test.junit.QuarkusTest;
@@ -103,7 +103,7 @@ class SchoolResourceTest {
     @Test
     void handlePlanningException(){
         var msg = "Error";
-        doThrow(new PlanningException(Response.Status.BAD_REQUEST, msg)).when(schoolService).list();
+        doThrow(new BadRequestException(msg)).when(schoolService).list();
         given()
                 .accept(ContentType.JSON)
                 .when()

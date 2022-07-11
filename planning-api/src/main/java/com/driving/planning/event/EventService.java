@@ -1,5 +1,8 @@
 package com.driving.planning.event;
 
+import com.driving.planning.common.exception.BadRequestException;
+import com.driving.planning.common.exception.InternalErrorException;
+import com.driving.planning.common.exception.NotFoundException;
 import com.driving.planning.common.exception.PlanningException;
 import com.driving.planning.config.database.Tenant;
 import com.driving.planning.event.domain.EventType;
@@ -21,7 +24,6 @@ import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.core.Response;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -70,14 +72,14 @@ public class EventService {
     public void add(@Valid final EventDto dto){
         logger.debugf("Add event %s", dto);
         if (dto.getType() == EventType.MONITOR && monitorService.get(dto.getRelatedUserId()).isEmpty()){
-            throw new PlanningException(Response.Status.NOT_FOUND, String.format("Monitor with id %s do not exist", dto.getRelatedUserId()));
+            throw new NotFoundException(String.format("Monitor with id %s do not exist", dto.getRelatedUserId()));
         }
         if (dto.getType() == EventType.STUDENT && studentService.get(dto.getRelatedUserId()).isEmpty()){
-            throw new PlanningException(Response.Status.NOT_FOUND, String.format("Student with id %s do not exist", dto.getRelatedUserId()));
+            throw new NotFoundException(String.format("Student with id %s do not exist", dto.getRelatedUserId()));
         }
         if (schoolService.isSchoolClosed(tenant.getName(), LocalDateTime.of(dto.getEventDate(), dto.getBegin())) ||
                 schoolService.isSchoolClosed(tenant.getName(), LocalDateTime.of(dto.getEventDate(), dto.getEnd()))){
-            throw new PlanningException(Response.Status.BAD_REQUEST, "School is not open at that time");
+            throw new BadRequestException("School is not open at that time");
         }
         var txOption = TransactionOptions.builder()
                 .readPreference(ReadPreference.primary())
@@ -86,10 +88,10 @@ public class EventService {
                 .build();
         TransactionBody<String> txBody = () -> {
             if (!isPLaceAvailable(dto)){
-                throw new PlanningException(Response.Status.BAD_REQUEST, "Place not found for the event");
+                throw new BadRequestException("Place not found for the event");
             }
             if (hasEvent(dto)){
-                throw new PlanningException(Response.Status.BAD_REQUEST, "User already register an event at that time");
+                throw new BadRequestException("User already register an event at that time");
             }
             var event = mapper.toEntity(dto);
             repository.persist(event);
@@ -100,7 +102,7 @@ public class EventService {
         } catch (PlanningException ex) {
             throw ex;
         } catch (Exception ex) {
-            throw new PlanningException(Response.Status.INTERNAL_SERVER_ERROR, "Unable to register an event", ex);
+            throw new InternalErrorException("Unable to register an event", ex);
         }
     }
 

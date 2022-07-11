@@ -1,6 +1,6 @@
 package com.driving.planning.school;
 
-import com.driving.planning.common.exception.PlanningException;
+import com.driving.planning.common.exception.NotFoundException;
 import com.driving.planning.school.domain.School;
 import com.driving.planning.school.dto.SchoolDto;
 import org.eclipse.microprofile.opentracing.Traced;
@@ -9,7 +9,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.core.Response;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -54,7 +53,7 @@ public class SchoolService {
     public void update(SchoolDto schoolDto){
         var school = repository.findByPseudo(schoolDto.getPseudo());
         if (school.isEmpty()){
-            throw new PlanningException(Response.Status.NOT_FOUND, SCHOOL_NOT_FOUND);
+            throw new NotFoundException(SCHOOL_NOT_FOUND);
         }
         repository.update(schoolMapper.toEntity(schoolDto));
     }
@@ -66,7 +65,7 @@ public class SchoolService {
 
     public void delete(@NotNull String pseudo){
         var school = repository.findByPseudo(pseudo)
-                .orElseThrow(() -> new PlanningException(Response.Status.NOT_FOUND, SCHOOL_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(SCHOOL_NOT_FOUND));
         repository.delete(school.getPseudo());
         repository.deleteDatabase(school.getPseudo());
     }
@@ -82,7 +81,7 @@ public class SchoolService {
 
     public boolean isSchoolOpened(@NotNull String pseudo, @NotNull final LocalDateTime dateTime){
         var school = get(pseudo)
-                .orElseThrow(() -> new PlanningException(Response.Status.NOT_FOUND, SCHOOL_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(SCHOOL_NOT_FOUND));
         var time = dateTime.toLocalTime();
         return school.getWorkDays()
                 .stream()
