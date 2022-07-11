@@ -88,6 +88,9 @@ public class EventService {
             if (!isPLaceAvailable(dto)){
                 throw new PlanningException(Response.Status.BAD_REQUEST, "Place not found for the event");
             }
+            if (hasEvent(dto)){
+                throw new PlanningException(Response.Status.BAD_REQUEST, "User already register an event at that time");
+            }
             var event = mapper.toEntity(dto);
             repository.persist(event);
             return "Done";
@@ -144,4 +147,14 @@ public class EventService {
     private boolean between(LocalTime begin, LocalTime value, LocalTime end){
         return (begin.isBefore(value) || begin.equals(value)) && value.isBefore(end);
     }
+
+    private boolean hasEvent(final EventDto eventDto){
+        return repository.listByDate(eventDto.getEventDate())
+                .stream()
+                .filter(event -> event.getRelatedUserId().equals(eventDto.getRelatedUserId()))
+                .anyMatch(event ->
+                        between(event.getBegin(), eventDto.getBegin(), event.getEnd())
+                                || between(event.getBegin(), eventDto.getEnd(), event.getEnd()));
+    }
+
 }
