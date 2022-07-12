@@ -1,6 +1,7 @@
 package com.driving.planning.school;
 
 import com.driving.planning.common.exception.NotFoundException;
+import com.driving.planning.config.database.Tenant;
 import com.driving.planning.school.domain.School;
 import com.driving.planning.school.dto.SchoolDto;
 import org.eclipse.microprofile.opentracing.Traced;
@@ -24,11 +25,15 @@ public class SchoolService {
 
     private final SchoolMapper schoolMapper;
 
+    private final Tenant tenant;
+
     @Inject
     public SchoolService(SchoolRepository repository,
-                         SchoolMapper schoolMapper) {
+                         SchoolMapper schoolMapper,
+                         Tenant tenant) {
         this.repository = repository;
         this.schoolMapper = schoolMapper;
+        this.tenant = tenant;
     }
 
     public List<SchoolDto> list(){
@@ -73,6 +78,10 @@ public class SchoolService {
     public void createSchool(@Valid SchoolDto dto){
         var school = schoolMapper.toEntity(dto);
         repository.persist(school);
+    }
+
+    public boolean isSchoolClosed(@NotNull final LocalDateTime dateTime){
+        return !isSchoolOpened(tenant.getName(), dateTime);
     }
 
     public boolean isSchoolClosed(@NotNull String pseudo, @NotNull final LocalDateTime dateTime){

@@ -2,7 +2,6 @@ package com.driving.planning.event;
 
 import com.driving.planning.common.exception.BadRequestException;
 import com.driving.planning.common.exception.NotFoundException;
-import com.driving.planning.config.database.Tenant;
 import com.driving.planning.event.domain.EventType;
 import com.driving.planning.event.dto.EventDto;
 import com.driving.planning.monitor.MonitorService;
@@ -37,15 +36,12 @@ public class EventService {
 
     private final SchoolService schoolService;
 
-    private final Tenant tenant;
-
     @Inject
     public EventService(EventMapper mapper,
                         EventRepository repository,
                         MonitorService monitorService,
                         StudentService studentService,
                         SchoolService schoolService,
-                        Tenant tenant,
                         Logger logger) {
         this.mapper = mapper;
         this.repository = repository;
@@ -53,7 +49,6 @@ public class EventService {
         this.studentService = studentService;
         this.logger = logger;
         this.schoolService = schoolService;
-        this.tenant = tenant;
     }
 
     public void add(@Valid final EventDto dto){
@@ -64,8 +59,8 @@ public class EventService {
         if (dto.getType() == EventType.STUDENT && studentService.get(dto.getRelatedUserId()).isEmpty()){
             throw new NotFoundException(String.format("Student with id %s do not exist", dto.getRelatedUserId()));
         }
-        if (schoolService.isSchoolClosed(tenant.getName(), LocalDateTime.of(dto.getEventDate(), dto.getBegin())) ||
-                schoolService.isSchoolClosed(tenant.getName(), LocalDateTime.of(dto.getEventDate(), dto.getEnd()))){
+        if (schoolService.isSchoolClosed(LocalDateTime.of(dto.getEventDate(), dto.getBegin())) ||
+                schoolService.isSchoolClosed(LocalDateTime.of(dto.getEventDate(), dto.getEnd()))){
             throw new BadRequestException("School is not open at that time");
         }
         if (!isPlaceAvailable(dto)){
