@@ -6,6 +6,8 @@ public class DatePattern {
 
     public static final String TIME = "HH:mm[:ss]";
 
+    public static final String TIME_NO_SECOND = "HH:mm";
+
     private DatePattern() {
     }
 

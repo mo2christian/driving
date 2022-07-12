@@ -52,7 +52,7 @@ public class Hourly implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Hourly hourly = (Hourly) o;
-        var formatter = DateTimeFormatter.ofPattern(DatePattern.TIME);
+        var formatter = DateTimeFormatter.ofPattern(DatePattern.TIME_NO_SECOND);
         if (hourly.begin == null || begin == null){
             return false;
         }
