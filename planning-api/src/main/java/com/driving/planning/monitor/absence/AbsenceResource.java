@@ -1,5 +1,6 @@
 package com.driving.planning.monitor.absence;
 
+import com.driving.planning.common.ResponseId;
 import com.driving.planning.common.exception.NotFoundException;
 import com.driving.planning.monitor.MonitorService;
 
@@ -23,10 +24,11 @@ public class AbsenceResource implements AbsenceEndpoint {
     }
 
     @Override
-    public void add(@PathParam("id") String monitorId, @Valid AbsenceRequest request){
+    public ResponseId add(@PathParam("id") String monitorId, @Valid AbsenceRequest request){
         var monitor = monitorService.get(monitorId)
                 .orElseThrow(() -> new NotFoundException("Monitor not found"));
-        absenceService.addAbsent(monitor, request);
+        var ref = absenceService.addAbsent(monitor, request);
+        return new ResponseId(ref);
     }
 
     @Override

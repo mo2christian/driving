@@ -59,7 +59,7 @@ public class AbsenceService {
         }
     }
 
-    public void addAbsent(@NotNull MonitorAbsenceDto monitor, @Valid AbsenceRequest request) {
+    public String addAbsent(@NotNull MonitorAbsenceDto monitor, @Valid AbsenceRequest request) {
         logger.debugf("Add absent for monitor %s", monitor);
         if (hasAbsence(monitor, request)) {
             throw new BadRequestException("Monitor already have and event at that time");
@@ -67,7 +67,7 @@ public class AbsenceService {
         var txnOptions = transactionOptions();
         var txBody = new AddEventTransaction(request, monitor);
         try (var session = mongoClient.startSession()) {
-            session.withTransaction(txBody, txnOptions);
+            return session.withTransaction(txBody, txnOptions);
         } catch (PlanningException ex) {
             throw ex;
         } catch (Exception ex) {
@@ -138,7 +138,7 @@ public class AbsenceService {
             absent.setReference(ref);
             monitor.getAbsences().add(absent);
             monitorService.updateMonitorWithAbsence(monitor);
-            return "Done";
+            return ref;
         }
 
         private Optional<Hourly> getWorkDay(MonitorAbsenceDto monitorAbsenceDto, LocalDate date) {
