@@ -23,9 +23,9 @@ public class DatabaseResolverInitializer {
     Tenant tenant;
 
     public void init(@Observes StartupEvent event){
+        alterAnnotation(Monitor.class, tenant);
         alterAnnotation(Account.class, tenant);
         alterAnnotation(Event.class, tenant);
-        alterAnnotation(Monitor.class, tenant);
         alterAnnotation(Student.class, tenant);
         alterAnnotation(OTP.class, tenant);
     }

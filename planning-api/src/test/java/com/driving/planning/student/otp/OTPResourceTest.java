@@ -66,7 +66,7 @@ class OTPResourceTest {
                 .when()
                 .post("/api/v1/students/{phone}/otp/send", student.getPhoneNumber())
                 .then()
-                .statusCode(405);
+                .statusCode(400);
     }
 
     @Test

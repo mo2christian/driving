@@ -6,12 +6,12 @@ public class PlanningException extends RuntimeException {
 
     private final Response.Status status;
 
-    public PlanningException(Response.Status status, String message) {
+    PlanningException(Response.Status status, String message) {
         super(message);
         this.status = status;
     }
 
-    public PlanningException(Response.Status status, String message, Throwable cause) {
+    PlanningException(Response.Status status, String message, Throwable cause) {
         super(message, cause);
         this.status = status;
     }

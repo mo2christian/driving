@@ -8,7 +8,7 @@ import com.driving.planning.event.domain.Event;
 import com.driving.planning.event.domain.EventType;
 import com.driving.planning.event.dto.EventDto;
 import com.driving.planning.monitor.MonitorService;
-import com.driving.planning.monitor.dto.MonitorDto;
+import com.driving.planning.monitor.dto.MonitorAbsenceDto;
 import com.driving.planning.school.SchoolService;
 import com.driving.planning.student.StudentService;
 import io.quarkus.test.junit.QuarkusTest;
@@ -60,7 +60,7 @@ class EventServiceTest {
         var eventDto = Generator.event();
         eventDto.setType(EventType.STUDENT);
         when(monitorService.list()).thenReturn(Collections.singletonList(monitorWithWorkingDate()));
-        when(studentService.get(eventDto.getRelatedUserId())).thenReturn(Optional.of(Generator.student()));
+        when(studentService.get(eventDto.getRelatedUserId())).thenReturn(Optional.of(Generator.studentReservation()));
         eventService.add(eventDto);
         ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
         verify(eventRepository, times(1)).persist(eventCaptor.capture());
@@ -143,27 +143,27 @@ class EventServiceTest {
         var eventDto = Generator.event();
         when(eventRepository.listByDate(eventDto.getEventDate())).thenReturn(Collections.singletonList(eventRef));
         when(monitorService.list()).thenReturn(Collections.singletonList(monitorWithWorkingDate()));
-        Assertions.assertThat(eventService.isPLaceAvailable(eventDto)).isFalse();
+        Assertions.assertThat(eventService.isPlaceAvailable(eventDto)).isFalse();
 
         eventDto = Generator.event();
         eventDto.setBegin(eventDto.getBegin().minusMinutes(30));
         eventDto.setEnd(eventDto.getEnd().minusMinutes(30));
         when(eventRepository.listByDate(eventDto.getEventDate())).thenReturn(Collections.singletonList(eventRef));
         when(monitorService.list()).thenReturn(Collections.singletonList(monitorWithWorkingDate()));
-        Assertions.assertThat(eventService.isPLaceAvailable(eventDto)).isFalse();
+        Assertions.assertThat(eventService.isPlaceAvailable(eventDto)).isFalse();
 
         eventDto = Generator.event();
         eventDto.setEnd(eventDto.getEnd().minusMinutes(30));
         when(eventRepository.listByDate(eventDto.getEventDate())).thenReturn(Collections.singletonList(eventRef));
         when(monitorService.list()).thenReturn(Collections.singletonList(monitorWithWorkingDate()));
-        Assertions.assertThat(eventService.isPLaceAvailable(eventDto)).isFalse();
+        Assertions.assertThat(eventService.isPlaceAvailable(eventDto)).isFalse();
 
         eventDto = Generator.event();
         eventDto.setBegin(eventDto.getBegin().plusMinutes(10));
         eventDto.setEnd(eventDto.getEnd().minusMinutes(10));
         when(eventRepository.listByDate(eventDto.getEventDate())).thenReturn(Collections.singletonList(eventMapper.toEntity(eventDto)));
         when(monitorService.list()).thenReturn(Collections.singletonList(monitorWithWorkingDate()));
-        Assertions.assertThat(eventService.isPLaceAvailable(eventDto)).isFalse();
+        Assertions.assertThat(eventService.isPlaceAvailable(eventDto)).isFalse();
     }
 
     @Test
@@ -174,7 +174,7 @@ class EventServiceTest {
         );
         when(monitorService.list()).thenReturn(Collections.singletonList(monitor));
         var eventDto = Generator.event();
-        Assertions.assertThat(eventService.isPLaceAvailable(eventDto)).isFalse();
+        Assertions.assertThat(eventService.isPlaceAvailable(eventDto)).isFalse();
     }
 
     @Test
@@ -197,7 +197,7 @@ class EventServiceTest {
         var event = Generator.event();
         event.setType(EventType.STUDENT);
         when(schoolService.isSchoolOpened(anyString(), any())).thenReturn(false);
-        when(studentService.get(anyString())).thenReturn(Optional.of(Generator.student()));
+        when(studentService.get(anyString())).thenReturn(Optional.of(Generator.studentReservation()));
         Assertions.assertThatThrownBy(() -> eventService.add(event))
                 .isInstanceOf(PlanningException.class)
                 .extracting("status")
@@ -213,30 +213,7 @@ class EventServiceTest {
         Assertions.assertThat(refCaptor.getValue()).isEqualTo(event.getReference());
     }
 
-    @Test
-    void haveEvent(){
-        var event = new Event();
-        event.setEventDate(LocalDate.now());
-        event.setRelatedUserId("userId");
-        when(eventRepository.listByUserId(event.getRelatedUserId())).thenReturn(Collections.singletonList(event));
-        Assertions.assertThat(eventService.hasEvent(event.getRelatedUserId(), event.getEventDate(), event.getEventDate())).isTrue();
-    }
-
-    @Test
-    void haveNotEvent(){
-        var event = new Event();
-        event.setEventDate(LocalDate.now());
-        event.setRelatedUserId("userId");
-
-        var date = event.getEventDate().plusDays(5);
-        when(eventRepository.listByUserId(event.getRelatedUserId())).thenReturn(Collections.singletonList(event));
-        Assertions.assertThat(eventService.hasEvent(event.getRelatedUserId(), date, date)).isFalse();
-
-        when(eventRepository.listByUserId(event.getRelatedUserId())).thenReturn(Collections.emptyList());
-        Assertions.assertThat(eventService.hasEvent(event.getRelatedUserId(), date, date)).isFalse();
-    }
-
-    private MonitorDto monitorWithWorkingDate(){
+    private MonitorAbsenceDto monitorWithWorkingDate(){
         var dto = Generator.monitor();
         var hourly = new Hourly();
         hourly.setDay(Day.fromDayOfWeek(LocalDate.now().getDayOfWeek()));

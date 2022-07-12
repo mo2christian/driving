@@ -1,7 +1,7 @@
 package com.driving.planning.account;
 
 import com.driving.planning.account.dto.AccountDto;
-import com.driving.planning.common.exception.PlanningException;
+import com.driving.planning.common.exception.InternalErrorException;
 import org.eclipse.microprofile.opentracing.Traced;
 import org.jboss.logging.Logger;
 
@@ -9,7 +9,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.core.Response;
 import javax.xml.bind.DatatypeConverter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -63,7 +62,7 @@ public class AccountService {
         }
         catch (NoSuchAlgorithmException ex){
             logger.error("Error while hashing password", ex);
-            throw new PlanningException(Response.Status.INTERNAL_SERVER_ERROR, "Error while hashing password", ex);
+            throw new InternalErrorException("Error while hashing password", ex);
         }
     }
 

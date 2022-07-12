@@ -1,6 +1,7 @@
 package com.driving.planning.school;
 
-import com.driving.planning.common.exception.PlanningException;
+import com.driving.planning.common.exception.NotFoundException;
+import com.driving.planning.config.database.Tenant;
 import com.driving.planning.school.domain.School;
 import com.driving.planning.school.dto.SchoolDto;
 import org.eclipse.microprofile.opentracing.Traced;
@@ -9,7 +10,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.core.Response;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -25,11 +25,15 @@ public class SchoolService {
 
     private final SchoolMapper schoolMapper;
 
+    private final Tenant tenant;
+
     @Inject
     public SchoolService(SchoolRepository repository,
-                         SchoolMapper schoolMapper) {
+                         SchoolMapper schoolMapper,
+                         Tenant tenant) {
         this.repository = repository;
         this.schoolMapper = schoolMapper;
+        this.tenant = tenant;
     }
 
     public List<SchoolDto> list(){
@@ -54,7 +58,7 @@ public class SchoolService {
     public void update(SchoolDto schoolDto){
         var school = repository.findByPseudo(schoolDto.getPseudo());
         if (school.isEmpty()){
-            throw new PlanningException(Response.Status.NOT_FOUND, SCHOOL_NOT_FOUND);
+            throw new NotFoundException(SCHOOL_NOT_FOUND);
         }
         repository.update(schoolMapper.toEntity(schoolDto));
     }
@@ -66,7 +70,7 @@ public class SchoolService {
 
     public void delete(@NotNull String pseudo){
         var school = repository.findByPseudo(pseudo)
-                .orElseThrow(() -> new PlanningException(Response.Status.NOT_FOUND, SCHOOL_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(SCHOOL_NOT_FOUND));
         repository.delete(school.getPseudo());
         repository.deleteDatabase(school.getPseudo());
     }
@@ -76,13 +80,17 @@ public class SchoolService {
         repository.persist(school);
     }
 
+    public boolean isSchoolClosed(@NotNull final LocalDateTime dateTime){
+        return !isSchoolOpened(tenant.getName(), dateTime);
+    }
+
     public boolean isSchoolClosed(@NotNull String pseudo, @NotNull final LocalDateTime dateTime){
         return !isSchoolOpened(pseudo, dateTime);
     }
 
     public boolean isSchoolOpened(@NotNull String pseudo, @NotNull final LocalDateTime dateTime){
         var school = get(pseudo)
-                .orElseThrow(() -> new PlanningException(Response.Status.NOT_FOUND, SCHOOL_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(SCHOOL_NOT_FOUND));
         var time = dateTime.toLocalTime();
         return school.getWorkDays()
                 .stream()

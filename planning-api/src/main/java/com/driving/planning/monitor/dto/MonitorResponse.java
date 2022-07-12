@@ -10,13 +10,13 @@ public class MonitorResponse implements Serializable {
 
     public static final long serialVersionUID = 1L;
 
-    private List<MonitorDto> monitors;
+    private List<MonitorAbsenceDto> monitors;
 
-    public List<MonitorDto> getMonitors() {
+    public List<MonitorAbsenceDto> getMonitors() {
         return monitors;
     }
 
-    public void setMonitors(List<MonitorDto> monitors) {
+    public void setMonitors(List<MonitorAbsenceDto> monitors) {
         this.monitors = monitors;
     }
 }

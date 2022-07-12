@@ -1,6 +1,7 @@
 package com.driving.planning.student.otp;
 
-import com.driving.planning.common.exception.PlanningException;
+import com.driving.planning.common.exception.BadRequestException;
+import com.driving.planning.common.exception.InternalErrorException;
 import com.driving.planning.common.mail.EmailService;
 import com.driving.planning.common.mail.Mail;
 import com.driving.planning.common.mail.MailTemplate;
@@ -12,7 +13,6 @@ import org.jboss.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.ws.rs.core.Response;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -50,7 +50,7 @@ public class OTPService {
             rand = SecureRandom.getInstanceStrong();
         }
         catch(NoSuchAlgorithmException ex){
-            throw new PlanningException(Response.Status.INTERNAL_SERVER_ERROR, ex.getMessage());
+            throw new InternalErrorException(ex.getMessage(), ex);
         }
     }
 
@@ -58,7 +58,7 @@ public class OTPService {
         logger.infof("Send OTP by mail to %s", studentDto.getEmail());
         var email = studentDto.getEmail();
         if (email == null || email.isBlank()){
-            throw new PlanningException(Response.Status.BAD_REQUEST, "Email not found");
+            throw new BadRequestException("Email not found");
         }
         var otp = new OTP();
         otp.setStudentId(studentDto.getId());

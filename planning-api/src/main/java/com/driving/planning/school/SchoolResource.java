@@ -1,7 +1,8 @@
 package com.driving.planning.school;
 
 import com.driving.planning.account.AccountService;
-import com.driving.planning.common.exception.PlanningException;
+import com.driving.planning.common.exception.BadRequestException;
+import com.driving.planning.common.exception.NotFoundException;
 import com.driving.planning.school.dto.SchoolDto;
 import com.driving.planning.school.dto.SchoolRequest;
 import com.driving.planning.school.dto.SchoolResponse;
@@ -20,7 +21,6 @@ import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.time.LocalDateTime;
 
 @ApplicationScoped
@@ -65,7 +65,7 @@ public class SchoolResource {
     @POST
     public void createSchool(@Valid SchoolRequest request){
         if (schoolService.isNameUsed(request.getSchool().getName())){
-            throw new PlanningException(Response.Status.BAD_REQUEST, "Name already used");
+            throw new BadRequestException("Name already used");
         }
         var schoolDto = request.getSchool();
         String pseudo = generatePseudo(schoolDto.getName());
@@ -85,10 +85,10 @@ public class SchoolResource {
     @POST
     public void updateSchool(@PathParam("id") String pseudo, @Valid SchoolDto schoolDto){
         if (schoolService.get(pseudo).isEmpty()){
-            throw new PlanningException(Response.Status.NOT_FOUND, "School not found");
+            throw new NotFoundException("School not found");
         }
         if (schoolService.isNameUsed(schoolDto.getName(), pseudo)){
-            throw new PlanningException(Response.Status.BAD_REQUEST, "Name already used");
+            throw new BadRequestException("Name already used");
         }
         schoolDto.setPseudo(pseudo);
         schoolService.update(schoolDto);
@@ -102,7 +102,7 @@ public class SchoolResource {
     @DELETE
     public void deleteSchool(@PathParam("pseudo") String pseudo){
         SchoolDto dto = schoolService.get(pseudo)
-                .orElseThrow(() -> new PlanningException(Response.Status.NOT_FOUND, "Pseudo not found"));
+                .orElseThrow(() -> new NotFoundException("Pseudo not found"));
         schoolService.delete(dto.getPseudo());
     }
 
@@ -115,7 +115,7 @@ public class SchoolResource {
     @GET
     public SchoolDto getSchool(@PathParam("id") String id){
         return schoolService.get(id)
-                .orElseThrow(() -> new PlanningException(Response.Status.NOT_FOUND, "School not found"));
+                .orElseThrow(() -> new NotFoundException("School not found"));
     }
 
     private String generatePseudo(String name){

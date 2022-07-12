@@ -2,13 +2,10 @@ package com.driving.planning.student.dto;
 
 import com.driving.planning.common.constraint.Email;
 import com.driving.planning.common.constraint.PhoneNumber;
-import com.driving.planning.student.reservation.Reservation;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 @RegisterForReflection
 public class StudentDto implements Serializable {
@@ -28,28 +25,6 @@ public class StudentDto implements Serializable {
 
     @Email
     private String email;
-
-    private List<Reservation> reservations;
-
-    public StudentDto() {
-        reservations = new ArrayList<>();
-    }
-
-    public void addReservation(Reservation reservation){
-        reservations.add(reservation);
-    }
-
-    public void removeReservation(Reservation reservation){
-        reservations.remove(reservation);
-    }
-
-    public List<Reservation> getReservations() {
-        return reservations;
-    }
-
-    public void setReservations(List<Reservation> reservations) {
-        this.reservations = reservations;
-    }
 
     public String getId() {
         return id;

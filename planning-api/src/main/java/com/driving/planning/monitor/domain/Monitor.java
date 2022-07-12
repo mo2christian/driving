@@ -1,7 +1,7 @@
 package com.driving.planning.monitor.domain;
 
 import com.driving.planning.common.hourly.Hourly;
-import com.driving.planning.monitor.absent.Absent;
+import com.driving.planning.monitor.absence.Absence;
 import io.quarkus.mongodb.panache.common.MongoEntity;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
@@ -37,19 +37,19 @@ public class Monitor implements Serializable {
     private Set<Hourly> workDays;
 
     @BsonProperty("absents")
-    private List<Absent> absents;
+    private List<Absence> absences;
 
     public Monitor(){
         workDays = new HashSet<>();
-        absents = new ArrayList<>();
+        absences = new ArrayList<>();
     }
 
-    public List<Absent> getAbsents() {
-        return absents;
+    public List<Absence> getAbsences() {
+        return absences;
     }
 
-    public void setAbsents(List<Absent> absents) {
-        this.absents = absents;
+    public void setAbsences(List<Absence> absences) {
+        this.absences = absences;
     }
 
     public ObjectId getId() {

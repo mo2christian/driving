@@ -4,6 +4,7 @@ import com.driving.planning.Generator;
 import com.driving.planning.common.DatePattern;
 import com.driving.planning.common.hourly.Day;
 import com.driving.planning.common.hourly.Hourly;
+import com.driving.planning.monitor.dto.MonitorAbsenceDto;
 import com.driving.planning.monitor.dto.MonitorDto;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
@@ -133,7 +134,7 @@ class MonitorResourceTest {
                 .statusCode(204);
 
         ArgumentCaptor<MonitorDto> captor = ArgumentCaptor.forClass(MonitorDto.class);
-        verify(service, atMostOnce()).update(captor.capture());
+        verify(service, atMostOnce()).updateMonitor(captor.capture());
         Assertions.assertThat(captor.getValue())
                 .extracting(MonitorDto::getId, MonitorDto::getFirstName, MonitorDto::getLastName, MonitorDto::getPhoneNumber, MonitorDto::getWorkDays)
                 .containsExactly(id, dto.getFirstName(), dto.getLastName(), dto.getPhoneNumber(), dto.getWorkDays());
@@ -165,7 +166,7 @@ class MonitorResourceTest {
                 .post("/api/v1/monitors/{id}", id)
                 .then()
                 .statusCode(400);
-        verify(service, never()).update(any());
+        verify(service, never()).updateMonitor(any());
 
         var hourly = new Hourly();
         hourly.setBegin(LocalTime.now());
@@ -180,7 +181,7 @@ class MonitorResourceTest {
                 .post("/api/v1/monitors/{id}", id)
                 .then()
                 .statusCode(400);
-        verify(service, never()).update(any());
+        verify(service, never()).updateMonitor(any());
     }
 
     @Test
@@ -212,7 +213,7 @@ class MonitorResourceTest {
     @Test
     void delete(){
         var id = "id";
-        var dto = new MonitorDto();
+        var dto = new MonitorAbsenceDto();
         dto.setId(id);
         when(service.get(id)).thenReturn(Optional.of(dto));
         given()
@@ -238,7 +239,7 @@ class MonitorResourceTest {
     }
 
     private void setField(Object target, String field, Object value) throws NoSuchFieldException, IllegalAccessException {
-        Field f = target.getClass().getDeclaredField(field);
+        Field f = target.getClass().getSuperclass().getDeclaredField(field);
         f.setAccessible(true);
         f.set(target, value);
     }

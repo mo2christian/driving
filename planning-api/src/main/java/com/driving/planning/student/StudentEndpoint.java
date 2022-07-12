@@ -1,6 +1,7 @@
 package com.driving.planning.student;
 
 import com.driving.planning.student.dto.StudentDto;
+import com.driving.planning.student.dto.StudentReservationDto;
 import com.driving.planning.student.dto.StudentResponse;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.ParameterIn;
@@ -85,9 +86,10 @@ public interface StudentEndpoint {
             content = @Content(schema = @Schema(implementation = String.class)))
     @Path("{id}")
     @APIResponse(responseCode = "400", description = "Tenant Header not found")
-    @APIResponse(responseCode = "200", description = "Return student")
+    @APIResponse(responseCode = "200", description = "Return student",
+            content = @Content(schema = @Schema(implementation = StudentReservationDto.class)))
     @APIResponse(responseCode = "404", description = "Student not found")
     @GET
-    StudentDto get(@PathParam("id") String id);
+    StudentReservationDto get(@PathParam("id") String id);
 
 }

@@ -3,6 +3,7 @@ package com.driving.planning.monitor;
 import com.driving.planning.Generator;
 import com.driving.planning.common.exception.PlanningException;
 import com.driving.planning.monitor.domain.Monitor;
+import com.driving.planning.monitor.dto.MonitorAbsenceDto;
 import com.driving.planning.monitor.dto.MonitorDto;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
@@ -35,8 +36,9 @@ class MonitorServiceTest {
         verify(repository, atMostOnce()).persist(monitorCaptor.capture());
         Monitor monitor = monitorCaptor.getValue();
         assertThat(monitorDto)
-                .extracting(MonitorDto::getFirstName, MonitorDto::getLastName, MonitorDto::getPhoneNumber, MonitorDto::getWorkDays, MonitorDto::getAbsents)
-                .containsExactly(monitor.getFirstName(), monitor.getLastName(), monitor.getPhoneNumber(), monitor.getWorkDays(), monitor.getAbsents());
+                .isNotNull()
+                .extracting(MonitorDto::getFirstName, MonitorDto::getLastName, MonitorDto::getPhoneNumber, MonitorDto::getWorkDays)
+                .containsExactly(monitor.getFirstName(), monitor.getLastName(), monitor.getPhoneNumber(), monitor.getWorkDays());
     }
 
     @Test
@@ -45,16 +47,16 @@ class MonitorServiceTest {
         MonitorDto monitorDto = Generator.monitor();
         monitorDto.setId(id);
         when(repository.findById(id)).thenReturn(Optional.empty());
-        assertThatExceptionOfType(PlanningException.class).isThrownBy(() -> service.update(monitorDto));
+        assertThatExceptionOfType(PlanningException.class).isThrownBy(() -> service.updateMonitor(monitorDto));
 
         when(repository.findById(id)).thenReturn(Optional.of(new Monitor()));
-        service.update(monitorDto);
+        service.updateMonitor(monitorDto);
         ArgumentCaptor<Monitor> monitorCaptor = ArgumentCaptor.forClass(Monitor.class);
         verify(repository, atMostOnce()).update(monitorCaptor.capture());
         Monitor monitor = monitorCaptor.getValue();
         assertThat(monitorDto)
-                .extracting(MonitorDto::getId, MonitorDto::getFirstName, MonitorDto::getLastName, MonitorDto::getPhoneNumber, MonitorDto::getWorkDays, MonitorDto::getAbsents)
-                .containsExactly(monitor.getId().toString(), monitor.getFirstName(), monitor.getLastName(), monitor.getPhoneNumber(), monitor.getWorkDays(), monitor.getAbsents());
+                .extracting(MonitorDto::getId, MonitorDto::getFirstName, MonitorDto::getLastName, MonitorDto::getPhoneNumber, MonitorDto::getWorkDays)
+                .containsExactly(monitor.getId().toString(), monitor.getFirstName(), monitor.getLastName(), monitor.getPhoneNumber(), monitor.getWorkDays());
     }
 
     @Test
@@ -87,8 +89,8 @@ class MonitorServiceTest {
         when(repository.findById(id)).thenReturn(Optional.of(monitor));
         assertThat(service.get(id)).isNotEmpty()
                 .get()
-                .extracting(MonitorDto::getId, MonitorDto::getFirstName, MonitorDto::getLastName, MonitorDto::getPhoneNumber, MonitorDto::getWorkDays, MonitorDto::getAbsents)
-                .containsExactly(monitor.getId().toString(), monitor.getFirstName(), monitor.getLastName(), monitor.getPhoneNumber(), monitor.getWorkDays(), monitor.getAbsents());
+                .extracting(MonitorDto::getId, MonitorDto::getFirstName, MonitorDto::getLastName, MonitorDto::getPhoneNumber, MonitorDto::getWorkDays, MonitorAbsenceDto::getAbsences)
+                .containsExactly(monitor.getId().toString(), monitor.getFirstName(), monitor.getLastName(), monitor.getPhoneNumber(), monitor.getWorkDays(), monitor.getAbsences());
     }
 
     @Test

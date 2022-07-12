@@ -2,6 +2,7 @@ package com.driving.planning.student;
 
 import com.driving.planning.student.domain.Student;
 import com.driving.planning.student.dto.StudentDto;
+import com.driving.planning.student.dto.StudentReservationDto;
 import org.bson.types.ObjectId;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -10,9 +11,15 @@ import org.mapstruct.Mapping;
 public interface StudentMapper {
 
     @Mapping(target = "id", expression = "java( dto.getId() != null ? new ObjectId(dto.getId()) : null )")
-    Student toEntity(StudentDto dto);
+    Student toStudent(StudentDto dto);
 
-    @Mapping(target = "id", expression = "java( entity.getId().toString() )")
-    StudentDto toDto(Student entity);
+    @Mapping(target = "id", expression = "java( dto.getId() != null ? new ObjectId(dto.getId()) : null )")
+    Student toStudentWithReservation(StudentReservationDto dto);
+
+    @Mapping(target = "id", expression = "java( student.getId().toString() )")
+    StudentDto toDto(Student student);
+
+    @Mapping(target = "id", expression = "java( student.getId().toString() )")
+    StudentReservationDto toStudentReservationDto(Student student);
 
 }

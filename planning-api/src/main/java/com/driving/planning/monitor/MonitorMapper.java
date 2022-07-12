@@ -1,6 +1,7 @@
 package com.driving.planning.monitor;
 
 import com.driving.planning.monitor.domain.Monitor;
+import com.driving.planning.monitor.dto.MonitorAbsenceDto;
 import com.driving.planning.monitor.dto.MonitorDto;
 import org.bson.types.ObjectId;
 import org.mapstruct.Mapper;
@@ -14,5 +15,11 @@ public interface MonitorMapper {
 
     @Mapping(target = "id", expression = "java( entity.getId().toString() )")
     MonitorDto toDto(Monitor entity);
+
+    @Mapping(target = "id", expression = "java( entity.getId().toString() )")
+    MonitorAbsenceDto toMonitorAbsenceDto(Monitor entity);
+
+    @Mapping(target = "id", expression = "java( dto.getId() != null ? new ObjectId(dto.getId()) : null )")
+    Monitor toMonitorWithAbsence(MonitorAbsenceDto dto);
 
 }

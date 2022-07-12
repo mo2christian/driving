@@ -1,6 +1,9 @@
 package com.driving.planning.monitor;
 
+import com.driving.planning.common.exception.BadRequestException;
+import com.driving.planning.common.exception.NotFoundException;
 import com.driving.planning.common.exception.PlanningException;
+import com.driving.planning.monitor.dto.MonitorAbsenceDto;
 import com.driving.planning.monitor.dto.MonitorDto;
 import com.driving.planning.monitor.dto.MonitorResponse;
 import org.jboss.logging.Logger;
@@ -9,7 +12,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Response;
 
 @ApplicationScoped
 public class MonitorResource implements MonitorEndpoint {
@@ -40,7 +42,7 @@ public class MonitorResource implements MonitorEndpoint {
     }
 
     @Override
-    public MonitorDto get(@PathParam("id") String id){
+    public MonitorAbsenceDto get(@PathParam("id") String id){
         logger.debugf("Get monitor %s", id);
         return service.get(id)
                 .orElseThrow(this::notFound);
@@ -52,10 +54,10 @@ public class MonitorResource implements MonitorEndpoint {
         var monitor = service.get(id)
                 .orElseThrow(this::notFound);
         if (!dto.getWorkDays().equals(monitor.getWorkDays())){
-            throw new PlanningException(Response.Status.BAD_REQUEST, "Cannot modify work days");
+            throw new BadRequestException("Cannot modify work days");
         }
         dto.setId(id);
-        service.update(dto);
+        service.updateMonitor(dto);
     }
 
     @Override
@@ -67,6 +69,6 @@ public class MonitorResource implements MonitorEndpoint {
     }
 
     private PlanningException notFound(){
-        return new PlanningException(Response.Status.NOT_FOUND, "Monitor not found");
+        return new NotFoundException("Monitor not found");
     }
 }

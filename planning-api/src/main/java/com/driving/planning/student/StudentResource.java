@@ -1,12 +1,12 @@
 package com.driving.planning.student;
 
-import com.driving.planning.common.exception.PlanningException;
+import com.driving.planning.common.exception.NotFoundException;
 import com.driving.planning.student.dto.StudentDto;
+import com.driving.planning.student.dto.StudentReservationDto;
 import com.driving.planning.student.dto.StudentResponse;
 import org.jboss.logging.Logger;
 
 import javax.inject.Inject;
-import javax.ws.rs.core.Response;
 
 public class StudentResource implements StudentEndpoint {
 
@@ -36,7 +36,7 @@ public class StudentResource implements StudentEndpoint {
     public void updateStudent(String id, StudentDto studentDto){
         logger.debugf("update user %s", id);
         studentDto.setId(id);
-        studentService.update(studentDto);
+        studentService.updateStudent(studentDto);
     }
 
     public void delete(String id){
@@ -45,9 +45,9 @@ public class StudentResource implements StudentEndpoint {
     }
 
     @Override
-    public StudentDto get(String id) {
+    public StudentReservationDto get(String id) {
         return studentService.get(id)
-                .orElseThrow(() -> new PlanningException(Response.Status.NOT_FOUND, "Student not found"));
+                .orElseThrow(() -> new NotFoundException("Student not found"));
     }
 
 }

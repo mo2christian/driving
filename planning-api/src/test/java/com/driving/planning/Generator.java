@@ -5,11 +5,12 @@ import com.driving.planning.common.hourly.Day;
 import com.driving.planning.common.hourly.Hourly;
 import com.driving.planning.event.domain.EventType;
 import com.driving.planning.event.dto.EventDto;
-import com.driving.planning.monitor.absent.Absent;
-import com.driving.planning.monitor.dto.MonitorDto;
+import com.driving.planning.monitor.absence.Absence;
+import com.driving.planning.monitor.dto.MonitorAbsenceDto;
 import com.driving.planning.school.dto.AddressDto;
 import com.driving.planning.school.dto.SchoolDto;
 import com.driving.planning.student.dto.StudentDto;
+import com.driving.planning.student.dto.StudentReservationDto;
 import com.driving.planning.student.reservation.Reservation;
 
 import java.time.LocalDate;
@@ -52,6 +53,16 @@ public class  Generator {
         student.setPhoneNumber("147852369");
         student.setFirstName("first");
         student.setLastName("last");
+        return student;
+    }
+
+    public static StudentReservationDto studentReservation(){
+        var student = new StudentReservationDto();
+        var dto = student();
+        student.setEmail(dto.getEmail());
+        student.setPhoneNumber(dto.getPhoneNumber());
+        student.setFirstName(dto.getFirstName());
+        student.setLastName(dto.getLastName());
         var reservation = new Reservation();
         reservation.setDate(LocalDate.now().plusDays(3));
         reservation.setBegin(LocalTime.now());
@@ -60,8 +71,8 @@ public class  Generator {
         return student;
     }
 
-    public static MonitorDto monitor(){
-        var monitor = new MonitorDto();
+    public static MonitorAbsenceDto monitor(){
+        var monitor = new MonitorAbsenceDto();
         monitor.setFirstName("firstname");
         monitor.setLastName("lastname");
         monitor.setPhoneNumber("748596322");
@@ -70,11 +81,11 @@ public class  Generator {
         hourly.setBegin(LocalTime.now());
         hourly.setEnd(LocalTime.now().plusHours(5));
         monitor.getWorkDays().add(hourly);
-        var absent = new Absent();
+        var absent = new Absence();
         absent.setStart(LocalDate.now());
         absent.setEnd(LocalDate.now().plusDays(3));
         absent.setReference("ref");
-        monitor.getAbsents().add(absent);
+        monitor.getAbsences().add(absent);
         return monitor;
     }
 

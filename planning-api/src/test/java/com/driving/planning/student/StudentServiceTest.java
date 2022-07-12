@@ -3,6 +3,7 @@ package com.driving.planning.student;
 import com.driving.planning.common.exception.PlanningException;
 import com.driving.planning.student.domain.Student;
 import com.driving.planning.student.dto.StudentDto;
+import com.driving.planning.student.dto.StudentReservationDto;
 import com.driving.planning.student.reservation.Reservation;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
@@ -30,11 +31,11 @@ class StudentServiceTest {
     @InjectMock
     StudentRepository studentRepository;
 
-    StudentDto studentDto;
+    StudentReservationDto studentDto;
 
     @BeforeEach
     void init(){
-        studentDto = new StudentDto();
+        studentDto = new StudentReservationDto();
         studentDto.setEmail("toto@toto.com");
         studentDto.setFirstName("first");
         studentDto.setLastName("last");
@@ -53,19 +54,22 @@ class StudentServiceTest {
         ArgumentCaptor<Student> studentCaptor = ArgumentCaptor.forClass(Student.class);
         verify(studentRepository, times(1)).persist(studentCaptor.capture());
         assertThat(studentCaptor.getValue()).isNotNull()
-                .extracting(Student::getEmail, Student::getFirstName, Student::getLastName, Student::getPhoneNumber, Student::getReservations)
-                .containsExactly(studentDto.getEmail(), studentDto.getFirstName(), studentDto.getLastName(), studentDto.getPhoneNumber(), studentDto.getReservations());
+                .extracting(Student::getEmail, Student::getFirstName, Student::getLastName, Student::getPhoneNumber)
+                .containsExactly(studentDto.getEmail(), studentDto.getFirstName(), studentDto.getLastName(), studentDto.getPhoneNumber());
     }
 
     @Test
     void update(){
-        when(studentRepository.findById(studentDto.getId())).thenReturn(Optional.of(new Student()));
-        studentService.update(studentDto);
+        var entity = new Student();
+        entity.setReservations(Collections.singletonList(new Reservation()));
+        when(studentRepository.findById(studentDto.getId())).thenReturn(Optional.of(entity));
+        studentService.updateStudentWithReservation(studentDto);
         ArgumentCaptor<Student> studentCaptor = ArgumentCaptor.forClass(Student.class);
         verify(studentRepository, times(1)).update(studentCaptor.capture());
-        assertThat(studentCaptor.getValue()).isNotNull()
+        assertThat(studentCaptor.getValue())
+                .isNotNull()
                 .extracting(Student::getEmail, Student::getFirstName, Student::getLastName, Student::getPhoneNumber, Student::getReservations)
-                .containsExactly(studentDto.getEmail(), studentDto.getFirstName(), studentDto.getLastName(), studentDto.getPhoneNumber(), studentDto.getReservations());
+                .containsExactly(studentDto.getEmail(), studentDto.getFirstName(), studentDto.getLastName(), studentDto.getPhoneNumber(), entity.getReservations());
         assertThat(studentCaptor.getValue().getId())
                 .isNotNull()
                 .asString()
@@ -76,7 +80,7 @@ class StudentServiceTest {
     void updateNotFound(){
         when(studentRepository.findById(studentDto.getId())).thenReturn(Optional.empty());
         assertThatExceptionOfType(PlanningException.class)
-                .isThrownBy(() -> studentService.update(studentDto));
+                .isThrownBy(() -> studentService.updateStudentWithReservation(studentDto));
     }
 
     @Test
@@ -109,8 +113,11 @@ class StudentServiceTest {
         when(studentRepository.listAll()).thenReturn(Collections.singletonList(student));
         assertThat(studentService.list()).hasSize(1)
                 .element(0)
-                .extracting(StudentDto::getEmail, StudentDto::getFirstName, StudentDto::getLastName, StudentDto::getPhoneNumber, StudentDto::getId, StudentDto::getReservations)
-                .containsExactly(student.getEmail(), student.getFirstName(), student.getLastName(), student.getPhoneNumber(), student.getId().toString(), student.getReservations());
+                .extracting(StudentReservationDto::getEmail, StudentReservationDto::getFirstName,
+                        StudentReservationDto::getLastName, StudentReservationDto::getPhoneNumber,
+                        StudentReservationDto::getId, StudentReservationDto::getReservations)
+                .containsExactly(student.getEmail(), student.getFirstName(), student.getLastName(),
+                        student.getPhoneNumber(), student.getId().toString(), student.getReservations());
     }
 
     @Test

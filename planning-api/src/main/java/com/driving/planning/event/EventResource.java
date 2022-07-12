@@ -1,6 +1,6 @@
 package com.driving.planning.event;
 
-import com.driving.planning.common.exception.PlanningException;
+import com.driving.planning.common.exception.BadRequestException;
 import com.driving.planning.event.dto.EventDto;
 import com.driving.planning.event.dto.EventResponse;
 import org.jboss.logging.Logger;
@@ -27,7 +27,7 @@ public class EventResource implements EventEndpoint{
     public Response add(@Valid EventDto dto) {
         logger.debugf("Add event %s", dto);
         if (dto.getBegin().isAfter(dto.getEnd()) || dto.getBegin().equals(dto.getEnd())){
-            throw new PlanningException(Response.Status.BAD_REQUEST, "Begin time must be before end time");
+            throw new BadRequestException("Begin time must be before end time");
         }
         eventService.add(dto);
         return Response.status(Response.Status.CREATED)

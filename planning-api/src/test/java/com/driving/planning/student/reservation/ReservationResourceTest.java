@@ -2,7 +2,7 @@ package com.driving.planning.student.reservation;
 
 import com.driving.planning.Generator;
 import com.driving.planning.student.StudentService;
-import com.driving.planning.student.dto.StudentDto;
+import com.driving.planning.student.dto.StudentReservationDto;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import io.restassured.http.ContentType;
@@ -35,7 +35,7 @@ class ReservationResourceTest {
     @Test
     void add(){
         var id = "id";
-        var student = Generator.student();
+        var student = Generator.studentReservation();
         when(studentService.get(id)).thenReturn(Optional.of(student));
         when(reservationService.addReservation(any(), any())).thenReturn("ref");
         var reservation = new ReservationRequest();
@@ -107,7 +107,7 @@ class ReservationResourceTest {
     @Test
     void remove(){
         var id = "85858";
-        var student = Generator.student();
+        var student = Generator.studentReservation();
         when(studentService.get(id)).thenReturn(Optional.of(student));
         given()
                 .contentType(ContentType.JSON)
@@ -117,7 +117,7 @@ class ReservationResourceTest {
                 .then()
                 .statusCode(204);
 
-        ArgumentCaptor<StudentDto> studentCaptor = ArgumentCaptor.forClass(StudentDto.class);
+        ArgumentCaptor<StudentReservationDto> studentCaptor = ArgumentCaptor.forClass(StudentReservationDto.class);
         verify(reservationService, times(1)).removeReservation(studentCaptor.capture(), eq("ref"));
         assertThat(studentCaptor.getValue())
                 .isNotNull();

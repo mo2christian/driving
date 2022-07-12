@@ -1,7 +1,7 @@
 package com.driving.planning.common.sms;
 
 import com.driving.planning.common.constraint.PhoneNumber;
-import com.driving.planning.common.exception.PlanningException;
+import com.driving.planning.common.exception.BadRequestException;
 import com.twilio.Twilio;
 import com.twilio.exception.ApiException;
 import com.twilio.rest.api.v2010.account.Message;
@@ -12,7 +12,6 @@ import org.jboss.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.validation.constraints.NotBlank;
-import javax.ws.rs.core.Response;
 
 @Traced
 @ApplicationScoped
@@ -48,7 +47,7 @@ public class SMSService {
             .create();
         }
         catch(ApiException ex){
-            throw new PlanningException(Response.Status.BAD_REQUEST, "Error while sending SMS : " + ex.getMoreInfo());
+            throw new BadRequestException("Error while sending SMS : " + ex.getMoreInfo());
         }
     }
 
