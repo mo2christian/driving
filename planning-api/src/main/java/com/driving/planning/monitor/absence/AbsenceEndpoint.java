@@ -1,5 +1,6 @@
 package com.driving.planning.monitor.absence;
 
+import com.driving.planning.common.ResponseId;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.ParameterIn;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -24,7 +25,7 @@ public interface AbsenceEndpoint {
             content = @Content(schema = @Schema(implementation = String.class)))
     @POST
     @Path("/{id}/absences")
-    void add(@PathParam("id") String monitorId, @Valid AbsenceRequest absent);
+    ResponseId add(@PathParam("id") String monitorId, @Valid AbsenceRequest absent);
 
     @Operation(description = "Delete absent", operationId = "deleteAbsent")
     @Parameter(in = ParameterIn.HEADER, name = "x-app-tenant", required = true,

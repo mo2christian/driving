@@ -38,7 +38,7 @@ class AbsenceResourceTest {
                 .when()
                 .post("/api/v1/monitors/{id}/absences", "id")
                 .then()
-                .statusCode(204);
+                .statusCode(200);
         verify(absenceService, times(1)).addAbsent(any(), any());
     }
 
