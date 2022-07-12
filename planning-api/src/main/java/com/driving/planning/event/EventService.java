@@ -1,34 +1,25 @@
 package com.driving.planning.event;
 
 import com.driving.planning.common.exception.BadRequestException;
-import com.driving.planning.common.exception.InternalErrorException;
 import com.driving.planning.common.exception.NotFoundException;
-import com.driving.planning.common.exception.PlanningException;
 import com.driving.planning.config.database.Tenant;
 import com.driving.planning.event.domain.EventType;
 import com.driving.planning.event.dto.EventDto;
 import com.driving.planning.monitor.MonitorService;
 import com.driving.planning.school.SchoolService;
 import com.driving.planning.student.StudentService;
-import com.mongodb.ReadConcern;
-import com.mongodb.ReadPreference;
-import com.mongodb.TransactionOptions;
-import com.mongodb.WriteConcern;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.TransactionBody;
 import org.eclipse.microprofile.opentracing.Traced;
 import org.jboss.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.driving.planning.common.Utils.between;
 
 @Traced
 @ApplicationScoped
@@ -44,8 +35,6 @@ public class EventService {
 
     private final Logger logger;
 
-    private final MongoClient mongoClient;
-
     private final SchoolService schoolService;
 
     private final Tenant tenant;
@@ -54,7 +43,6 @@ public class EventService {
     public EventService(EventMapper mapper,
                         EventRepository repository,
                         MonitorService monitorService,
-                        MongoClient mongoClient,
                         StudentService studentService,
                         SchoolService schoolService,
                         Tenant tenant,
@@ -63,7 +51,6 @@ public class EventService {
         this.repository = repository;
         this.monitorService = monitorService;
         this.studentService = studentService;
-        this.mongoClient = mongoClient;
         this.logger = logger;
         this.schoolService = schoolService;
         this.tenant = tenant;
@@ -81,53 +68,27 @@ public class EventService {
                 schoolService.isSchoolClosed(tenant.getName(), LocalDateTime.of(dto.getEventDate(), dto.getEnd()))){
             throw new BadRequestException("School is not open at that time");
         }
-        var txOption = TransactionOptions.builder()
-                .readPreference(ReadPreference.primary())
-                .readConcern(ReadConcern.LOCAL)
-                .writeConcern(WriteConcern.MAJORITY)
-                .build();
-        TransactionBody<String> txBody = () -> {
-            if (!isPLaceAvailable(dto)){
-                throw new BadRequestException("Place not found for the event");
-            }
-            if (hasEvent(dto)){
-                throw new BadRequestException("User already register an event at that time");
-            }
-            var event = mapper.toEntity(dto);
-            repository.persist(event);
-            return "Done";
-        };
-        try (var session = mongoClient.startSession()) {
-            session.withTransaction(txBody, txOption);
-        } catch (PlanningException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new InternalErrorException("Unable to register an event", ex);
+        if (!isPlaceAvailable(dto)){
+            throw new BadRequestException("No place available for this event");
         }
+        var event = mapper.toEntity(dto);
+        repository.persist(event);
     }
 
-    public boolean isPLaceAvailable(final EventDto eventDto){
+    public boolean isPlaceAvailable(final EventDto eventDto){
         long nbEvent = repository.listByDate(eventDto.getEventDate())
                 .stream()
                 .filter(event ->
-                                between(event.getBegin(), eventDto.getBegin(), event.getEnd())
-                                        || between(event.getBegin(), eventDto.getEnd(), event.getEnd())
+                                between(event.getBegin(), eventDto.getBegin(), event.getEnd()) ||
+                                between(event.getBegin(), eventDto.getEnd(), event.getEnd())
                         ).count();
         long nbPlace = monitorService.list()
-                .stream().filter(dto -> dto.getWorkDays().stream()
+                .stream()
+                .filter(dto -> dto.getWorkDays().stream()
                         .map(h -> h.getDay().getDayOfWeek())
                         .anyMatch(dow -> dow == eventDto.getEventDate().getDayOfWeek()))
                 .count();
         return nbPlace >= nbEvent + 1;
-    }
-
-    public boolean hasEvent(@NotBlank String userId, @NotNull LocalDate begin, @NotNull LocalDate end){
-        return repository.listByUserId(userId)
-                .stream()
-                .anyMatch(event -> {
-                    var value = event.getEventDate();
-                    return (begin.isBefore(value) || begin.equals(value)) && (value.isBefore(end) || value.equals(end));
-                });
     }
 
     public List<EventDto> list(){
@@ -144,19 +105,6 @@ public class EventService {
 
     public void deleteByRef(@NotNull String ref){
         repository.deleteByRef(ref);
-    }
-
-    private boolean between(LocalTime begin, LocalTime value, LocalTime end){
-        return (begin.isBefore(value) || begin.equals(value)) && value.isBefore(end);
-    }
-
-    private boolean hasEvent(final EventDto eventDto){
-        return repository.listByDate(eventDto.getEventDate())
-                .stream()
-                .filter(event -> event.getRelatedUserId().equals(eventDto.getRelatedUserId()))
-                .anyMatch(event ->
-                        between(event.getBegin(), eventDto.getBegin(), event.getEnd())
-                                || between(event.getBegin(), eventDto.getEnd(), event.getEnd()));
     }
 
 }

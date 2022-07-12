@@ -1,6 +1,7 @@
 package com.driving.planning.monitor.absence;
 
 import com.driving.planning.Generator;
+import com.driving.planning.common.exception.BadRequestException;
 import com.driving.planning.common.hourly.Day;
 import com.driving.planning.common.hourly.Hourly;
 import com.driving.planning.event.EventService;
@@ -8,9 +9,9 @@ import com.driving.planning.event.domain.EventType;
 import com.driving.planning.event.dto.EventDto;
 import com.driving.planning.monitor.MonitorService;
 import com.driving.planning.monitor.dto.MonitorAbsenceDto;
-import com.driving.planning.school.SchoolService;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -30,9 +31,6 @@ class AbsenceServiceTest {
 
     @InjectMock
     EventService eventService;
-
-    @InjectMock
-    SchoolService schoolService;
 
     @Inject
     AbsenceService absenceService;
@@ -55,12 +53,31 @@ class AbsenceServiceTest {
     }
 
     @Test
+    void addEventExist(){
+        LocalDate now = LocalDate.now();
+        var request = new AbsenceRequest(now, now.plusDays(1));
+        var monitor = new MonitorAbsenceDto();
+        monitor.setId("id");
+        var h1 = new Hourly();
+        h1.setDay(Day.fromDayOfWeek(request.getStart().getDayOfWeek()));
+        h1.setBegin(LocalTime.of(8, 0));
+        h1.setEnd(LocalTime.of(18, 0));
+        monitor.getWorkDays().add(h1);
+        var absence = new Absence();
+        absence.setStart(now);
+        absence.setEnd(now);
+        monitor.getAbsences().add(absence);
+        when(monitorService.get(monitor.getId())).thenReturn(Optional.of(monitor));
+        Assertions.assertThatThrownBy(() -> absenceService.addAbsent(monitor, request))
+                .isInstanceOf(BadRequestException.class);
+    }
+
+    @Test
     void addEvent(){
         LocalDate now = LocalDate.now();
         var absent = new AbsenceRequest(now, now.plusDays(1));
         var monitor = new MonitorAbsenceDto();
         monitor.setId("id");
-        when(monitorService.get(monitor.getId())).thenReturn(Optional.of(monitor));
         var h1 = new Hourly();
         h1.setDay(Day.fromDayOfWeek(absent.getStart().getDayOfWeek()));
         h1.setBegin(LocalTime.of(8, 0));
@@ -69,10 +86,9 @@ class AbsenceServiceTest {
         h2.setDay(Day.fromDayOfWeek(absent.getEnd().getDayOfWeek()));
         h2.setBegin(LocalTime.of(8, 0));
         h2.setEnd(LocalTime.of(18, 0));
-        var school = Generator.school();
-        school.getWorkDays().add(h1);
-        school.getWorkDays().add(h2);
-        when(schoolService.get(anyString())).thenReturn(Optional.of(school));
+        monitor.getWorkDays().add(h1);
+        monitor.getWorkDays().add(h2);
+        when(monitorService.get(monitor.getId())).thenReturn(Optional.of(monitor));
 
         absenceService.addAbsent(monitor, absent);
 

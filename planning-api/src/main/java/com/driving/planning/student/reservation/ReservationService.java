@@ -1,6 +1,8 @@
 package com.driving.planning.student.reservation;
 
+import com.driving.planning.common.exception.BadRequestException;
 import com.driving.planning.common.exception.InternalErrorException;
+import com.driving.planning.common.exception.NotFoundException;
 import com.driving.planning.common.exception.PlanningException;
 import com.driving.planning.event.EventService;
 import com.driving.planning.event.domain.EventType;
@@ -8,10 +10,6 @@ import com.driving.planning.event.dto.EventDto;
 import com.driving.planning.student.StudentService;
 import com.driving.planning.student.dto.StudentDto;
 import com.driving.planning.student.dto.StudentReservationDto;
-import com.mongodb.ReadConcern;
-import com.mongodb.ReadPreference;
-import com.mongodb.TransactionOptions;
-import com.mongodb.WriteConcern;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.TransactionBody;
 import org.eclipse.microprofile.opentracing.Traced;
@@ -22,6 +20,9 @@ import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
+
+import static com.driving.planning.common.Utils.between;
+import static com.driving.planning.common.Utils.transactionOptions;
 
 @Traced
 @ApplicationScoped
@@ -48,26 +49,60 @@ public class ReservationService {
 
     public void removeReservation(@NotNull StudentReservationDto student, @NotNull String ref){
         logger.debugf("remove reservation %s", ref);
-        student.getReservations().removeIf(r -> ref.equals(r.getReference()));
-        studentService.updateStudentWithReservation(student);
-        eventService.deleteByRef(ref);
+        var txnOptions = transactionOptions();
+        try(var session = mongoClient.startSession()){
+            session.withTransaction(new RemoveEventTransaction(student, ref), txnOptions);
+        } catch (PlanningException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new InternalErrorException("Unable to register reservation", ex);
+        }
     }
 
     public String addReservation(@NotNull StudentReservationDto student, @Valid ReservationRequest request){
         logger.debugf("add reservation to student %s", student.getEmail());
-        var txnOptions = TransactionOptions.builder()
-                .readPreference(ReadPreference.primary())
-                .readConcern(ReadConcern.LOCAL)
-                .writeConcern(WriteConcern.MAJORITY)
-                .build();
-
+        if (hasReservation(student, request)){
+            throw new BadRequestException("Student already have a reservation at that time");
+        }
+        var txnOptions = transactionOptions();
         try(var session = mongoClient.startSession()){
             return session.withTransaction(new AddEventTransaction(student, request), txnOptions);
-        } catch (
-        PlanningException ex) {
+        }
+        catch (PlanningException ex) {
             throw ex;
         } catch (Exception ex) {
             throw new InternalErrorException("Unable to register reservation", ex);
+        }
+    }
+
+    private boolean hasReservation(StudentDto studentDto, ReservationRequest request){
+        logger.debugf("Check if student %s has reservation", studentDto);
+        return studentService.get(studentDto.getId())
+                .orElseThrow(() -> new NotFoundException("Monitor not found"))
+                .getReservations()
+                .stream()
+                .anyMatch(res ->
+                        between(res.getBegin(), request.getBegin(), res.getEnd()) ||
+                        between(res.getBegin(), request.getEnd(), res.getEnd()));
+    }
+
+    private class RemoveEventTransaction implements TransactionBody<String> {
+
+        private final StudentReservationDto student;
+
+        private final String ref;
+
+        public RemoveEventTransaction(StudentReservationDto student, String ref) {
+            this.student = student;
+            this.ref = ref;
+        }
+
+        @Override
+        public String execute() {
+            student.getReservations().removeIf(r -> ref.equals(r.getReference()));
+            studentService.updateStudentWithReservation(student);
+            eventService.deleteByRef(ref);
+            return "Done";
         }
     }
 

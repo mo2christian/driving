@@ -2,20 +2,14 @@ package com.driving.planning.monitor.absence;
 
 import com.driving.planning.common.exception.BadRequestException;
 import com.driving.planning.common.exception.InternalErrorException;
+import com.driving.planning.common.exception.NotFoundException;
 import com.driving.planning.common.exception.PlanningException;
 import com.driving.planning.common.hourly.Hourly;
-import com.driving.planning.config.database.Tenant;
 import com.driving.planning.event.EventService;
 import com.driving.planning.event.domain.EventType;
 import com.driving.planning.event.dto.EventDto;
 import com.driving.planning.monitor.MonitorService;
 import com.driving.planning.monitor.dto.MonitorAbsenceDto;
-import com.driving.planning.school.SchoolService;
-import com.driving.planning.school.dto.SchoolDto;
-import com.mongodb.ReadConcern;
-import com.mongodb.ReadPreference;
-import com.mongodb.TransactionOptions;
-import com.mongodb.WriteConcern;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.TransactionBody;
 import org.jboss.logging.Logger;
@@ -28,6 +22,9 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.driving.planning.common.Utils.between;
+import static com.driving.planning.common.Utils.transactionOptions;
+
 @ApplicationScoped
 public class AbsenceService {
 
@@ -35,48 +32,39 @@ public class AbsenceService {
 
     private final MongoClient mongoClient;
 
-    private final SchoolService schoolService;
-
     private final MonitorService monitorService;
 
     private final Logger logger;
 
-    private final Tenant tenant;
-
     @Inject
     public AbsenceService(EventService eventService, MongoClient mongoClient,
-                          SchoolService schoolService, MonitorService monitorService,
-                          Logger logger, Tenant tenant) {
+                          MonitorService monitorService,
+                          Logger logger) {
         this.eventService = eventService;
         this.mongoClient = mongoClient;
-        this.schoolService = schoolService;
         this.monitorService = monitorService;
         this.logger = logger;
-        this.tenant = tenant;
-    }
-
-    public boolean hasAbsent(@NotNull MonitorAbsenceDto monitor, @Valid AbsenceRequest request) {
-        logger.debugf("Check in monitor %s has event", monitor);
-        return eventService.hasEvent(monitor.getId(), request.getStart(), request.getEnd());
     }
 
     public void removeAbsent(@NotNull MonitorAbsenceDto monitor, @NotNull String ref){
         logger.debugf("Remove absent %s", ref);
-        monitor.getAbsences().removeIf(a -> a.getReference().equalsIgnoreCase(ref));
-        monitorService.updateMonitorWithAbsence(monitor);
-        eventService.deleteByRef(ref);
+        var txnOptions = transactionOptions();
+        var txBody = new RemoveEventTransaction(monitor, ref);
+        try (var session = mongoClient.startSession()) {
+            session.withTransaction(txBody, txnOptions);
+        } catch (PlanningException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new InternalErrorException("Unable to remove absence", ex);
+        }
     }
 
     public void addAbsent(@NotNull MonitorAbsenceDto monitor, @Valid AbsenceRequest request) {
         logger.debugf("Add absent for monitor %s", monitor);
-        if (hasAbsent(monitor, request)) {
+        if (hasAbsence(monitor, request)) {
             throw new BadRequestException("Monitor already have and event at that time");
         }
-        var txnOptions = TransactionOptions.builder()
-                .readPreference(ReadPreference.primary())
-                .readConcern(ReadConcern.LOCAL)
-                .writeConcern(WriteConcern.MAJORITY)
-                .build();
+        var txnOptions = transactionOptions();
         var txBody = new AddEventTransaction(request, monitor);
         try (var session = mongoClient.startSession()) {
             session.withTransaction(txBody, txnOptions);
@@ -84,6 +72,37 @@ public class AbsenceService {
             throw ex;
         } catch (Exception ex) {
             throw new InternalErrorException("Unable to register absent", ex);
+        }
+    }
+
+    private boolean hasAbsence(@NotNull MonitorAbsenceDto monitor, @Valid AbsenceRequest request) {
+        logger.debugf("Check if monitor %s has event", monitor);
+        return monitorService.get(monitor.getId())
+                .orElseThrow(() -> new NotFoundException("Monitor not found"))
+                .getAbsences()
+                .stream()
+                .anyMatch(absence ->
+                        between(absence.getStart(), request.getStart(), absence.getEnd()) ||
+                                between(absence.getStart(), request.getEnd(), absence.getEnd()));
+    }
+
+    private class RemoveEventTransaction implements TransactionBody<String> {
+
+        private final MonitorAbsenceDto monitorAbsenceDto;
+
+        private final String ref;
+
+        public RemoveEventTransaction(MonitorAbsenceDto monitorAbsenceDto, String ref) {
+            this.monitorAbsenceDto = monitorAbsenceDto;
+            this.ref = ref;
+        }
+
+        @Override
+        public String execute() {
+            monitorAbsenceDto.getAbsences().removeIf(a -> a.getReference().equalsIgnoreCase(ref));
+            monitorService.updateMonitorWithAbsence(monitorAbsenceDto);
+            eventService.deleteByRef(ref);
+            return "Done";
         }
     }
 
@@ -102,10 +121,8 @@ public class AbsenceService {
         public String execute() {
             var d = request.getStart();
             var ref = UUID.randomUUID().toString();
-            var school = schoolService.get(tenant.getName())
-                    .orElseThrow();
             for (; d.isBefore(request.getEnd()) || d.equals(request.getEnd()); d = d.plusDays(1)) {
-                var wd = getWorkDay(school, d);
+                var wd = getWorkDay(monitor, d);
                 if (wd.isEmpty()) {
                     continue;
                 }
@@ -124,8 +141,8 @@ public class AbsenceService {
             return "Done";
         }
 
-        private Optional<Hourly> getWorkDay(SchoolDto schoolDto, LocalDate date) {
-            return schoolDto.getWorkDays()
+        private Optional<Hourly> getWorkDay(MonitorAbsenceDto monitorAbsenceDto, LocalDate date) {
+            return monitorAbsenceDto.getWorkDays()
                     .stream()
                     .filter(h -> h.getDay().getDayOfWeek() == date.getDayOfWeek())
                     .findFirst();

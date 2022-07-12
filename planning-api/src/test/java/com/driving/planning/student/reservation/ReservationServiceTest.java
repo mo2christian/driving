@@ -1,6 +1,7 @@
 package com.driving.planning.student.reservation;
 
 import com.driving.planning.Generator;
+import com.driving.planning.common.exception.BadRequestException;
 import com.driving.planning.event.EventService;
 import com.driving.planning.event.domain.EventType;
 import com.driving.planning.event.dto.EventDto;
@@ -15,9 +16,9 @@ import org.mockito.ArgumentCaptor;
 import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Optional;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @QuarkusTest
 class ReservationServiceTest {
@@ -49,6 +50,23 @@ class ReservationServiceTest {
         verify(eventService, times(1)).deleteByRef("ref");
     }
 
+    @Test()
+    void addReservationExist(){
+        var request = new ReservationRequest();
+        request.setDate(LocalDate.now());
+        request.setBegin(LocalTime.of(10,0));
+        request.setEnd(LocalTime.of(11,0));
+        var student = Generator.studentReservation();
+        var reservation = new Reservation();
+        reservation.setDate(request.getDate());
+        reservation.setBegin(request.getBegin());
+        reservation.setEnd(request.getEnd());
+        student.getReservations().add(reservation);
+        when(studentService.get(student.getId())).thenReturn(Optional.of(student));
+        Assertions.assertThatThrownBy(() -> reservationService.addReservation(student, request))
+                        .isInstanceOf(BadRequestException.class);
+    }
+
     @Test
     void addReservation(){
         var request = new ReservationRequest();
@@ -56,6 +74,7 @@ class ReservationServiceTest {
         request.setBegin(LocalTime.of(10,0));
         request.setEnd(LocalTime.of(11,0));
         var student = Generator.studentReservation();
+        when(studentService.get(student.getId())).thenReturn(Optional.of(student));
         reservationService.addReservation(student, request);
 
         ArgumentCaptor<EventDto> eventCaptor = ArgumentCaptor.forClass(EventDto.class);
