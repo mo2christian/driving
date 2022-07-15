@@ -66,7 +66,7 @@ class MonitorControllerTest {
             workDays.add(hourly);
         }
 
-        var monitor = new MonitorDto()
+        var monitor = new MonitorAbsenceDto()
                 .id("id")
                 .firstName("test")
                 .lastName("test")
@@ -126,7 +126,7 @@ class MonitorControllerTest {
         assertThat(monitorCaptor.getValue().getWorkDays())
                 .isNotNull()
                 .hasSize(6)
-                .allMatch(hourly -> "09:00".equals(hourly.getBegin()) && "17:00".equals(hourly.getEnd()))
+                .allMatch(hourly -> "09:00:00".equals(hourly.getBegin()) && "17:00:00".equals(hourly.getEnd()))
                 .allMatch(hourly -> hourly.getDay() != null);
     }
 
@@ -159,7 +159,7 @@ class MonitorControllerTest {
         assertThat(monitorCaptor.getValue().getWorkDays())
                 .isNotNull()
                 .hasSize(4)
-                .allMatch(hourly -> "09:00".equals(hourly.getBegin()) && "17:00".equals(hourly.getEnd()))
+                .allMatch(hourly -> "09:00:00".equals(hourly.getBegin()) && "17:00:00".equals(hourly.getEnd()))
                 .allMatch(hourly -> hourly.getDay() != null);
     }
 
@@ -260,7 +260,7 @@ class MonitorControllerTest {
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/monitor/list"));
-        ArgumentCaptor<AbsentRequest> absentCaptor = ArgumentCaptor.forClass(AbsentRequest.class);
+        ArgumentCaptor<AbsenceRequest> absentCaptor = ArgumentCaptor.forClass(AbsenceRequest.class);
         verify(monitorApiClient, times(1)).addAbsent(eq("monitorId"), eq(TENANT), absentCaptor.capture());
         assertThat(absentCaptor.getValue().getStart()).isEqualTo(absent.getStart());
         assertThat(absentCaptor.getValue().getEnd()).isEqualTo(absent.getEnd());

@@ -1,7 +1,7 @@
 package com.driving.planning.school.student;
 
 import com.driving.planning.client.StudentApiClient;
-import com.driving.planning.client.model.StudentDto;
+import com.driving.planning.client.model.StudentReservationDto;
 import com.driving.planning.school.common.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +70,7 @@ public class StudentController {
     }
 
     @ModelAttribute("students")
-    private List<StudentDto> getStudents(){
+    private List<StudentReservationDto> getStudents(){
         var body = studentApiClient.getStudents(Utils.getSchoolID())
                 .getBody();
         if (body == null){

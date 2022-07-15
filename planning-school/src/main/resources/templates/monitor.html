@@ -26,7 +26,7 @@
             <td th:text="${monitor.lastName}">Last Name</td>
             <td th:text="${monitor.phoneNumber}">Phone Number</td>
             <td>
-                <p th:each="absence : ${monitor.absents}">
+                <p th:each="absence : ${monitor.absences}">
                     <span th:text="${absence.start}">Start</span>
                     <span th:text="${absence.end}">Start</span>
                     <span>

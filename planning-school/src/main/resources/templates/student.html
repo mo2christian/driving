@@ -29,7 +29,7 @@
             <td th:text="${student.email}">Phone Number</td>
             <td>
                 <p th:each="reservation : ${student.reservations}">
-                    <span th:text="${reservation.start}">Start</span>
+                    <span th:text="${reservation.begin}">Start</span>
                     <span th:text="${reservation.end}">Start</span>
                     <span>
                         <a th:href="@{/student/reservation/delete(id=${student.id},ref=${reservation.reference})}">Delete</a>
