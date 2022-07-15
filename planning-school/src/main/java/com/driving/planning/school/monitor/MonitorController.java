@@ -2,9 +2,9 @@ package com.driving.planning.school.monitor;
 
 import com.driving.planning.client.DrivingSchoolApiClient;
 import com.driving.planning.client.MonitorApiClient;
-import com.driving.planning.client.model.AbsentRequest;
+import com.driving.planning.client.model.AbsenceRequest;
 import com.driving.planning.client.model.Day;
-import com.driving.planning.client.model.MonitorDto;
+import com.driving.planning.client.model.MonitorAbsenceDto;
 import com.driving.planning.client.model.MonitorResponse;
 import com.driving.planning.school.common.exception.ApiException;
 import com.driving.planning.school.common.form.WorkDayForm;
@@ -112,7 +112,7 @@ public class MonitorController {
         if (result.hasErrors()){
             return MONITOR_VIEW;
         }
-        var absentRequest = new AbsentRequest()
+        var absentRequest = new AbsenceRequest()
                 .end(form.getEnd())
                 .start(form.getStart());
         monitorApiClient.addAbsent(form.getMonitorId(), getSchoolID(), absentRequest);
@@ -147,7 +147,7 @@ public class MonitorController {
     }
 
     @ModelAttribute("monitors")
-    private List<MonitorDto> getMonitors(){
+    private List<MonitorAbsenceDto> getMonitors(){
         MonitorResponse response = monitorApiClient.getMonitors(getSchoolID())
                 .getBody();
         if (response != null){

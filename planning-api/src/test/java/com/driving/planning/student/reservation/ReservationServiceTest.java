@@ -70,7 +70,7 @@ class ReservationServiceTest {
     @Test
     void addReservation(){
         var request = new ReservationRequest();
-        request.setDate(LocalDate.now());
+        request.setDate(LocalDate.now().plusDays(7));
         request.setBegin(LocalTime.of(10,0));
         request.setEnd(LocalTime.of(11,0));
         var student = Generator.studentReservation();

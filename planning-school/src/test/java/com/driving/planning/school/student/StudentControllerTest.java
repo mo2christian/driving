@@ -2,6 +2,7 @@ package com.driving.planning.school.student;
 
 import com.driving.planning.client.StudentApiClient;
 import com.driving.planning.client.model.StudentDto;
+import com.driving.planning.client.model.StudentReservationDto;
 import com.driving.planning.client.model.StudentResponse;
 import com.driving.planning.school.auth.MockUser;
 import org.assertj.core.api.Assertions;
@@ -38,7 +39,7 @@ class StudentControllerTest {
     @BeforeEach
     void before(){
         var response = new StudentResponse();
-        response.addStudentsItem(new StudentDto());
+        response.addStudentsItem(new StudentReservationDto());
         when(studentApiClient.getStudents(TENANT)).thenReturn(ResponseEntity.ok(response));
     }
 
@@ -55,7 +56,7 @@ class StudentControllerTest {
     @Test
     @MockUser(username = "user", school = TENANT)
     void show() throws Exception {
-        var student = new StudentDto();
+        var student = new StudentReservationDto();
         student.setEmail("email");
         student.setFirstName("first");
         when(studentApiClient.getStudent("id", TENANT)).thenReturn(ResponseEntity.ok(student));

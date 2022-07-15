@@ -1,5 +1,6 @@
 package com.driving.planning.school.monitor;
 
+import com.driving.planning.client.model.MonitorAbsenceDto;
 import com.driving.planning.client.model.MonitorDto;
 import com.driving.planning.school.common.form.WorkDayMapper;
 import org.mapstruct.Mapper;
@@ -12,6 +13,6 @@ public interface MonitorMapper {
     MonitorDto formToDto(MonitorForm form);
 
     @Mapping(target = "workDays", ignore = true)
-    MonitorForm dtoToForm(MonitorDto dto);
+    MonitorForm dtoToForm(MonitorAbsenceDto dto);
 
 }
