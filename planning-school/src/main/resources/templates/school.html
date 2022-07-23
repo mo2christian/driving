@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{layout/main}">
+<head>
+    <title>School</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <form th:action="@{/school/action}" method="post" th:object="${request}">
+        <div class="form-group">
+            <label> Name: </label>
+            <input type="text" name="name" class="form-control" th:field="*{name}"/>
+            <ul>
+                <li th:each="err : ${#fields.errors('name')}" th:text="${err}" class="error"></li>
+            </ul>
+        </div>
+        <div class="form-group">
+            <label> Phone Number: </label>
+            <input type="text" name="phoneNumber" class="form-control" th:field="*{phoneNumber}"/>
+            <ul>
+                <li th:each="err : ${#fields.errors('phoneNumber')}" th:text="${err}" class="error"></li>
+            </ul>
+        </div>
+        <div class="form-group">
+            <label> Adress: </label>
+            <input type="text" name="path" class="form-control" th:field="*{path}"/>
+            <ul>
+                <li th:each="err : ${#fields.errors('path')}" th:text="${err}" class="error"></li>
+            </ul>
+        </div>
+        <div class="form-group">
+            <label> Postal Code: </label>
+            <input type="number" name="postalCode" class="form-control" th:field="*{zipCode}"/>
+            <ul>
+                <li th:each="err : ${#fields.errors('zipCode')}" th:text="${err}" class="error"></li>
+            </ul>
+        </div>
+        <div class="form-group">
+            <label> town: </label>
+            <input type="text" name="town" class="form-control" th:field="*{town}"/>
+            <ul>
+                <li th:each="err : ${#fields.errors('town')}" th:text="${err}" class="error"></li>
+            </ul>
+        </div>
+        <div class="form-group">
+                <div class="row">
+                    <div class="col" th:each="workDay, stat : *{workDays}">
+                        <label th:text="${workDay.day}">Day</label>
+                        <input type="hidden" th:field="*{workDays[__${stat.index}__].day}">
+                        <input type="checkbox" th:field="*{workDays[__${stat.index}__].selected}">
+                        <input type="text" class="form-control"
+                               th:field="*{workDays[__${stat.index}__].begin}"/>
+                        <br/>
+                        <input type="text" class="form-control"
+                               th:field="*{workDays[__${stat.index}__].end}"/>
+                        <ul>
+                            <li th:each="err : ${#fields.errors('workDays[__${stat.index}__]')}" th:text="${err}" class="error"></li>
+                        </ul>
+                    </div>
+                </div>
+        </div>
+        <input type="hidden" name="operation" value="update"/>
+        <input type="hidden" name="id" th:value="*{id}"/>
+        <button type="submit" class="btn btn-primary">Register</button>
+    </form>
+</div>
+</body>
+</html>
